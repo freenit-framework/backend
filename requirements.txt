@@ -1,0 +1,9 @@
+bcrypt
+flask-admin
+flask-collect
+flask-cors
+flask-jwt
+flask-pw
+flask-restplus
+flask-script
+flask-security
