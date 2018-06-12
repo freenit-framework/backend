@@ -1,4 +1,10 @@
-*.pyc
-.ropeproject/
-.vagrant/
-database.db
+build
+cbsd.conf
+ansible/group_vars/all
+ansible/inventory/inventory
+ansible/roles/*
+!ansible/roles/.keep
+ansible/site.yml
+vars.mk
+site.retry
+__pycache__

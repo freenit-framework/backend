@@ -1,0 +1,8 @@
+# -*- mode: ansible -*-
+# vi: set ft=ansible :
+
+---
+- name: backend provisioning
+  hosts: backend
+  roles:
+    - onelove-roles.freebsd-common
