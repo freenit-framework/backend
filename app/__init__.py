@@ -1,12 +1,10 @@
 from flask import Flask, Blueprint
-from flask_admin import Admin, AdminIndexView
 from flask_collect import Collect
 from flask_jwt import JWT
 from flask_restplus import apidoc
 from flask_security import Security, PeeweeUserDatastore
 from flask_security.utils import verify_password
-from flask_pw import Peewee
-import db
+from .db import db
 
 
 def create_app(config, app=None):
@@ -19,17 +17,10 @@ def create_app(config, app=None):
         app = Flask(__name__)
         app.config.from_object(config)
 
-    app.admin = Admin(
-        name='App',
-        # base_template='admin_master.html',
-        template_mode='bootstrap3',
-        index_view=AdminIndexView(
-            # template='admin/my_index.html',
-        ),
-    )
     app.collect = Collect()
-    app.db = Peewee(app)
-    db.db = app.db
+    db.init_app(app)
+    app.db = db
+
     app.blueprint = Blueprint(
         'app',
         __name__,
@@ -39,7 +30,7 @@ def create_app(config, app=None):
     )
     app.register_blueprint(app.blueprint)
 
-    from api import api_v0, api
+    from .api import api_v0, api
     app.api = api
     app.register_blueprint(api_v0)
     app.register_blueprint(apidoc.apidoc)
@@ -52,8 +43,6 @@ def create_app(config, app=None):
         UserRoles,
     )
     app.security = Security(app, app.user_datastore)
-
-    app.admin.init_app(app)
 
     def authenticate(username, password):
         try:

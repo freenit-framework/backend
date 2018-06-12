@@ -1,0 +1,11 @@
+---
+- name: install devel packages
+  with_items: "{{ devel_packages }}"
+  pkgng:
+    name: "{{ item.name }}"
+
+- name: configure development locale
+  template:
+    src: login_conf.j2
+    dest: /usr/home/devel/.login_conf
+  removes: /usr/home/devel

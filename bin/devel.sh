@@ -1,6 +1,9 @@
 #!/bin/sh
 
-export FLASK_CONFIG="dev"
+
+export FLASK_ENV=development
+export FLASK_PORT=${FLASK_PORT:=5000}
+API_ROOT="http://`hostname`:${FLASK_PORT}/api/v0/doc/"
 BIN_DIR=`dirname $0`
 PROJECT_ROOT=`readlink -f "${BIN_DIR}/.."`
 VIRTUALENV=${VIRTUALENV:="backend"}
@@ -12,8 +15,7 @@ fi
 . ~/.virtualenvs/${VIRTUALENV}/bin/activate
 cd ${PROJECT_ROOT}
 pip install -U -r requirements.txt
-./manage.py db migrate
-./manage.py create_admin -e admin@example.com -p Sekrit
 echo "Backend"
 echo "==============="
-./manage.py runserver
+echo " * API_ROOT: ${API_ROOT}"
+flask run -h 0.0.0.0 -p ${FLASK_PORT}
