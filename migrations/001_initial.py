@@ -52,13 +52,13 @@ def migrate(migrator, database, fake=False, **kwargs):
         class Meta:
             db_table = "user"
 
-    @migrator.create_model
-    class UserRoles(pw.Model):
-        role = pw.ForeignKeyField(db_column='role_id', rel_model=migrator.orm['role'], related_name='users', to_field='id')
-        user = pw.ForeignKeyField(db_column='user_id', rel_model=migrator.orm['user'], related_name='roles', to_field='id')
+    #  @migrator.create_model
+    #  class UserRoles(pw.Model):
+        #  role = pw.ForeignKeyField(db_column='role_id', rel_model=migrator.orm['role'], related_name='users', to_field='id')
+        #  user = pw.ForeignKeyField(db_column='user_id', rel_model=migrator.orm['user'], related_name='roles', to_field='id')
 
-        class Meta:
-            db_table = "userroles"
+        #  class Meta:
+            #  db_table = "userroles"
 
 
 

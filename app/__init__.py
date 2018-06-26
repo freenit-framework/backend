@@ -35,14 +35,14 @@ def create_app(config, app=None):
     app.register_blueprint(api_v0)
     app.register_blueprint(apidoc.apidoc)
 
-    from .models.auth import User, Role, UserRoles
-    app.user_datastore = PeeweeUserDatastore(
-        app.db,
-        User,
-        Role,
-        UserRoles,
-    )
-    app.security = Security(app, app.user_datastore)
+    from .models.auth import User, Role #, UserRoles
+    #  app.user_datastore = PeeweeUserDatastore(
+        #  app.db,
+        #  User,
+        #  Role,
+        #  UserRoles,
+    #  )
+    #  app.security = Security(app, app.user_datastore)
 
     def authenticate(username, password):
         try:

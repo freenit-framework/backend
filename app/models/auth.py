@@ -20,8 +20,8 @@ class User(Model, UserMixin):
     password = TextField()
 
 
-class UserRoles(Model):
-    description = property(lambda self: self.role.description)
-    name = property(lambda self: self.role.name)
-    role = ForeignKeyField(Role, related_name='users')
-    user = ForeignKeyField(User, related_name='roles')
+#  class UserRoles(Model):
+    #  description = property(lambda self: self.role.description)
+    #  name = property(lambda self: self.role.name)
+    #  role = ForeignKeyField(Role, related_name='users')
+    #  user = ForeignKeyField(User, related_name='roles')
