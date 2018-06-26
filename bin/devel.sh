@@ -15,6 +15,7 @@ fi
 . ~/.virtualenvs/${VIRTUALENV}/bin/activate
 cd ${PROJECT_ROOT}
 pip install -U -r requirements.txt
+flask migration run
 echo "Backend"
 echo "==============="
 echo " * API_ROOT: ${API_ROOT}"
