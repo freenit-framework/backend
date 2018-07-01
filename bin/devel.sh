@@ -16,6 +16,7 @@ fi
 cd ${PROJECT_ROOT}
 pip install -U -r requirements.txt
 cp templates/peewee_migrate.txt ~/.virtualenvs/${VIRTUALENV}/lib/python3.6/site-packages/peewee_migrate/template.txt
+flask migration run
 echo "Backend"
 echo "==============="
 echo " * API_ROOT: ${API_ROOT}"
