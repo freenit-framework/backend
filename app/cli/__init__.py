@@ -17,7 +17,7 @@ def register(app):
     @migration.command()
     @click.argument('name')
     def create(name):
-        router.create(name)
+        router.create(name, 'app.models')
 
 
     @migration.command()

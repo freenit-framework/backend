@@ -15,6 +15,7 @@ fi
 . ~/.virtualenvs/${VIRTUALENV}/bin/activate
 cd ${PROJECT_ROOT}
 pip install -U -r requirements.txt
+cp templates/peewee_migrate.txt ~/.virtualenvs/${VIRTUALENV}/lib/python3.6/site-packages/peewee_migrate/template.txt
 echo "Backend"
 echo "==============="
 echo " * API_ROOT: ${API_ROOT}"
