@@ -1,9 +1,11 @@
 from flask import Flask, Blueprint
 from flask_collect import Collect
+from flask_cors import CORS
 from flask_jwt import JWT
 from flask_restplus import apidoc
 from flask_security import Security, PeeweeUserDatastore
 from flask_security.utils import verify_password
+from werkzeug.security import safe_str_cmp
 from .db import db
 
 
@@ -17,7 +19,10 @@ def create_app(config, app=None):
         app = Flask(__name__)
         app.config.from_object(config)
 
-    app.collect = Collect()
+    debug = app.config.get('DEBUG', False)
+    if debug:
+        CORS(app)
+    app.collect = Collect(app)
     db.init_app(app)
     app.db = db
 
@@ -52,6 +57,7 @@ def create_app(config, app=None):
         result = Result(
             id=user.id,
             email=user.email,
+            password=user.password,
         )
         if verify_password(password, user.password):
             return result

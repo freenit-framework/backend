@@ -35,7 +35,7 @@ class AuthAPI(Resource):
         if identity and user and user.active:
             access_token = _jwt.jwt_encode_callback(identity)
             token = {
-                "token": access_token
+                "token": access_token.decode('utf-8')
             }
             return token
         else:
