@@ -5,4 +5,5 @@ flask-jwt
 flask-restplus
 flask-script
 flask-security
+marshmallow
 peewee-migrate
