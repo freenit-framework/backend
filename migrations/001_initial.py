@@ -23,7 +23,7 @@ Some examples (model - class or model name)::
 
 import datetime as dt
 import peewee as pw
-from peewee import SQL
+SQL = pw.SQL
 
 try:
     import playhouse.postgres_ext as pw_pext

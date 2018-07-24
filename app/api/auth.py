@@ -4,8 +4,8 @@ from flask import request, current_app
 from flask_jwt import _jwt, JWTError
 from .namespaces import ns_auth
 from .fields.auth import forgot_password_fields, token_fields
-from .schemas import TokenSchema
 from ..models.auth import User
+from ..schemas import TokenSchema
 
 
 @ns_auth.route('/tokens', endpoint='auth.token')

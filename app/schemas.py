@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, post_load
-from ..models.parsing import TokenModel
+from .models.parsing import TokenModel
 
 
 class TokenSchema(Schema):
