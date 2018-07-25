@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 export FLASK_ENV=development
 export FLASK_PORT=${FLASK_PORT:=5000}
 API_ROOT="http://`hostname`:${FLASK_PORT}/api/v0/doc/"
@@ -11,10 +10,10 @@ VIRTUALENV=${VIRTUALENV:="backend"}
 if [ ! -d ~/.virtualenvs/${VIRTUALENV} ]; then
     python3.6 -m venv ~/.virtualenvs/${VIRTUALENV}
 fi
-
 . ~/.virtualenvs/${VIRTUALENV}/bin/activate
+
 cd ${PROJECT_ROOT}
-pip install -U -r requirements.txt
+pip install -U -r requirements_dev.txt
 cp templates/peewee_migrate.txt ~/.virtualenvs/${VIRTUALENV}/lib/python3.6/site-packages/peewee_migrate/template.txt
 flask migration run
 echo "Backend"
