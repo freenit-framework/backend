@@ -28,6 +28,8 @@ class BaseSchema(Schema):
         marshal_fields = {}
         for name in cls._declared_fields.keys():
             field = cls._declared_fields[name]
+            if field.dump_only:
+                continue
             fieldType = marshmallowToField(field)
             description = field.metadata.get('description', None)
             if required is None:

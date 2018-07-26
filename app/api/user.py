@@ -12,18 +12,20 @@ from ..schemas import UserSchema
 class UserListAPI(ProtectedResource):
     def get(self):
         """List users"""
-        response, errors = UserSchema(many=True).dump(User.select())
+        schema = UserSchema(many=True)
+        response, errors = schema.dump(User.select())
         if errors:
             abort(409, errors)
         return response
 
     @ns_user.expect(UserSchema.fields())
     def post(self):
-        user, errors = UserSchema().load(current_app.api.payload)
+        schema = UserSchema()
+        user, errors = schema.load(current_app.api.payload)
         if errors:
             abort(409, errors)
         user.save()
-        return UserSchema().dump(user)
+        return schema.dump(user)
 
 
 @ns_user.route('/<id>', endpoint='user')
@@ -35,7 +37,8 @@ class UserAPI(ProtectedResource):
             user = User.get(id=id)
         except User.DoesNotExist:
             abort(404, 'User not found')
-        response, errors = UserSchema().dump(user)
+        schema = UserSchema()
+        response, errors = schema.dump(user)
         if errors:
             abort(409, errors)
         return response
