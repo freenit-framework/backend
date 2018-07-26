@@ -2,7 +2,7 @@ import os
 import re
 from flask import current_app
 from flask_restplus import abort
-from .resources import ProtectedResource, fields
+from .resources import ProtectedResource
 from .namespaces import ns_user
 from ..models.auth import User
 from ..schemas import UserSchema
@@ -10,7 +10,6 @@ from ..schemas import UserSchema
 
 @ns_user.route('', endpoint='users')
 class UserListAPI(ProtectedResource):
-    @ns_user.expect(fields)
     def get(self):
         """List users"""
         response, errors = UserSchema(many=True).dump(User.select())
@@ -18,7 +17,7 @@ class UserListAPI(ProtectedResource):
             abort(409, errors)
         return response
 
-    @ns_user.expect(fields, UserSchema.fields())
+    @ns_user.expect(UserSchema.fields())
     def post(self):
         user, errors = UserSchema().load(current_app.api.payload)
         if errors:

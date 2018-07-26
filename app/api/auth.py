@@ -23,6 +23,6 @@ class AuthAPI(Resource):
             if user and user.active:
                 access_token = _jwt.jwt_encode_callback(identity)
                 return {
-                    "token": access_token.decode('utf-8'),
+                    "token": 'JWT {}'.format(access_token.decode('utf-8')),
                 }
         raise JWTError('Bad Request', 'Invalid credentials')

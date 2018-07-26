@@ -16,6 +16,13 @@ class ErrorFriendlyApi(Api):
 
 api_v0 = Blueprint('api', __name__, url_prefix='/api/v0')
 
+authorizations = {
+    'token': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+    }
+}
 
 api = ErrorFriendlyApi(
     api_v0,
@@ -25,4 +32,6 @@ api = ErrorFriendlyApi(
     doc='/doc/',
     catch_all_404s=True,
     default='auth',
+    authorizations=authorizations,
+    security='token',
 )
