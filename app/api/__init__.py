@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template
 from flask_restplus import Api
-from flask_jwt import JWTError
+from flask_jwt_extended.exceptions import NoAuthorizationError
 
 
 class ErrorFriendlyApi(Api):
     def error_router(self, original_handler, e):
-        if type(e) is JWTError:
+        if type(e) is NoAuthorizationError:
             return original_handler(e)
         else:
             return super(ErrorFriendlyApi, self).error_router(
@@ -16,14 +16,6 @@ class ErrorFriendlyApi(Api):
 
 api_v0 = Blueprint('api', __name__, url_prefix='/api/v0')
 
-authorizations = {
-    'token': {
-        'type': 'apiKey',
-        'in': 'header',
-        'name': 'Authorization',
-    }
-}
-
 api = ErrorFriendlyApi(
     api_v0,
     version='0',
@@ -32,6 +24,4 @@ api = ErrorFriendlyApi(
     doc='/doc/',
     catch_all_404s=True,
     default='auth',
-    authorizations=authorizations,
-    security='token',
 )

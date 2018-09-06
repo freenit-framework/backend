@@ -2,15 +2,16 @@ from datetime import timedelta
 import os
 
 
-PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
+SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
 
 
 class Config:
     DEBUG = False
     SECURITY_PASSWORD_SALT = 'tilda'
-    SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
+    SECRET_KEY = SECRET_KEY
     SECURITY_TRACKABLE = False
-    JWT_EXPIRATION_DELTA = timedelta(days=7)
+    JWT_SECRET_KEY = SECRET_KEY
+    JWT_TOKEN_LOCATION = ['cookies']
     DATABASE = 'sqlite:///database.db'
 
     @staticmethod

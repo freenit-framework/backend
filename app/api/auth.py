@@ -1,14 +1,19 @@
 import uuid
+from flask import request, current_app, jsonify
 from flask_restplus import Resource, abort
-from flask import request, current_app
-from flask_jwt import _jwt, JWTError
+from flask_jwt_extended import (
+    create_access_token,
+    set_access_cookies,
+    unset_jwt_cookies,
+)
+from flask_security.utils import verify_password
 from .namespaces import ns_auth
 from ..models.auth import User
 from ..schemas import TokenSchema
 
 
-@ns_auth.route('/tokens', endpoint='auth.token')
-class AuthAPI(Resource):
+@ns_auth.route('/login', endpoint='auth.login')
+class AuthLoginAPI(Resource):
     @ns_auth.response(401, 'Invalid credentials')
     @ns_auth.expect(TokenSchema.fields())
     def post(self):
@@ -16,13 +21,25 @@ class AuthAPI(Resource):
         schema = TokenSchema()
         data, errors = schema.load(current_app.api.payload)
         if errors:
-            return errors, 409
-        identity = _jwt.authentication_callback(data.email, data.password)
-        if identity is not None:
-            user = User.get(id=identity.id)
-            if user and user.active:
-                access_token = _jwt.jwt_encode_callback(identity)
-                return {
-                    "token": 'JWT {}'.format(access_token.decode('utf-8')),
-                }
-        raise JWTError('Bad Request', 'Invalid credentials')
+            return errors, 400
+        try:
+            user = User.get(email=data.email)
+        except User.DoesNotExist:
+            abort(403, 'No such user, or wrong password')
+        if not user or not user.active:
+            abort(403, 'No such user, or wrong password')
+        if not verify_password(data.password, user.password):
+            abort(403, 'No such user, or wrong password')
+        access_token = create_access_token(identity=user.email)
+        resp = jsonify({'login': True})
+        set_access_cookies(resp, access_token)
+        return resp
+
+
+@ns_auth.route('/logout', endpoint='auth.logout')
+class AuthLogoutAPI(Resource):
+    def post(self):
+        """Logout."""
+        resp = jsonify({'logout': True})
+        unset_jwt_cookies(resp)
+        return resp

@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint
 from flask_collect import Collect
 from flask_cors import CORS
-from flask_jwt import JWT
+from flask_jwt_extended import JWTManager
 from flask_restplus import apidoc
 from flask_security import Security, PeeweeUserDatastore
 from flask_security.utils import verify_password
@@ -49,27 +49,7 @@ def create_app(config, app=None):
     )
     app.security = Security(app, app.user_datastore)
 
-    def authenticate(username, password):
-        try:
-            user = User.get(email=username)
-        except User.DoesNotExist:
-            return None
-        result = Result(
-            id=user.id,
-            email=user.email,
-            password=user.password,
-        )
-        if verify_password(password, user.password):
-            return result
-
-    def identity(payload):
-        try:
-            user = User.get(id=payload['identity'])
-        except User.DoesNotExist:
-            user = None
-        return user
-
-    app.jwt = JWT(app, authenticate, identity)
+    app.jwt = JWTManager(app)
 
     from .api import auth, user
 
