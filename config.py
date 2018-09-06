@@ -12,6 +12,8 @@ class Config:
     SECURITY_TRACKABLE = False
     JWT_SECRET_KEY = SECRET_KEY
     JWT_TOKEN_LOCATION = ['cookies']
+    JWT_ACCESS_COOKIE_PATH = '/api/v0'
+    JWT_REFRESH_COOKIE_PATH = '/api/v0'
     DATABASE = 'sqlite:///database.db'
 
     @staticmethod

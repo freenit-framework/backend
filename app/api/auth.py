@@ -3,7 +3,9 @@ from flask import request, current_app, jsonify
 from flask_restplus import Resource, abort
 from flask_jwt_extended import (
     create_access_token,
+    create_refresh_token,
     set_access_cookies,
+    set_refresh_cookies,
     unset_jwt_cookies,
 )
 from flask_security.utils import verify_password
@@ -31,8 +33,10 @@ class AuthLoginAPI(Resource):
         if not verify_password(data.password, user.password):
             abort(403, 'No such user, or wrong password')
         access_token = create_access_token(identity=user.email)
+        refresh_token = create_refresh_token(identity=user.email)
         resp = jsonify({'login': True})
         set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
         return resp
 
 
