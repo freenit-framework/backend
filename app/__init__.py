@@ -1,6 +1,5 @@
 from flask import Flask, Blueprint
 from flask_collect import Collect
-from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_restplus import apidoc
 from flask_security import Security, PeeweeUserDatastore
@@ -20,8 +19,6 @@ def create_app(config, app=None):
         app.config.from_object(config)
 
     debug = app.config.get('DEBUG', False)
-    if debug:
-        CORS(app)
     app.collect = Collect(app)
     db.init_app(app)
     app.db = db
@@ -51,6 +48,6 @@ def create_app(config, app=None):
 
     app.jwt = JWTManager(app)
 
-    from .api import auth, user
+    from .api import auth, me, user
 
     return app

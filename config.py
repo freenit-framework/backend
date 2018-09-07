@@ -14,6 +14,7 @@ class Config:
     JWT_TOKEN_LOCATION = ['cookies']
     JWT_ACCESS_COOKIE_PATH = '/api/v0'
     JWT_REFRESH_COOKIE_PATH = '/api/v0'
+    JWT_SESSION_COOKIE = False
     DATABASE = 'sqlite:///database.db'
 
     @staticmethod
@@ -32,7 +33,7 @@ class TestConfig(Config):
 
 
 class ProdConfig(Config):
-    pass
+    JWT_COOKIE_SECURE = True
 
 
 configs = {
