@@ -4,6 +4,8 @@ from flask_restplus import Resource, abort
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
+    get_jwt_identity,
+    jwt_refresh_token_required,
     set_access_cookies,
     set_refresh_cookies,
     unset_jwt_cookies,
@@ -19,7 +21,7 @@ class AuthLoginAPI(Resource):
     @ns_auth.response(401, 'Invalid credentials')
     @ns_auth.expect(TokenSchema.fields())
     def post(self):
-        """Authenticates and generates a token."""
+        """Authenticates and generates a token"""
         schema = TokenSchema()
         data, errors = schema.load(current_app.api.payload)
         if errors:
@@ -43,7 +45,23 @@ class AuthLoginAPI(Resource):
 @ns_auth.route('/logout', endpoint='auth.logout')
 class AuthLogoutAPI(Resource):
     def post(self):
-        """Logout."""
+        """Logout"""
         resp = jsonify({'logout': True})
         unset_jwt_cookies(resp)
+        return resp
+
+
+@ns_auth.route('/refresh', endpoint='auth.refresh')
+class AuthRefreshAPI(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        """Refresh access token"""
+        email = get_jwt_identity()
+        try:
+            user = User.get(email=email)
+        except User.DoesNotExist:
+            abort(403, 'No such user, or wrong password')
+        resp = jsonify({'refresh': True})
+        access_token = create_access_token(identity=user.email)
+        set_access_cookies(resp, access_token)
         return resp

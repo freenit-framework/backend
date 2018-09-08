@@ -13,8 +13,10 @@ class Config:
     JWT_SECRET_KEY = SECRET_KEY
     JWT_TOKEN_LOCATION = ['cookies']
     JWT_ACCESS_COOKIE_PATH = '/api/v0'
-    JWT_REFRESH_COOKIE_PATH = '/api/v0'
+    JWT_REFRESH_COOKIE_PATH = '/api/v0/auth/refresh'
     JWT_SESSION_COOKIE = False
+    #  JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=1)
+    #  JWT_REFRESH_TOKEN_EXPIRES = timedelta(seconds=10)
     DATABASE = 'sqlite:///database.db'
 
     @staticmethod
@@ -24,6 +26,7 @@ class Config:
 
 class DevConfig(Config):
     DEBUG = True
+    JWT_COOKIE_CSRF_PROTECT = False
     SECURITY_SEND_REGISTER_EMAIL = False
 
 

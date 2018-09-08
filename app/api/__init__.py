@@ -1,11 +1,19 @@
 from flask import Blueprint, render_template
 from flask_restplus import Api
-from flask_jwt_extended.exceptions import NoAuthorizationError
+from flask_jwt_extended.exceptions import (
+    CSRFError,
+    NoAuthorizationError,
+)
+from jwt import ExpiredSignatureError
 
 
 class ErrorFriendlyApi(Api):
     def error_router(self, original_handler, e):
-        if type(e) is NoAuthorizationError:
+        if type(e) in [
+            CSRFError,
+            ExpiredSignatureError,
+            NoAuthorizationError,
+        ]:
             return original_handler(e)
         else:
             return super(ErrorFriendlyApi, self).error_router(
