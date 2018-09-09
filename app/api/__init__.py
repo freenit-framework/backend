@@ -33,3 +33,14 @@ api = ErrorFriendlyApi(
     catch_all_404s=True,
     default='auth',
 )
+
+
+def swagger_ui():
+    return render_template(
+        'flask-restplus/swagger-ui.html',
+        title=api.title,
+        specs_url=api.specs_url
+    )
+
+
+api._doc_view = swagger_ui

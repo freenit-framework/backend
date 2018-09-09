@@ -95,4 +95,3 @@ class TestAPI(TestCase):
         self.assertEqual(response['admin'], user.admin)
         self.assertEqual(response['email'], user.email)
         self.assertEqual(response['confirmed_at'], user.confirmed_at)
-

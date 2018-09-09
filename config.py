@@ -26,7 +26,6 @@ class Config:
 
 class DevConfig(Config):
     DEBUG = True
-    JWT_COOKIE_CSRF_PROTECT = False
     SECURITY_SEND_REGISTER_EMAIL = False
 
 
