@@ -1,16 +1,16 @@
 import factory
 from flask_security.utils import encrypt_password
-import models
+from application.models.auth import User, Role
 
 
 class UserFactory(factory.Factory):
     class Meta:
-        model = models.auth.User
+        model = User
 
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     email = factory.Faker('email')
-    password = encrypt_password('Sekrit')
+    password = factory.LazyAttribute(lambda a: encrypt_password('Sekrit'))
     username = factory.Faker('name')
 
 
@@ -20,7 +20,6 @@ class AdminFactory(UserFactory):
 
 class RoleFactory(factory.Factory):
     class Meta:
-        model = models.auth.Role
+        model = Role
 
     name = factory.Faker('first_name')
-    admin = False

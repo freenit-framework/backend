@@ -7,6 +7,6 @@ VIRTUALENV=${VIRTUALENV:="backend"}
 
 . ~/.virtualenvs/${VIRTUALENV}/bin/activate
 cd ${PROJECT_ROOT}
-flask users create -a --password Sekrit admin@example.com
+flask users create -a --password Sekrit admini@example.com
 flask roles create -d Administrators admin
 flask roles add admin@example.com admin

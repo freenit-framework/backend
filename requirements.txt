@@ -2,7 +2,6 @@ bcrypt
 flask-collect
 flask-jwt-extended
 flask-restplus
-flask-script
 flask-security
 marshmallow
 peewee-migrate

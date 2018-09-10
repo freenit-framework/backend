@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, render_template
-from app import create_app, cli
+from application import create_app, cli
 from config import configs
 
 
