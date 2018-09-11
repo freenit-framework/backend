@@ -2,7 +2,7 @@ from marshmallow import Schema, fields, post_load
 from flask_restplus import fields as rest_fields
 from .models.auth import User
 from .models.parsing import TokenModel
-from .api import api
+from flask_restplus.model import Model
 
 
 def marshmallowToField(field):
@@ -40,7 +40,7 @@ class BaseSchema(Schema):
                 description=description,
                 required=required,
             )
-        return api.model(cls.Meta.name, marshal_fields)
+        return Model(cls.Meta.name, marshal_fields)
 
 
 class TokenSchema(BaseSchema):

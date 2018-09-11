@@ -16,7 +16,7 @@ from ..models.auth import User
 from ..schemas import TokenSchema
 
 
-@ns_auth.route('/login', endpoint='auth.login')
+@ns_auth.route('/login', endpoint='auth_login')
 class AuthLoginAPI(Resource):
     @ns_auth.response(401, 'Invalid credentials')
     @ns_auth.expect(TokenSchema.fields())
@@ -42,7 +42,7 @@ class AuthLoginAPI(Resource):
         return resp
 
 
-@ns_auth.route('/logout', endpoint='auth.logout')
+@ns_auth.route('/logout', endpoint='auth_logout')
 class AuthLogoutAPI(Resource):
     def post(self):
         """Logout"""
@@ -51,7 +51,7 @@ class AuthLogoutAPI(Resource):
         return resp
 
 
-@ns_auth.route('/refresh', endpoint='auth.refresh')
+@ns_auth.route('/refresh', endpoint='auth_refresh')
 class AuthRefreshAPI(Resource):
     @jwt_refresh_token_required
     def post(self):

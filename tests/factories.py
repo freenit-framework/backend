@@ -1,5 +1,5 @@
 import factory
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 from application.models.auth import User, Role
 
 
@@ -10,7 +10,7 @@ class UserFactory(factory.Factory):
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     email = factory.Faker('email')
-    password = factory.LazyAttribute(lambda a: encrypt_password('Sekrit'))
+    password = factory.LazyAttribute(lambda a: hash_password('Sekrit'))
     username = factory.Faker('name')
 
 
