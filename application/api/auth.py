@@ -36,7 +36,13 @@ class AuthLoginAPI(Resource):
             abort(403, 'No such user, or wrong password')
         access_token = create_access_token(identity=user.email)
         refresh_token = create_refresh_token(identity=user.email)
-        resp = jsonify({'login': True})
+        access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
+        refresh_expire = current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
+        resp = jsonify({
+            'login': True,
+            'access_expire': int(access_expire.total_seconds()),
+            'refresh_expire': int(refresh_expire.total_seconds()),
+        })
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp
@@ -61,7 +67,11 @@ class AuthRefreshAPI(Resource):
             user = User.get(email=email)
         except User.DoesNotExist:
             abort(403, 'No such user, or wrong password')
-        resp = jsonify({'refresh': True})
+        access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
+        resp = jsonify({
+            'refresh': True,
+            'access_expire': int(access_expire.total_seconds()),
+        })
         access_token = create_access_token(identity=user.email)
         set_access_cookies(resp, access_token)
         return resp
