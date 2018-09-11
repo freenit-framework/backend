@@ -5,8 +5,8 @@ from flask_jwt_extended.exceptions import (
     NoAuthorizationError,
 )
 from jwt import ExpiredSignatureError
-from .namespaces import ns_auth, ns_me, ns_user
-from ..schemas import TokenSchema, UserSchema
+from .namespaces import namespaces
+from ..schemas import schemas
 
 
 class ErrorFriendlyApi(Api):
@@ -36,17 +36,18 @@ def create_api(app):
     app.api = ErrorFriendlyApi(
         api_v0,
         version='0',
-        title='API',
-        description='API description',
+        title='StartKit API',
+        description='StartKit operations',
         doc='/doc/',
         catch_all_404s=True,
         default='auth',
     )
     app.api._doc_view = swagger_ui
-    ns_auth.add_model(TokenSchema.Meta.name, TokenSchema.fields())
-    ns_auth.add_model(UserSchema.Meta.name, UserSchema.fields())
-    app.api.add_namespace(ns_auth)
-    app.api.add_namespace(ns_me)
-    app.api.add_namespace(ns_user)
+    if len(namespaces) > 0:
+        ns = namespaces[0]
+        for schema in schemas:
+            ns.add_model(schema.Meta.name, schema.fields())
+        for ns in namespaces:
+            app.api.add_namespace(ns)
     app.register_blueprint(api_v0)
     app.register_blueprint(apidoc.apidoc)

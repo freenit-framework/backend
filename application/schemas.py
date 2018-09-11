@@ -63,3 +63,6 @@ class UserSchema(BaseSchema):
     class Meta:
         model = User
         name = 'User'
+
+
+schemas = [TokenSchema, UserSchema]
