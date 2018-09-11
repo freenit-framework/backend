@@ -11,4 +11,5 @@ build
 cbsd.conf
 database.db
 site.retry
+test.db
 vars.mk

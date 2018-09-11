@@ -6,6 +6,7 @@ from flask_jwt_extended.exceptions import (
 )
 from jwt import ExpiredSignatureError
 from .namespaces import ns_auth, ns_me, ns_user
+from ..schemas import TokenSchema, UserSchema
 
 
 class ErrorFriendlyApi(Api):
@@ -27,12 +28,12 @@ def create_api(app):
     def swagger_ui():
         return render_template(
             'flask-restplus/swagger-ui.html',
-            title=api.title,
-            specs_url=api.specs_url
+            title=app.api.title,
+            specs_url=app.api.specs_url
         )
 
-    api_v0 = Blueprint('api', __name__, url_prefix='/api/v0')
-    api = ErrorFriendlyApi(
+    api_v0 = Blueprint('api_v0', __name__, url_prefix='/api/v0')
+    app.api = ErrorFriendlyApi(
         api_v0,
         version='0',
         title='API',
@@ -41,10 +42,11 @@ def create_api(app):
         catch_all_404s=True,
         default='auth',
     )
-    api._doc_view = swagger_ui
-    api.add_namespace(ns_auth)
-    api.add_namespace(ns_me)
-    api.add_namespace(ns_user)
-    app.api = api
+    app.api._doc_view = swagger_ui
+    ns_auth.add_model(TokenSchema.Meta.name, TokenSchema.fields())
+    ns_auth.add_model(UserSchema.Meta.name, UserSchema.fields())
+    app.api.add_namespace(ns_auth)
+    app.api.add_namespace(ns_me)
+    app.api.add_namespace(ns_user)
     app.register_blueprint(api_v0)
     app.register_blueprint(apidoc.apidoc)

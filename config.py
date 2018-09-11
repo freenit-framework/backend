@@ -1,3 +1,4 @@
+from tempfile import mkstemp
 try:
     from local_config import Config
 except ModuleNotFoundError:
@@ -13,7 +14,7 @@ class DevConfig(Config):
 class TestConfig(Config):
     TESTING = True
     JWT_COOKIE_SECURE = False
-    DATABASE = 'sqlite:///:memory:'
+    DATABASE = 'sqlite:///test.db'
 
 
 class ProdConfig(Config):
