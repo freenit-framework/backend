@@ -1,42 +1,62 @@
 import json
 import pytest
 from flask_restplus.api import url_for
+from werkzeug.datastructures import Headers
 
 
 @pytest.mark.usefixtures('client_class')
 class Base:
-    def get(self, endpoint, auth=None):
+    headers = None
+
+    def set_csrf(self, csrf_item=None):
+        if csrf_item is not None:
+            csrf_name = 'csrf_{}_token'.format(csrf_item)
+            csrf = getattr(self, csrf_name)
+            self.headers = Headers()
+            self.headers.add_header('X-CSRF-TOKEN', csrf)
+
+    def get(self, endpoint):
         url = url_for(endpoint)
         return self.client.get(url)
 
-    def post(self, endpoint, data, auth=None):
+    def post(self, endpoint, data, csrf=None):
         url = url_for(endpoint)
-        return self.client.post(
+        self.set_csrf(csrf)
+        response = self.client.post(
             url,
             data=json.dumps(data),
             content_type='application/json',
+            headers=self.headers,
         )
-
-    def put(self, endpoint, data, auth=None):
-        url = url_for(endpoint)
-        return self.client.put(
-            url,
-            data=json.dumps(data),
-            content_type='application/json',
-        )
-
-    def patch(self, endpoint, data, auth=None):
-        url = url_for(endpoint)
-        return self.client.patch(
-            url,
-            data=json.dumps(data),
-            content_type='application/json',
-        )
-
-    def delete(self, endpoint, auth=None):
-        url = url_for(endpoint)
-        response = self.client.patch(url)
+        self.headers = None
         return response
+
+    def put(self, endpoint, data, csrf=None):
+        url = url_for(endpoint)
+        self.set_csrf(csrf)
+        response = self.client.put(
+            url,
+            data=json.dumps(data),
+            content_type='application/json',
+            headers=self.headers,
+        )
+        self.headers = None
+        return response
+
+    def patch(self, endpoint, data, csrf=None):
+        url = url_for(endpoint)
+        self.set_csrf(csrf)
+        response = self.client.patch(
+            url,
+            data=json.dumps(data),
+            content_type='application/json',
+        )
+        self.headers = None
+        return response
+
+    def delete(self, endpoint):
+        url = url_for(endpoint)
+        return self.client.patch(url)
 
     def login(self, endpoint, user, password):
         data = {
