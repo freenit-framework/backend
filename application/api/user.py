@@ -2,8 +2,8 @@ from flask import current_app
 from flask_restplus import abort
 from .resources import ProtectedResource
 from .namespaces import ns_user
+from .schemas import UserSchema
 from ..models.auth import User
-from ..schemas import UserSchema
 
 
 @ns_user.route('', endpoint='users')

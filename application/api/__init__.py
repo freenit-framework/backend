@@ -6,7 +6,7 @@ from flask_jwt_extended.exceptions import (
 )
 from jwt import ExpiredSignatureError
 from .namespaces import namespaces
-from ..schemas import schemas
+from .schemas import schemas
 
 
 class ErrorFriendlyApi(Api):

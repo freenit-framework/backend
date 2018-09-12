@@ -2,8 +2,8 @@ from flask_restplus import abort
 from flask_jwt_extended import get_jwt_identity
 from .resources import ProtectedResource
 from .namespaces import ns_me
+from .schemas import UserSchema
 from ..models.auth import User
-from ..schemas import UserSchema
 
 
 @ns_me.route('', endpoint='me')

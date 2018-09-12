@@ -12,8 +12,8 @@ from flask_jwt_extended import (
 )
 from flask_security.utils import verify_password
 from .namespaces import ns_auth
+from .schemas import TokenSchema
 from ..models.auth import User
-from ..schemas import TokenSchema
 
 
 @ns_auth.route('/login', endpoint='auth_login')
