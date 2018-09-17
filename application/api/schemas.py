@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, post_load
 from flask_restplus import fields as rest_fields
 from flask_restplus.model import Model
-from ..models.auth import User, UserRoles
+from ..models.auth import User, UserRoles, Role
 from ..models.parsing import TokenModel
 
 
@@ -23,7 +23,7 @@ def marshmallowToField(field, required=None):
         field_type = rest_fields.List
         subtype = marshmallowToField(field.container)
     else:
-        raise ValueError('Unknown field of type {}'.format(type(field)))
+        raise ValueError('Unknown field of type {}'.format(typeOfField))
     description = field.metadata.get('description', None)
     if required is None:
         field_required = field.required
@@ -66,8 +66,18 @@ class TokenSchema(BaseSchema):
         name = 'Token'
 
 
-class UserRolesSchema(BaseSchema):
+class RoleSchema(BaseSchema):
     id = fields.Integer(description='ID', dump_only=True)
+    description = fields.String(required=True, description='Description')
+    name = fields.String(required=True, description='Name')
+
+    class Meta:
+        model = Role
+        name = 'Role'
+
+
+class UserRolesSchema(BaseSchema):
+    role = fields.Nested(RoleSchema)
 
     class Meta:
         model = UserRoles
@@ -76,11 +86,11 @@ class UserRolesSchema(BaseSchema):
 
 class UserSchema(BaseSchema):
     id = fields.Integer(description='ID', dump_only=True)
-    email = fields.Email(required=True, description='Email')
-    password = fields.Str(required=True, description='Password', load_only=True)
     active = fields.Boolean(description='Activate the user', default=True)
     admin = fields.Boolean(description='Is the user admin?', default=False)
-    roles = fields.List(fields.Nested(UserRolesSchema))
+    email = fields.Email(required=True, description='Email')
+    password = fields.Str(required=True, description='Password', load_only=True)
+    roles = fields.List(fields.Nested(UserRolesSchema), many=True)
     confirmed_at = fields.DateTime(
         description='Time when user was confirmed',
         dump_only=True,
@@ -91,4 +101,9 @@ class UserSchema(BaseSchema):
         name = 'User'
 
 
-schemas = [TokenSchema, UserSchema, UserRolesSchema]
+schemas = [
+    TokenSchema,
+    UserSchema,
+    UserRolesSchema,
+    RoleSchema,
+]

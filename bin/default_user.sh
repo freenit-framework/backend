@@ -6,4 +6,4 @@ BIN_DIR=`dirname $0`
 setup
 
 
-py.test
+flask users create -a --password Sekrit admin@example.com
