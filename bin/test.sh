@@ -6,4 +6,5 @@ BIN_DIR=`dirname $0`
 setup
 
 
+rm -rf `find . -name __pycache__`
 py.test
