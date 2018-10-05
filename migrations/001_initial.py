@@ -22,7 +22,9 @@ Some examples (model - class or model name)::
 """
 
 import datetime as dt
+
 import peewee as pw
+
 SQL = pw.SQL
 
 try:
@@ -58,12 +60,19 @@ def migrate(migrator, database, fake=False, **kwargs):
     @migrator.create_model
     class UserRoles(pw.Model):
         id = pw.AutoField()
-        role = pw.ForeignKeyField(backref='users', column_name='role_id', field='id', model=migrator.orm['role'])
-        user = pw.ForeignKeyField(backref='roles', column_name='user_id', field='id', model=migrator.orm['user'])
+        role = pw.ForeignKeyField(
+            backref='users',
+            column_name='role_id',
+            field='id',
+            model=migrator.orm['role'])
+        user = pw.ForeignKeyField(
+            backref='roles',
+            column_name='user_id',
+            field='id',
+            model=migrator.orm['user'])
 
         class Meta:
             table_name = "userroles"
-
 
 
 def rollback(migrator, database, fake=False, **kwargs):
