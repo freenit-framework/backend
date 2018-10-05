@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-
 SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
 
 

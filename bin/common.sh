@@ -9,16 +9,13 @@ export PY_VERSION=${PY_VERSION:="3.6"}
 
 
 setup() {
-  if [ ! -d ~/.virtualenvs/${VIRTUALENV} ]; then
-      python${PY_VERSION} -m venv ~/.virtualenvs/${VIRTUALENV}
+  if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
+      python${PY_VERSION} -m venv ${HOME}/.virtualenvs/${VIRTUALENV}
   fi
-  . ~/.virtualenvs/${VIRTUALENV}/bin/activate
+  . ${HOME}/.virtualenvs/${VIRTUALENV}/bin/activate
 
   cd ${PROJECT_ROOT}
   pip install -U -r requirements_dev.txt
-  cp templates/peewee_migrate.txt ~/.virtualenvs/${VIRTUALENV}/lib/python${PY_VERSION}/site-packages/peewee_migrate/template.txt
-  if [ "${1}" = "no" ]; then
-    flask migration run
-  fi
+  cp templates/peewee_migrate.txt ${HOME}/.virtualenvs/${VIRTUALENV}/lib/python${PY_VERSION}/site-packages/peewee_migrate/template.txt
+  flask migration run
 }
-
