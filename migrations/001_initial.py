@@ -1,3 +1,4 @@
+# flake8: noqa
 """Peewee migrations -- 001_initial.py.
 
 Some examples (model - class or model name)::
@@ -21,16 +22,9 @@ Some examples (model - class or model name)::
 
 """
 
-import datetime as dt
-
 import peewee as pw
 
 SQL = pw.SQL
-
-try:
-    import playhouse.postgres_ext as pw_pext
-except ImportError:
-    pass
 
 
 def migrate(migrator, database, fake=False, **kwargs):
@@ -64,12 +58,14 @@ def migrate(migrator, database, fake=False, **kwargs):
             backref='users',
             column_name='role_id',
             field='id',
-            model=migrator.orm['role'])
+            model=migrator.orm['role']
+        )
         user = pw.ForeignKeyField(
             backref='roles',
             column_name='user_id',
             field='id',
-            model=migrator.orm['user'])
+            model=migrator.orm['user']
+        )
 
         class Meta:
             table_name = "userroles"

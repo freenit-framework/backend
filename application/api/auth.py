@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flask import current_app, jsonify, request
 from flask_jwt_extended import (

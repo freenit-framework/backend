@@ -1,4 +1,4 @@
-from datetime import timedelta
+#  from datetime import timedelta
 
 SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
 
@@ -16,7 +16,10 @@ class CommonConfig:
     JWT_COOKIE_SECURE = True
     #  JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=1)
     #  JWT_REFRESH_TOKEN_EXPIRES = timedelta(seconds=10)
-    DATABASE = 'sqlite:///database.db'
+    DATABASE = {
+        'name': 'database.db',
+        'engine': 'SqliteDatabase',
+    }
 
     @staticmethod
     def init_app(app):

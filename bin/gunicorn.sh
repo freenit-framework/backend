@@ -2,8 +2,8 @@
 
 
 BIN_DIR=`dirname $0`
-FLASK_CONFIG="prod"
-NAME=pyser
+FLASK_ENV="production"
+NAME=pulsar
 NUM_WORKERS=4
 WSGI_MODULE=wsgi
 PORT=${PORT:=9000}
@@ -18,5 +18,5 @@ exec gunicorn ${WSGI_MODULE}:app \
   --workers ${NUM_WORKERS} \
   --bind=:${PORT} \
   --log-level=${LOG_LEVEL} \
-  --log-file=-
+  --log-file=- \
   --capture-output

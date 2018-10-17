@@ -1,7 +1,6 @@
-from tempfile import mkstemp
 try:
     from local_config import Config
-except ModuleNotFoundError:
+except ImportError:
     from common_config import CommonConfig as Config
 
 

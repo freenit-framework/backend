@@ -1,10 +1,15 @@
 #!/bin/sh
 
 
+set -e
+
+
 BIN_DIR=`dirname $0`
 . ${BIN_DIR}/common.sh
 setup
 
 
 rm -rf `find . -name __pycache__`
-py.test
+rm -rf .pytest_cache
+flake8 .
+py.test --cov=pulsar --cov-report=xml
