@@ -1,4 +1,5 @@
 import json
+
 import pytest
 from flask_restplus.api import url_for
 from werkzeug.datastructures import Headers
@@ -64,7 +65,9 @@ class Base:
             'password': password,
         }
         response = self.post(endpoint, data)
-        cookies = [header for header in response.headers if header[0] == 'Set-Cookie']
+        cookies = [
+            header for header in response.headers if header[0] == 'Set-Cookie'
+        ]
         for cookie in cookies:
             name, value = cookie[1].split(';')[0].split('=')
             setattr(self, name, value)

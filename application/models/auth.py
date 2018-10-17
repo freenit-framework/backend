@@ -1,8 +1,13 @@
 from flask_security import RoleMixin, UserMixin
-from peewee import CharField, TextField, BooleanField, DateTimeField, ForeignKeyField
-from flask import current_app
-from ..db import db
+from peewee import (
+    BooleanField,
+    CharField,
+    DateTimeField,
+    ForeignKeyField,
+    TextField
+)
 
+from ..db import db
 
 Model = db.Model
 

@@ -1,7 +1,8 @@
-from marshmallow import Schema, fields, post_load
 from flask_restplus import fields as rest_fields
 from flask_restplus.model import Model
-from ..models.auth import User, UserRoles, Role
+from marshmallow import Schema, fields, post_load
+
+from ..models.auth import Role, User, UserRoles
 from ..models.parsing import TokenModel
 
 
@@ -32,12 +33,12 @@ def marshmallowToField(field, required=None):
     if subtype is None:
         return field_type(
             description=description,
-            required=required,
+            required=field_required,
         )
     return field_type(
         subtype,
         description=description,
-        required=required,
+        required=field_required,
     )
 
 
@@ -89,7 +90,11 @@ class UserSchema(BaseSchema):
     active = fields.Boolean(description='Activate the user', default=True)
     admin = fields.Boolean(description='Is the user admin?', default=False)
     email = fields.Email(required=True, description='Email')
-    password = fields.Str(required=True, description='Password', load_only=True)
+    password = fields.Str(
+        required=True,
+        description='Password',
+        load_only=True
+    )
     roles = fields.List(fields.Nested(UserRolesSchema), many=True)
     confirmed_at = fields.DateTime(
         description='Time when user was confirmed',

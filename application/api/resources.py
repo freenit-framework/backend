@@ -1,5 +1,5 @@
-from flask_restplus import Resource, abort
 from flask_jwt_extended import jwt_required
+from flask_restplus import Resource
 
 
 class ProtectedResource(Resource):

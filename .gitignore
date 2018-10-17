@@ -1,4 +1,5 @@
 __pycache__
+.coverage
 .provisioned
 .pytest_cache
 ansible/group_vars/all
@@ -7,8 +8,10 @@ ansible/roles/*
 ansible/site.yml
 !ansible/roles/.keep
 !ansible/roles/devel
+application/static/
 build
 cbsd.conf
+coverage.xml
 database.db
 site.retry
 test.db

@@ -1,10 +1,8 @@
 from flask import Blueprint, render_template
+from flask_jwt_extended.exceptions import CSRFError, NoAuthorizationError
 from flask_restplus import Api, apidoc
-from flask_jwt_extended.exceptions import (
-    CSRFError,
-    NoAuthorizationError,
-)
 from jwt import ExpiredSignatureError
+
 from .namespaces import namespaces
 from .schemas import schemas
 
@@ -18,10 +16,11 @@ class ErrorFriendlyApi(Api):
         ]:
             return original_handler(e)
         else:
-            return super(ErrorFriendlyApi, self).error_router(
-                original_handler,
-                e,
-            )
+            return super(ErrorFriendlyApi,
+                         self).error_router(
+                             original_handler,
+                             e,
+                         )
 
 
 def create_api(app):
@@ -51,3 +50,4 @@ def create_api(app):
             app.api.add_namespace(ns)
     app.register_blueprint(api_v0)
     app.register_blueprint(apidoc.apidoc)
+    from . import auth, me, user  # noqa: F401
