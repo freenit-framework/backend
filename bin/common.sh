@@ -18,7 +18,6 @@ setup() {
   cd ${PROJECT_ROOT}
   if [ "${update}" != "no" ]; then
     pip install -U -r requirements_dev.txt
-    cp templates/peewee_migrate.txt ${HOME}/.virtualenvs/${VIRTUALENV}/lib/python${PY_VERSION}/site-packages/peewee_migrate/template.txt
     flask migration run
   fi
 }

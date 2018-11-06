@@ -44,8 +44,8 @@ class AuthLoginAPI(Resource):
             {
                 'access': access_token,
                 'refresh': refresh_token,
-                'access_expire': int(access_expire.total_seconds()),
-                'refresh_expire': int(refresh_expire.total_seconds()),
+                'accessExpire': int(access_expire.total_seconds()),
+                'refreshExpire': int(refresh_expire.total_seconds()),
             }
         )
         set_access_cookies(resp, access_token)
@@ -93,8 +93,8 @@ class AuthRefreshAPI(Resource):
         resp = jsonify(
             {
                 'access': access_token,
-                'access_expire': int(access_expire.total_seconds()),
-                'refresh_expire': int(refresh_delta.total_seconds()),
+                'accessExpire': int(access_expire.total_seconds()),
+                'refreshExpire': int(refresh_delta.total_seconds()),
             }
         )
         set_access_cookies(resp, access_token)
