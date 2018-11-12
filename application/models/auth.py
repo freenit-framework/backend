@@ -18,6 +18,9 @@ class Role(Model, RoleMixin):
 
 
 class User(Model, UserMixin):
+    class Meta:
+        table_name = 'users'
+
     active = BooleanField(default=True)
     admin = BooleanField(default=False)
     confirmed_at = DateTimeField(null=True)
