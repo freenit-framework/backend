@@ -22,13 +22,27 @@ Some examples (model - class or model name)::
 
 """
 
+import datetime as dt
+
 import peewee as pw
+
+try:
+    import playhouse.postgres_ext as pw_pext
+except ImportError:
+    pass
 
 SQL = pw.SQL
 
 
 def migrate(migrator, database, fake=False, **kwargs):
     """Write your migrations here."""
+
+    @migrator.create_model
+    class BaseModel(pw.Model):
+        id = pw.AutoField()
+
+        class Meta:
+            table_name = "basemodel"
 
     @migrator.create_model
     class Role(pw.Model):
@@ -49,7 +63,7 @@ def migrate(migrator, database, fake=False, **kwargs):
         password = pw.TextField()
 
         class Meta:
-            table_name = "user"
+            table_name = "users"
 
     @migrator.create_model
     class UserRoles(pw.Model):
@@ -64,7 +78,7 @@ def migrate(migrator, database, fake=False, **kwargs):
             backref='roles',
             column_name='user_id',
             field='id',
-            model=migrator.orm['user']
+            model=migrator.orm['users']
         )
 
         class Meta:
@@ -76,6 +90,8 @@ def rollback(migrator, database, fake=False, **kwargs):
 
     migrator.remove_model('userroles')
 
-    migrator.remove_model('user')
+    migrator.remove_model('users')
 
     migrator.remove_model('role')
+
+    migrator.remove_model('basemodel')

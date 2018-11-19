@@ -8,7 +8,6 @@ ansible/roles/*
 ansible/site.yml
 !ansible/roles/.keep
 !ansible/roles/devel
-application/static/
 build
 cbsd.conf
 coverage.xml
