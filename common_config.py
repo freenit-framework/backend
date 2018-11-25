@@ -18,9 +18,10 @@ class CommonConfig:
     #  JWT_REFRESH_TOKEN_EXPIRES = timedelta(seconds=10)
     OPENAPI_URL_PREFIX = '/doc'
     OPENAPI_REDOC_PATH = '/redoc'
-    OPENAPI_SWAGGER_UI_PATH = 'swaggerui'
-    OPENAPI_SWAGGER_UI_URL = 'static/swaggerui/'
-    OPENAPI_SWAGGER_UI_VERSION = '3.0'
+    OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
+    #  OPENAPI_SWAGGER_UI_URL = 'static/swaggerui/'
+    #  OPENAPI_SWAGGER_UI_VERSION = '3.0'
+    OPENAPI_SWAGGER_UI_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/'
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',

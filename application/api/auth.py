@@ -12,16 +12,18 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 from flask_rest_api import Blueprint
+from flask_rest_api.utils import get_appcontext
 from flask_security.utils import verify_password
 
 from ..models.auth import User
-from .schemas import TokenSchema
+from .schemas import LoginSchema, RefreshSchema, TokenSchema
 
-auth = Blueprint('auth', 'auth', url_prefix='/auth')
+auth = Blueprint('auth', 'auth')
 
 
 @auth.route('/login', endpoint='auth_login')
 class AuthLoginAPI(MethodView):
+    @auth.response(LoginSchema)
     @auth.arguments(TokenSchema)
     def post(self, args):
         """Authenticates and generates a token"""
@@ -62,20 +64,22 @@ class AuthLoginAPI(MethodView):
             httponly=True,
             secure=refresh_secure,
         )
-        return resp
+        get_appcontext()['headers'] = resp.headers
+        return resp.get_json()
 
 
 @auth.route('/logout', endpoint='auth_logout')
 class AuthLogoutAPI(MethodView):
     def post(self):
         """Logout"""
-        resp = jsonify({'logout': True})
+        resp = jsonify({})
         unset_jwt_cookies(resp)
         return resp
 
 
 @auth.route('/refresh', endpoint='auth_refresh')
 class AuthRefreshAPI(MethodView):
+    @auth.response(RefreshSchema)
     @jwt_refresh_token_required
     def post(self):
         """Refresh access token"""
@@ -99,4 +103,5 @@ class AuthRefreshAPI(MethodView):
             }
         )
         set_access_cookies(resp, access_token)
-        return resp
+        get_appcontext()['headers'] = resp.headers
+        return resp.get_json()

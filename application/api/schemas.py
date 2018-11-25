@@ -1,4 +1,6 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, post_load
+
+from ..models.auth import User
 
 
 class BaseSchema(Schema):
@@ -37,3 +39,13 @@ class UserSchema(BaseSchema):
         description='Time when user was confirmed',
         dump_only=True,
     )
+
+
+class RefreshSchema(BaseSchema):
+    access = fields.Str()
+    accessExpire = fields.Integer()
+    refreshExpire = fields.Integer()
+
+
+class LoginSchema(RefreshSchema):
+    refresh = fields.Str()
