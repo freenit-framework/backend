@@ -15,3 +15,6 @@ database.db
 site.retry
 test.db
 vars.mk
+
+application/static/*
+!application/static/.keep
