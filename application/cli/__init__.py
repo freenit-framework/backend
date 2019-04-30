@@ -2,7 +2,7 @@ import click
 from flask.cli import AppGroup
 from peewee_migrate import Router
 
-migration = AppGroup('migration')
+migration = AppGroup('migration', short_help='Migration operations')
 
 
 def register(app):
