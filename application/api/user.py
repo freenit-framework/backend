@@ -1,42 +1,39 @@
-from flask import current_app
-from flask_restplus import abort
-from .resources import ProtectedResource
-from .namespaces import ns_user
-from .schemas import UserSchema
+from flask_rest_api import Blueprint
+
 from ..models.auth import User
+from .methodviews import ProtectedMethodView
+from .schemas import UserSchema
+
+user = Blueprint('user', 'user')
 
 
-@ns_user.route('', endpoint='users')
-class UserListAPI(ProtectedResource):
+@user.route('/', endpoint='users')
+class UserListAPI(ProtectedMethodView):
+    @user.response(UserSchema(many=True))
     def get(self):
         """List users"""
-        schema = UserSchema(many=True)
-        response, errors = schema.dump(User.select())
-        if errors:
-            abort(409, errors)
-        return response
+        return User.select()
 
-    @ns_user.expect(UserSchema.fields())
-    def post(self):
+    @user.arguments(UserSchema)
+    @user.response(UserSchema)
+    def post(self, args):
+        """Create user"""
         schema = UserSchema()
-        user, errors = schema.load(current_app.api.payload)
+        data, errors = schema.load(args)
         if errors:
-            abort(409, errors)
+            return errors, 409
+        user = User(**data)
         user.save()
-        return schema.dump(user)
+        return user
 
 
-@ns_user.route('/<id>', endpoint='user')
-@ns_user.response(404, 'User not found')
-class UserAPI(ProtectedResource):
+@user.route('/<id>', endpoint='user')
+class UserAPI(ProtectedMethodView):
+    @user.response(UserSchema)
     def get(self, id):
         """Get user details"""
         try:
             user = User.get(id=id)
         except User.DoesNotExist:
-            abort(404, 'User not found')
-        schema = UserSchema()
-        response, errors = schema.dump(user)
-        if errors:
-            abort(409, errors)
-        return response
+            return {'message': 'User not found'}, 404
+        return user

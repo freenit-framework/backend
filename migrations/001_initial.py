@@ -21,7 +21,14 @@ Some examples (model - class or model name)::
 
 """
 
+import datetime as dt
+
 import peewee as pw
+
+try:
+    import playhouse.postgres_ext as pw_pext
+except ImportError:
+    pass
 
 SQL = pw.SQL
 

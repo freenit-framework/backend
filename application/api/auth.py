@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import current_app, jsonify, request
+from flask.views import MethodView
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -10,32 +11,34 @@ from flask_jwt_extended import (
     set_refresh_cookies,
     unset_jwt_cookies
 )
-from flask_restplus import Resource, abort
+from flask_rest_api import Blueprint
+from flask_rest_api.utils import get_appcontext
 from flask_security.utils import verify_password
 
 from ..models.auth import User
-from .namespaces import ns_auth
-from .schemas import TokenSchema
+from .schemas import LoginSchema, RefreshSchema, TokenSchema
+
+auth = Blueprint('auth', 'auth')
 
 
-@ns_auth.route('/login', endpoint='auth_login')
-class AuthLoginAPI(Resource):
-    @ns_auth.response(401, 'Invalid credentials')
-    @ns_auth.expect(TokenSchema.fields())
-    def post(self):
+@auth.route('/login', endpoint='auth_login')
+class AuthLoginAPI(MethodView):
+    @auth.response(LoginSchema)
+    @auth.arguments(TokenSchema)
+    def post(self, args):
         """Authenticates and generates a token"""
-        schema = TokenSchema()
-        data, errors = schema.load(current_app.api.payload)
-        if errors:
-            return errors, 400
+        email = args.get('email', None)
+        password = args.get('password', None)
+        if email is None:
+            return {'message': 'Email not provided'}, 403
         try:
-            user = User.get(email=data.email)
+            user = User.get(email=email)
         except User.DoesNotExist:
-            abort(403, 'No such user, or wrong password')
+            return {'message': 'No such user, or wrong password'}, 403
         if not user or not user.active:
-            abort(403, 'No such user, or wrong password')
-        if not verify_password(data.password, user.password):
-            abort(403, 'No such user, or wrong password')
+            return {'message': 'No such user, or wrong password'}, 403
+        if not verify_password(password, user.password):
+            return {'message': 'No such user, or wrong password'}, 403
         access_token = create_access_token(identity=user.email)
         refresh_token = create_refresh_token(identity=user.email)
         access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
@@ -64,17 +67,18 @@ class AuthLoginAPI(Resource):
         return resp
 
 
-@ns_auth.route('/logout', endpoint='auth_logout')
-class AuthLogoutAPI(Resource):
+@auth.route('/logout', endpoint='auth_logout')
+class AuthLogoutAPI(MethodView):
     def post(self):
         """Logout"""
-        resp = jsonify({'logout': True})
+        resp = jsonify({})
         unset_jwt_cookies(resp)
         return resp
 
 
-@ns_auth.route('/refresh', endpoint='auth_refresh')
-class AuthRefreshAPI(Resource):
+@auth.route('/refresh', endpoint='auth_refresh')
+class AuthRefreshAPI(MethodView):
+    @auth.response(RefreshSchema)
     @jwt_refresh_token_required
     def post(self):
         """Refresh access token"""
@@ -82,7 +86,7 @@ class AuthRefreshAPI(Resource):
         try:
             user = User.get(email=email)
         except User.DoesNotExist:
-            abort(403, 'No such user, or wrong password')
+            return {'message': 'No such user, or wrong password'}, 403
         access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
         access_token = create_access_token(identity=user.email)
         refresh_expire_date = datetime.strptime(
@@ -98,4 +102,5 @@ class AuthRefreshAPI(Resource):
             }
         )
         set_access_cookies(resp, access_token)
-        return resp
+        get_appcontext()['headers'] = resp.headers
+        return resp.get_json()

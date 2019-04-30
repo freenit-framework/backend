@@ -1,0 +1,79 @@
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='swaggerui/swagger-ui.css') }}" >
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='swaggerui/favicon-32x32.png') }}" sizes="32x32" />
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='swaggerui/favicon-16x16.png') }}" sizes="16x16" />
+    <style>
+      html
+      {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+      }
+      *,
+      *:before,
+      *:after
+      {
+        box-sizing: inherit;
+      }
+      body
+      {
+        margin:0;
+        background: #fafafa;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="swagger-ui"></div>
+
+    <script src="{{ url_for('static', filename='swaggerui/swagger-ui-bundle.js') }}"> </script>
+    <script src="{{ url_for('static', filename='swaggerui/swagger-ui-standalone-preset.js') }}"> </script>
+    <script>
+      function getCookie(name) {
+          var value = "; " + document.cookie;
+          var parts = value.split("; " + name + "=");
+          if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+      window.onload = function() {
+        // Begin Swagger UI call region
+        const ui = SwaggerUIBundle({
+          url: "{{ url_for('api-docs.openapi_json') }}",
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+          requestInterceptor: (request) => {
+              if (request.method === 'OPTIONS' || request.method === 'GET') {
+                  return request;
+              }
+              if (request.url === `${window.location.origin}/api/v0/auth/refresh`) {
+                  csrf = getCookie('csrf_refresh_token');
+                  if (csrf) {
+                      request.headers['X-CSRF-TOKEN'] = csrf;
+                  }
+              } else {
+                  csrf = getCookie('csrf_access_token');
+                  if (csrf) {
+                      request.headers['X-CSRF-TOKEN'] = csrf;
+                  }
+              }
+              return request;
+          },
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl
+          ],
+          layout: "StandaloneLayout"
+        })
+        // End Swagger UI call region
+        window.ui = ui
+      }
+    </script>
+  </body>
+</html>

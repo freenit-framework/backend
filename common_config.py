@@ -16,6 +16,11 @@ class CommonConfig:
     JWT_COOKIE_SECURE = True
     #  JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=1)
     #  JWT_REFRESH_TOKEN_EXPIRES = timedelta(seconds=10)
+    OPENAPI_URL_PREFIX = '/doc'
+    OPENAPI_REDOC_PATH = '/redoc'
+    OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
+    OPENAPI_SWAGGER_UI_URL = 'static/swaggerui/'
+    OPENAPI_VERSION = '3.0.2'
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',
