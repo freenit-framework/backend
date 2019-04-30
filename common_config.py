@@ -19,9 +19,8 @@ class CommonConfig:
     OPENAPI_URL_PREFIX = '/doc'
     OPENAPI_REDOC_PATH = '/redoc'
     OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
-    #  OPENAPI_SWAGGER_UI_URL = 'static/swaggerui/'
-    #  OPENAPI_SWAGGER_UI_VERSION = '3.0'
-    OPENAPI_SWAGGER_UI_URL = 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/'
+    OPENAPI_SWAGGER_UI_URL = 'static/swaggerui/'
+    OPENAPI_VERSION = '3.0.2'
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',

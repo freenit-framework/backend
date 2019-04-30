@@ -17,6 +17,7 @@ class UserListAPI(ProtectedMethodView):
     @user.arguments(UserSchema)
     @user.response(UserSchema)
     def post(self, args):
+        """Create user"""
         schema = UserSchema()
         data, errors = schema.load(args)
         if errors:

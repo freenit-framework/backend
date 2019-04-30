@@ -64,8 +64,7 @@ class AuthLoginAPI(MethodView):
             httponly=True,
             secure=refresh_secure,
         )
-        get_appcontext()['headers'] = resp.headers
-        return resp.get_json()
+        return resp
 
 
 @auth.route('/logout', endpoint='auth_logout')
