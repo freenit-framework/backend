@@ -1,7 +1,8 @@
-from flask import Blueprint, Flask
 from flask_collect import Collect
 from flask_jwt_extended import JWTManager
 from flask_security import PeeweeUserDatastore, Security
+
+from flask import Blueprint, Flask
 
 from .api import create_api
 from .db import db
@@ -20,15 +21,6 @@ def create_app(config, app=None):
     app.collect = Collect(app)
     db.init_app(app)
     app.db = db
-
-    app.blueprint = Blueprint(
-        'app',
-        __name__,
-        template_folder='templates',
-        static_folder='static',
-        static_url_path='/static/app',
-    )
-    app.register_blueprint(app.blueprint)
 
     from .models.auth import User, Role, UserRoles
     app.user_datastore = PeeweeUserDatastore(
