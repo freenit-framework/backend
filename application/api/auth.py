@@ -16,7 +16,7 @@ from flask_rest_api.utils import get_appcontext
 from flask_security.utils import verify_password
 
 from ..models.auth import User
-from .schemas import LoginSchema, RefreshSchema, TokenSchema
+from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema
 
 auth = Blueprint('auth', 'auth')
 

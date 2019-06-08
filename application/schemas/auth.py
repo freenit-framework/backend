@@ -1,12 +1,6 @@
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields
 
-from ..models.auth import User
-
-
-class BaseSchema(Schema):
-    class Meta:
-        strict = True
-        ordered = True
+from .base import BaseSchema
 
 
 class TokenSchema(BaseSchema):

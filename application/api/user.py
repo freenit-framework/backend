@@ -1,8 +1,8 @@
 from flask_rest_api import Blueprint
 
 from ..models.auth import User
+from ..schemas.auth import UserSchema
 from .methodviews import ProtectedMethodView
-from .schemas import UserSchema
 
 user = Blueprint('user', 'user')
 
