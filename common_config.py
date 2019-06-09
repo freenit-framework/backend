@@ -19,8 +19,8 @@ class CommonConfig:
     OPENAPI_URL_PREFIX = '/doc'
     OPENAPI_REDOC_PATH = '/redoc'
     OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
-    OPENAPI_SWAGGER_UI_URL = 'static/swaggerui/'
-    OPENAPI_VERSION = '3.0.2'
+    OPENAPI_SWAGGER_UI_URL = '/static/swaggerui/'
+    OPENAPI_VERSION = '2.0.0'
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',

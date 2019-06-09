@@ -1,6 +1,7 @@
 factory-boy
 flake8
 ipdb
+neovim
 pytest-cov
 pytest-factoryboy
 pytest-flask

@@ -1,8 +1,7 @@
+from flask import Blueprint, Flask
 from flask_collect import Collect
 from flask_jwt_extended import JWTManager
 from flask_security import PeeweeUserDatastore, Security
-
-from flask import Blueprint, Flask
 
 from .api import create_api
 from .db import db
