@@ -14,7 +14,6 @@ class UserListAPI(ProtectedMethodView):
     @user.response(UserSchema(many=True))
     def get(self, pagination):
         """List users"""
-        print(pagination)
         return User.select()
 
     @user.arguments(UserSchema)
@@ -25,9 +24,9 @@ class UserListAPI(ProtectedMethodView):
         data, errors = schema.load(args)
         if errors:
             return errors, 409
-        user = User(**data)
-        user.save()
-        return user
+        account = User(**data)
+        account.save()
+        return account
 
 
 @user.route('/<id>', endpoint='user')
@@ -36,7 +35,7 @@ class UserAPI(ProtectedMethodView):
     def get(self, id):
         """Get user details"""
         try:
-            user = User.get(id=id)
+            account = User.get(id=id)
         except User.DoesNotExist:
             return {'message': 'User not found'}, 404
-        return user
+        return account

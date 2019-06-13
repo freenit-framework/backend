@@ -28,7 +28,11 @@ class UserSchema(BaseSchema):
         description='Password',
         load_only=True
     )
-    roles = fields.List(fields.Nested(UserRolesSchema), many=True)
+    roles = fields.List(
+        fields.Nested(UserRolesSchema),
+        many=True,
+        dump_only=True,
+    )
     confirmed_at = fields.DateTime(
         description='Time when user was confirmed',
         dump_only=True,

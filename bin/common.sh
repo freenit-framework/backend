@@ -19,6 +19,7 @@ setup() {
   cd ${PROJECT_ROOT}
   if [ "${update}" != "no" ]; then
     pip install -U pip
+    pip install -U wheel
     pip install -U -r requirements.txt
   fi
   flask migration run
