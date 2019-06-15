@@ -1,0 +1,6 @@
+[MASTER]
+disable=missing-docstring,
+        too-few-public-methods,
+        no-self-use,
+        import-error,
+        invalid-name

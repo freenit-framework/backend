@@ -1,24 +1,17 @@
 try:
-    from local_config import Config
+    from local_config import DevConfig
 except ImportError:
-    from common_config import CommonConfig as Config
+    from common_config import DevConfig
 
+try:
+    from local_config import TestConfig
+except ImportError:
+    from common_config import TestConfig
 
-class DevConfig(Config):
-    DEBUG = True
-    JWT_COOKIE_SECURE = False
-    SECURITY_SEND_REGISTER_EMAIL = False
-
-
-class TestConfig(Config):
-    TESTING = True
-    JWT_COOKIE_SECURE = False
-    DATABASE = 'sqlite:///test.db'
-
-
-class ProdConfig(Config):
-    pass
-
+try:
+    from local_config import ProdConfig
+except ImportError:
+    from common_config import ProdConfig
 
 configs = {
     'development': DevConfig,
