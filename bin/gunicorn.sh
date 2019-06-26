@@ -3,7 +3,7 @@
 
 BIN_DIR=`dirname $0`
 FLASK_ENV="production"
-NAME=pulsar
+NAME=startkit
 NUM_WORKERS=4
 WSGI_MODULE=wsgi
 PORT=${PORT:=9000}
