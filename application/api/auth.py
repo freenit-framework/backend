@@ -17,13 +17,13 @@ from flask_security.utils import verify_password
 from ..models.auth import User
 from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema
 
-auth = Blueprint('auth', 'auth')
+blueprint = Blueprint('auth', 'auth')
 
 
-@auth.route('/login', endpoint='auth_login')
+@blueprint.route('/login', endpoint='auth_login')
 class AuthLoginAPI(MethodView):
-    @auth.response(LoginSchema)
-    @auth.arguments(TokenSchema)
+    @blueprint.response(LoginSchema)
+    @blueprint.arguments(TokenSchema)
     def post(self, args):
         """Authenticates and generates a token"""
         email = args.get('email', None)
@@ -66,7 +66,7 @@ class AuthLoginAPI(MethodView):
         return resp
 
 
-@auth.route('/logout', endpoint='auth_logout')
+@blueprint.route('/logout', endpoint='auth_logout')
 class AuthLogoutAPI(MethodView):
     def post(self):
         """Logout"""
@@ -75,9 +75,9 @@ class AuthLogoutAPI(MethodView):
         return resp
 
 
-@auth.route('/refresh', endpoint='auth_refresh')
+@blueprint.route('/refresh', endpoint='auth_refresh')
 class AuthRefreshAPI(MethodView):
-    @auth.response(RefreshSchema)
+    @blueprint.response(RefreshSchema)
     @jwt_refresh_token_required
     def post(self):
         """Refresh access token"""

@@ -9,3 +9,6 @@ REGGAE_PATH :=/usr/local/share/reggae
 
 print-virtualenv:
 	@echo ${CBSD_WORKDIR}/jails-data/${SERVICE}-data/usr/home/devel/.virtualenvs/backend
+
+shell: up
+	@sudo cbsd jexec user=devel jname=${SERVICE} /usr/src/bin/shell.sh
