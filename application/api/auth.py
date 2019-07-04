@@ -12,7 +12,6 @@ from flask_jwt_extended import (
     unset_jwt_cookies
 )
 from flask_rest_api import Blueprint
-from flask_rest_api.utils import get_appcontext
 from flask_security.utils import verify_password
 
 from ..models.auth import User
@@ -102,5 +101,4 @@ class AuthRefreshAPI(MethodView):
             }
         )
         set_access_cookies(resp, access_token)
-        get_appcontext()['headers'] = resp.headers
-        return resp.get_json()
+        return resp
