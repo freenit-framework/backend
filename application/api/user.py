@@ -35,3 +35,23 @@ class UserAPI(ProtectedMethodView):
         except User.DoesNotExist:
             abort(404, 'User not found')
         return user
+
+    @blueprint.arguments(UserSchema(partial=True))
+    @blueprint.response(UserSchema)
+    def patch(self, args, user_id):
+        try:
+            user = User.get(id=user_id)
+        except User.DoesNotExist:
+            abort(404, 'User not found')
+        user.email = args.get('email',user.email)
+        user.save()
+        return user
+
+    @blueprint.response(UserSchema)
+    def delete(self, user_id):
+        try:
+            user = User.get(id=user_id)
+        except User.DoesNotExist:
+            abort(404,'User not found')
+        user.delete_instance()
+        return user
