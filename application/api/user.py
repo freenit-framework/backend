@@ -43,7 +43,8 @@ class UserAPI(ProtectedMethodView):
             user = User.get(id=user_id)
         except User.DoesNotExist:
             abort(404, 'User not found')
-        user.email = args.get('email',user.email)
+        for field in args:
+            setattr(user, field, args[field])
         user.save()
         return user
 
@@ -52,6 +53,6 @@ class UserAPI(ProtectedMethodView):
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
-            abort(404,'User not found')
+            abort(404, 'User not found')
         user.delete_instance()
         return user
