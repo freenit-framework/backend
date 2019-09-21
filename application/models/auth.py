@@ -24,7 +24,7 @@ class User(Model, UserMixin):
     active = BooleanField(default=True)
     admin = BooleanField(default=False)
     confirmed_at = DateTimeField(null=True)
-    email = TextField()
+    email = TextField(unique=True)
     password = TextField()
 
 
