@@ -3,9 +3,11 @@ from flask.cli import AppGroup
 from flask_security.utils import hash_password
 from peewee_migrate import Router
 
+migration = AppGroup('migration', short_help='Migration operations')
+admin_group = AppGroup('admin', short_help='Manage admin users')
+
 
 def register_migration(app):
-    migration = AppGroup('migration', short_help='Migration operations')
     router = Router(app.db.database)
 
     @migration.command()
@@ -26,8 +28,6 @@ def register_migration(app):
 
 
 def register_admin(app):
-    admin_group = AppGroup('admin', short_help='Manage admin users')
-
     @admin_group.command()
     def create():
         from ..models.auth import User
@@ -45,5 +45,5 @@ def register_admin(app):
 
 
 def register(app):
-    register_migration(app)
     register_admin(app)
+    register_migration(app)

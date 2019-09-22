@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask
+from flask import Flask
 from flask_collect import Collect
 from flask_jwt_extended import JWTManager
 from flask_security import PeeweeUserDatastore, Security
@@ -8,11 +8,6 @@ from .db import db
 
 
 def create_app(config, app=None):
-    class Result(object):
-        def __init__(self, **kwargs):
-            for k, v in kwargs.items():
-                setattr(self, k, v)
-
     if app is None:
         app = Flask(__name__)
         app.config.from_object(config)
