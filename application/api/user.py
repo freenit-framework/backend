@@ -1,4 +1,5 @@
 from flask_rest_api import Blueprint, abort
+from flask_security.utils import hash_password
 
 from ..models.auth import User
 from ..schemas.auth import UserSchema
@@ -21,6 +22,7 @@ class UserListAPI(ProtectedMethodView):
     def post(self, args):
         """Create user"""
         user = User(**args)
+        user.password = hash_password(user.password)
         user.save()
         return user
 
@@ -45,6 +47,8 @@ class UserAPI(ProtectedMethodView):
             abort(404, 'User not found')
         for field in args:
             setattr(user, field, args[field])
+        if 'password' in args:
+            user.password = hash_password(user.password)
         user.save()
         return user
 

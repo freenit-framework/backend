@@ -1,5 +1,6 @@
 import click
 from flask.cli import AppGroup
+from flask_security.utils import hash_password
 from peewee_migrate import Router
 
 
@@ -35,6 +36,7 @@ def register_admin(app):
             password='Sekrit',
         )
         if created:
+            admin.password = hash_password(admin.password)
             admin.admin = True
             admin.active = True
             admin.save()
