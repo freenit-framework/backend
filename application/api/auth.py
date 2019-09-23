@@ -11,7 +11,7 @@ from flask_jwt_extended import (
     set_refresh_cookies,
     unset_jwt_cookies
 )
-from flask_rest_api import Blueprint
+from flask_rest_api import Blueprint, abort
 from flask_security.utils import verify_password
 
 from ..models.auth import User
@@ -29,15 +29,15 @@ class AuthLoginAPI(MethodView):
         email = args.get('email', None)
         password = args.get('password', None)
         if email is None:
-            return {'message': 'Email not provided'}, 403
+            abort(403, message='Email not provided')
         try:
             user = User.get(email=email)
         except User.DoesNotExist:
-            return {'message': 'No such user, or wrong password'}, 403
+            abort(403, message='No such user, or wrong password')
         if not user or not user.active:
-            return {'message': 'No such user, or wrong password'}, 403
+            abort(403, message='No such user, or wrong password')
         if not verify_password(password, user.password):
-            return {'message': 'No such user, or wrong password'}, 403
+            abort(403, message='No such user, or wrong password')
         access_token = create_access_token(identity=user.email)
         refresh_token = create_refresh_token(identity=user.email)
         access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
@@ -85,7 +85,7 @@ class AuthRefreshAPI(MethodView):
         try:
             user = User.get(email=email)
         except User.DoesNotExist:
-            return {'message': 'No such user, or wrong password'}, 403
+            abort(403, message='No such user, or wrong password')
         access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
         access_token = create_access_token(identity=user.email)
         refresh_expire_date = datetime.strptime(
