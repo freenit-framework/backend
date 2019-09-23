@@ -9,7 +9,7 @@ from .methodviews import ProtectedMethodView
 blueprint = Blueprint('user', 'user')
 
 
-@blueprint.route('/', endpoint='users')
+@blueprint.route('', endpoint='users')
 class UserListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
     @blueprint.response(PageOutSchema(UserSchema))
