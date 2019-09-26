@@ -1,4 +1,5 @@
 import click
+from application.models.auth import User
 from flask.cli import AppGroup
 from flask_security.utils import hash_password
 from peewee_migrate import Router
@@ -30,15 +31,15 @@ def register_migration(app):
 def register_admin(app):
     @admin_group.command()
     def create():
-        from ..models.auth import User
-        admin, created = User.get_or_create(
-            email='admin@example.com',
-            password='Sekrit',
-        )
-        if created:
-            admin.password = hash_password(admin.password)
-            admin.admin = True
-            admin.active = True
+        try:
+            User.get(email='admin@example.com')
+        except User.DoesNotExist:
+            admin = User(
+                email='admin@example.com',
+                admin=True,
+                active=True,
+                password=hash_password('Sekrit'),
+            )
             admin.save()
 
     app.cli.add_command(admin_group)
