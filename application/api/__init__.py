@@ -1,3 +1,5 @@
+from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec.ext.marshmallow.common import resolve_schema_cls
 from flask import render_template
 from flask_rest_api import Api
 
@@ -18,11 +20,30 @@ def register_endpoints(app, api_prefix, blueprints):
         )
 
 
+def schema_name_resolver(schema):
+    schema_cls = resolve_schema_cls(schema)
+    name = schema_cls.__name__
+    if name.endswith("Schema"):
+        name = name[:-6] or name
+    if schema.partial:
+        if isinstance(schema.partial, list):
+            for field in schema.partial:
+                name += field.capitalize()
+        name += 'Partial'
+    return name
+
+
 def create_api(app):
     from .auth import blueprint as auth
     from .user import blueprint as user
 
-    app.api = MyApi(app)
+    marshmallow_plugin = MarshmallowPlugin(
+        schema_name_resolver=schema_name_resolver
+    )
+    spec_kwargs = {
+        'marshmallow_plugin': marshmallow_plugin,
+    }
+    app.api = MyApi(app, spec_kwargs=spec_kwargs)
     register_endpoints(
         app,
         '/api/v0',
