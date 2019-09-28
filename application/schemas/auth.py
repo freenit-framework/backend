@@ -3,15 +3,23 @@ from marshmallow import fields
 from .base import BaseSchema
 
 
+class UserAssignSchema(BaseSchema):
+    id = fields.Integer(description='ID')
+
+
 class TokenSchema(BaseSchema):
     email = fields.Email(required=True, description='Email')
     password = fields.Str(required=True, description='Password')
 
 
-class RoleSchema(BaseSchema):
+class RoleBaseSchema(BaseSchema):
     id = fields.Integer(description='ID', dump_only=True)
-    description = fields.String(required=True, description='Description')
-    name = fields.String(required=True, description='Name')
+    description = fields.String(description='Description')
+    name = fields.String(description='Name')
+
+
+class RoleSchema(RoleBaseSchema):
+    users = fields.List(fields.Nested('UserSchema'), dump_only=True)
 
 
 class UserRolesSchema(BaseSchema):

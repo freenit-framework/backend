@@ -35,6 +35,8 @@ def schema_name_resolver(schema):
 
 def create_api(app):
     from .auth import blueprint as auth
+    from .me import blueprint as me
+    from .role import blueprint as role
     from .user import blueprint as user
 
     marshmallow_plugin = MarshmallowPlugin(
@@ -49,6 +51,8 @@ def create_api(app):
         '/api/v0',
         [
             auth,
+            me,
+            role,
             user,
         ],
     )

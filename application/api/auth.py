@@ -15,7 +15,7 @@ from flask_rest_api import Blueprint, abort
 from flask_security.utils import verify_password
 
 from ..models.auth import User
-from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema
+from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema, UserSchema
 
 blueprint = Blueprint('auth', 'auth')
 
@@ -102,3 +102,21 @@ class AuthRefreshAPI(MethodView):
         )
         set_access_cookies(resp, access_token)
         return resp
+
+
+@blueprint.route('/register', endpoint='register')
+class AuthRegisterAPI(MethodView):
+    @blueprint.response(UserSchema)
+    @blueprint.arguments(TokenSchema)
+    def post(self, args):
+        """Register new user"""
+        email = args.get('email')
+        password = args.get('password')
+        try:
+            User.get(email=args.get('email'))
+            abort(409, message='User already registered')
+        except User.DoesNotExist:
+            user = User(email=email, password=hash_password(password))
+        user.active = False
+        user.save()
+        return user

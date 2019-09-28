@@ -35,7 +35,7 @@ class UserAPI(ProtectedMethodView):
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
-            abort(404, 'User not found')
+            abort(404, message='User not found')
         return user
 
     @blueprint.arguments(UserSchema(partial=True))
@@ -44,7 +44,7 @@ class UserAPI(ProtectedMethodView):
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
-            abort(404, 'User not found')
+            abort(404, message='User not found')
         for field in args:
             setattr(user, field, args[field])
         if 'password' in args:
@@ -57,6 +57,6 @@ class UserAPI(ProtectedMethodView):
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
-            abort(404, 'User not found')
+            abort(404, message='User not found')
         user.delete_instance()
         return user
