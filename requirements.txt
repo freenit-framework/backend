@@ -6,3 +6,4 @@ flask-security
 gunicorn
 marshmallow
 peewee-migrate
+bs4

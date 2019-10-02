@@ -38,6 +38,7 @@ def create_api(app):
     from .me import blueprint as me
     from .role import blueprint as role
     from .user import blueprint as user
+    from .pyser_parser import blueprint as parser
 
     marshmallow_plugin = MarshmallowPlugin(
         schema_name_resolver=schema_name_resolver
@@ -54,5 +55,6 @@ def create_api(app):
             me,
             role,
             user,
+            parser,
         ],
     )
