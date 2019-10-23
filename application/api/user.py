@@ -2,8 +2,8 @@ from flask_rest_api import Blueprint, abort
 from flask_security.utils import hash_password
 
 from ..models.auth import User
-from ..schemas.auth import UserSchema
-from ..schemas.paging import PageInSchema, PageOutSchema, paginate
+from ..schemas.auth import UserPageOutSchema, UserSchema
+from ..schemas.paging import PageInSchema, paginate
 from .methodviews import ProtectedMethodView
 
 blueprint = Blueprint('user', 'user')
@@ -12,7 +12,7 @@ blueprint = Blueprint('user', 'user')
 @blueprint.route('', endpoint='users')
 class UserListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
-    @blueprint.response(PageOutSchema(UserSchema))
+    @blueprint.response(UserPageOutSchema)
     def get(self, pagination):
         """List users"""
         return paginate(User.select(), pagination)

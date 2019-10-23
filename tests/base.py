@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from flask_restplus.api import url_for
+from flask import url_for
 from werkzeug.datastructures import Headers
 
 

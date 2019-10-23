@@ -31,5 +31,5 @@ class User(Model, UserMixin):
 class UserRoles(Model):
     description = property(lambda self: self.role.description)
     name = property(lambda self: self.role.name)
-    role = ForeignKeyField(Role, related_name='users')
-    user = ForeignKeyField(User, related_name='roles')
+    role = ForeignKeyField(Role, backref='users')
+    user = ForeignKeyField(User, backref='roles')

@@ -1,8 +1,8 @@
 from flask_rest_api import Blueprint, abort
 
 from ..models.auth import Role, User, UserRoles
-from ..schemas.auth import RoleSchema, UserAssignSchema
-from ..schemas.paging import PageInSchema, PageOutSchema, paginate
+from ..schemas.auth import RolePageOutSchema, RoleSchema, UserAssignSchema
+from ..schemas.paging import PageInSchema, paginate
 from .methodviews import ProtectedMethodView
 
 blueprint = Blueprint('role', 'role')
@@ -11,7 +11,7 @@ blueprint = Blueprint('role', 'role')
 @blueprint.route('', endpoint='roles')
 class RoleListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
-    @blueprint.response(PageOutSchema(RoleSchema))
+    @blueprint.response(RolePageOutSchema)
     def get(self, pagination):
         """List roles"""
         return paginate(Role.select(), pagination)
