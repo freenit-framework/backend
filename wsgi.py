@@ -1,12 +1,16 @@
 import os
 import socket
+from importlib import import_module
 
-from application import cli, create_app
 from config import configs
+from name import app_name
+
+application = import_module(f'{app_name}')
+cli = import_module(f'{app_name}.cli')
 
 config_name = os.getenv('FLASK_ENV') or 'default'
 config = configs[config_name]
-app = create_app(config)
+app = application.create_app(config)
 cli.register(app)
 hostname = socket.gethostname()
 port = os.environ.get('FLASK_PORT', 5000)
