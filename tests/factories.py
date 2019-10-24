@@ -1,11 +1,15 @@
+from importlib import import_module
+
 import factory
 from flask_security.utils import hash_password
-from application.models.auth import User, Role
+from name import app_name
+
+auth = import_module(f'{app_name}.models.auth')
 
 
 class UserFactory(factory.Factory):
     class Meta:
-        model = User
+        model = auth.User
 
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
@@ -20,6 +24,6 @@ class AdminFactory(UserFactory):
 
 class RoleFactory(factory.Factory):
     class Meta:
-        model = Role
+        model = auth.Role
 
     name = factory.Faker('first_name')

@@ -3,7 +3,8 @@
 
 export BIN_DIR=`dirname $0`
 export PROJECT_ROOT="${BIN_DIR}/.."
-export VIRTUALENV=${VIRTUALENV:="backend"}
+. "${PROJECT_ROOT}/name.py"
+export VIRTUALENV=${VIRTUALENV:="${app_name}back"}
 export FLASK_ENV=${FLASK_ENV:="production"}
 export PY_VERSION=${PY_VERSION:="3.6"}
 

@@ -1,4 +1,6 @@
-SERVICE = backend
+.include <name.py>
+
+SERVICE != echo ${app_name}back
 REGGAE_PATH :=/usr/local/share/reggae
 
 shell: up

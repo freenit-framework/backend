@@ -4,7 +4,9 @@
 set -e
 
 
-BIN_DIR=`dirname $0`
+export BIN_DIR=`dirname $0`
+export PROJECT_ROOT="${BIN_DIR}/.."
+. "${PROJECT_ROOT}/name.py"
 . ${BIN_DIR}/common.sh
 setup
 
@@ -12,4 +14,4 @@ setup
 rm -rf `find . -name __pycache__`
 rm -rf .pytest_cache
 flake8 .
-py.test --cov=application --cov-report=term-missing:skip-covered --cov-report=xml
+py.test --cov="${app_name}" --cov-report=term-missing:skip-covered --cov-report=xml

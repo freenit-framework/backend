@@ -2,6 +2,7 @@ import click
 from application.models.auth import User
 from flask.cli import AppGroup
 from flask_security.utils import hash_password
+from name import app_name
 from peewee_migrate import Router
 
 migration = AppGroup('migration', short_help='Migration operations')
@@ -19,7 +20,7 @@ def register_migration(app):
     @migration.command()
     @click.argument('name')
     def create(name):
-        router.create(name, 'application.models')
+        router.create(name, f'{app_name}.models')
 
     @migration.command()
     def run():
