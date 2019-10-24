@@ -31,8 +31,8 @@ class UserRolesSchema(BaseSchema):
 
 class UserSchema(BaseSchema):
     id = fields.Integer(description='ID', dump_only=True)
-    active = fields.Boolean(description='Activate the user', default=True)
-    admin = fields.Boolean(description='Is the user admin?', default=False)
+    active = fields.Boolean(description='Activate the user')
+    admin = fields.Boolean(description='Is the user admin?')
     email = fields.Email(required=True, description='Email')
     password = fields.Str(
         required=True,
