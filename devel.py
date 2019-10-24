@@ -1,5 +1,8 @@
-from application import create_app
-from config import configs
+from importlib import import_module
 
+from config import configs
+from name import app_name
+
+application = import_module(f'{app_name}')
 config = configs['development']
-app = create_app(config)
+app = application.create_app(config)

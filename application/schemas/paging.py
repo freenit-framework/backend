@@ -24,7 +24,7 @@ class PageInSchema(BaseSchema):
     PerPage = fields.Int()
 
 
-def PageOutSchema(schema):
+def PageOutSchema(schema, module):
     name = schema.__name__
     if name.endswith("Schema"):
         name = name[:-6] or name
@@ -40,4 +40,5 @@ def PageOutSchema(schema):
             'data': fields.List(fields.Nested(schema)),
         }
     )
+    setattr(module, name, PS)
     return PS
