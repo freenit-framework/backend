@@ -11,6 +11,11 @@ export PROJECT_ROOT="${BIN_DIR}/.."
 setup
 
 
+if [ "${OFFLINE}" != "yes" ]; then
+  pip install -U -r requirements_dev.txt
+fi
+
+
 rm -rf `find . -name __pycache__`
 rm -rf .pytest_cache
 flake8 .
