@@ -1,1 +1,1 @@
-app_name="application"  # noqa: E225
+app_name="freenit"  # noqa: E225
