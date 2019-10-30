@@ -16,6 +16,7 @@ class UserFactory(factory.Factory):
     email = factory.Faker('email')
     password = factory.LazyAttribute(lambda a: hash_password('Sekrit'))
     username = factory.Faker('name')
+    active = True
 
 
 class AdminFactory(UserFactory):

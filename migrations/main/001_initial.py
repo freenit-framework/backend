@@ -4,14 +4,6 @@ SQL = pw.SQL
 
 
 def migrate(migrator, database, fake=False, **kwargs):
-    """Write your migrations here."""
-    @migrator.create_model
-    class BaseModel(pw.Model):
-        id = pw.AutoField()
-
-        class Meta:
-            table_name = "basemodel"
-
     @migrator.create_model
     class Role(pw.Model):
         id = pw.AutoField()
@@ -54,12 +46,6 @@ def migrate(migrator, database, fake=False, **kwargs):
 
 
 def rollback(migrator, database, fake=False, **kwargs):
-    """Write your rollback migrations here."""
-
     migrator.remove_model('userroles')
-
     migrator.remove_model('users')
-
     migrator.remove_model('role')
-
-    migrator.remove_model('basemodel')

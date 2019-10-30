@@ -5,6 +5,7 @@ from flask.cli import AppGroup
 from flask_security.utils import hash_password
 from name import app_name
 from peewee_migrate import Router
+from peewee_migrate.router import DEFAULT_MIGRATE_DIR
 
 auth = import_module(f'{app_name}.models.auth')
 
@@ -13,21 +14,38 @@ admin_group = AppGroup('admin', short_help='Manage admin users')
 
 
 def register_migration(app):
-    router = Router(app.db.database)
+    router = Router(
+        app.db.database,
+        migrate_dir=f'{DEFAULT_MIGRATE_DIR}/main',
+    )
+    #  logs_router = Router(
+    #      app.logdb.database,
+    #      migrate_dir=f'{DEFAULT_MIGRATE_DIR}/logs',
+    #  )
 
     @migration.command()
     def list():
+        print('=== MAIN ===')
         for migration in router.done:
             print(migration)
+        #  print('=== LOGS ===')
+        #  for migration in logs_router.done:
+        #      print(migration)
 
     @migration.command()
     @click.argument('name')
     def create(name):
         router.create(name, f'{app_name}.models')
 
+    #  @migration.command()
+    #  @click.argument('name')
+    #  def logs_create(name):
+    #      logs_router.create(name, f'{app_name}.logging')
+
     @migration.command()
     def run():
         router.run()
+        #  logs_router.run()
 
     app.cli.add_command(migration)
 

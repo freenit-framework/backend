@@ -6,6 +6,7 @@ set -e
 
 export BIN_DIR=`dirname $0`
 export PROJECT_ROOT="${BIN_DIR}/.."
+export FLASK_ENV="testing"
 . "${PROJECT_ROOT}/name.py"
 . ${BIN_DIR}/common.sh
 setup
