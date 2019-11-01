@@ -9,8 +9,25 @@ from peewee_migrate.router import DEFAULT_MIGRATE_DIR
 
 auth = import_module(f'{app_name}.models.auth')
 
-migration = AppGroup('migration', short_help='Migration operations')
 admin_group = AppGroup('admin', short_help='Manage admin users')
+migration = AppGroup('migration', short_help='Migration operations')
+
+
+def register_admin(app):
+    @admin_group.command()
+    def create():
+        try:
+            auth.User.get(email='admin@example.com')
+        except auth.User.DoesNotExist:
+            admin = auth.User(
+                email='admin@example.com',
+                admin=True,
+                active=True,
+                password=hash_password('Sekrit'),
+            )
+            admin.save()
+
+    app.cli.add_command(admin_group)
 
 
 def register_migration(app):
@@ -48,23 +65,6 @@ def register_migration(app):
         #  logs_router.run()
 
     app.cli.add_command(migration)
-
-
-def register_admin(app):
-    @admin_group.command()
-    def create():
-        try:
-            auth.User.get(email='admin@example.com')
-        except auth.User.DoesNotExist:
-            admin = auth.User(
-                email='admin@example.com',
-                admin=True,
-                active=True,
-                password=hash_password('Sekrit'),
-            )
-            admin.save()
-
-    app.cli.add_command(admin_group)
 
 
 def register(app):

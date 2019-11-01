@@ -15,7 +15,7 @@ class MeAPI(ProtectedMethodView):
     def get(self):
         """Get user details"""
         try:
-            user = User.get(email=get_jwt_identity())
+            user = User.get(id=get_jwt_identity())
         except User.DoesNotExist:
             abort(404, message='User not found')
         return user
@@ -24,7 +24,7 @@ class MeAPI(ProtectedMethodView):
     @blueprint.response(UserSchema)
     def patch(self, args):
         try:
-            user = User.get(email=get_jwt_identity())
+            user = User.get(id=get_jwt_identity())
         except User.DoesNotExist:
             abort(404, message='User not found')
         for field in args:

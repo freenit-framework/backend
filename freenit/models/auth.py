@@ -21,7 +21,7 @@ class User(Model, UserMixin):
     class Meta:
         table_name = 'users'
 
-    active = BooleanField(default=True)
+    active = BooleanField(default=False)
     admin = BooleanField(default=False)
     confirmed_at = DateTimeField(null=True)
     email = TextField(unique=True)
