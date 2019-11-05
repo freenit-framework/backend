@@ -1,4 +1,4 @@
-from flask_rest_api import Blueprint, abort
+from flask_smorest import Blueprint, abort
 
 from ..models.auth import Role, User, UserRoles
 from ..schemas.auth import RolePageOutSchema, RoleSchema, UserAssignSchema

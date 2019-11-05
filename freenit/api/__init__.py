@@ -1,7 +1,7 @@
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec.ext.marshmallow.common import resolve_schema_cls
 from flask import render_template
-from flask_rest_api import Api
+from flask_smorest import Api
 
 
 class MyApi(Api):

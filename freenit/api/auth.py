@@ -11,8 +11,8 @@ from flask_jwt_extended import (
     set_refresh_cookies,
     unset_jwt_cookies
 )
-from flask_rest_api import Blueprint, abort
 from flask_security.utils import hash_password, verify_password
+from flask_smorest import Blueprint, abort
 
 from ..models.auth import User
 from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema, UserSchema

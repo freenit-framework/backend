@@ -1,7 +1,7 @@
 bcrypt
 flask-collect
 flask-jwt-extended
-flask-rest-api
+flask-smorest
 flask-security
 gunicorn
 marshmallow
