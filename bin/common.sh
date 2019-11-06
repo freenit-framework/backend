@@ -13,7 +13,6 @@ setup() {
   update=${1}
   if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
       python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"
-      cp "${PROJECT_ROOT}/templates/activate.fish" "${HOME}/.virtualenvs/${VIRTUALENV}/bin"
   fi
   . ${HOME}/.virtualenvs/${VIRTUALENV}/bin/activate
 
