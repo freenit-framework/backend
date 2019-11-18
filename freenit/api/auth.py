@@ -15,7 +15,13 @@ from flask_security.utils import hash_password, verify_password
 from flask_smorest import Blueprint, abort
 
 from ..models.auth import User
-from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema, UserSchema
+from ..schemas.auth import (
+    LoginSchema,
+    RefreshSchema,
+    ResetSchema,
+    TokenSchema,
+    UserSchema
+)
 
 blueprint = Blueprint('auth', 'auth')
 
@@ -121,3 +127,19 @@ class AuthRegisterAPI(MethodView):
             user = User(email=email, password=hash_password(password))
         user.save()
         return user
+
+
+@blueprint.route('/reset', endpoint='register')
+class AuthResetAPI(MethodView):
+    @blueprint.response(ResetSchema)
+    @blueprint.arguments(TokenSchema(only=('email', )))
+    def post(self, args):
+        """Reset user password"""
+        try:
+            user = User.get(email=args['email'], active=True)
+        except User.DoesNotExist:
+            abort(409, message='User does not exist')
+        expires = datetime.timedelta(days=7)
+        user.reset = create_access_token(user.email, expires_delta=expires)
+        user.save()
+        return {}

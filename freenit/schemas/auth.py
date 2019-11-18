@@ -60,5 +60,9 @@ class LoginSchema(RefreshSchema):
     refresh = fields.Str()
 
 
+class ResetSchema(RefreshSchema):
+    link = fields.Str()
+
+
 PageOutSchema(UserSchema, sys.modules[__name__])
 PageOutSchema(RoleSchema, sys.modules[__name__])

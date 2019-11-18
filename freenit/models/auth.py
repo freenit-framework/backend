@@ -26,6 +26,7 @@ class User(Model, UserMixin):
     confirmed_at = DateTimeField(null=True)
     email = TextField(unique=True)
     password = TextField()
+    reset = TextField(null=True)
 
 
 class UserRoles(Model):
