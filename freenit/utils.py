@@ -1,27 +1,7 @@
 from smtplib import SMTP
 
 
-def sendmail(config, fromAddress, to, message):
-    """
-    from email.mime.text import MIMEText
-    msg = MIMEText(
-        rawmessage.format(
-            fullname,
-            content,
-        ),
-        'plain',
-        'utf-8',
-    )
-    msg['From'] = 'meka@tilda.center'
-    msg['Subject'] = 'Insurance'
-    msg['To'] = to
-    sendmail(
-        current_app.config,
-        'meka@tilda.center',
-        [to],
-        msg.as_string(),
-    )
-    """
+def sendmail(config, to, message):
     port = config['MAIL'].get('port', 587)
     ssl = config['MAIL'].get('ssl', True)
     host = config['MAIL'].get('host', None)
@@ -34,4 +14,8 @@ def sendmail(config, fromAddress, to, message):
             server.starttls()
             server.ehlo()
         server.login(username, password)
-        server.sendmail(fromAddress, to, message.encode('utf-8'))
+        server.sendmail(
+            message['From'],
+            to,
+            message.as_string().encode('utf-8')
+        )

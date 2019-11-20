@@ -1,5 +1,6 @@
 bcrypt
 flask-collect
+flask-cors
 flask-jwt-extended
 flask-smorest
 flask-security

@@ -21,9 +21,19 @@ class Config:
     OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
     OPENAPI_SWAGGER_UI_URL = '/static/swaggerui/'
     OPENAPI_VERSION = '2.0.0'
+    MEDIA_URL = '/media'
+    MEDIA_PATH = 'media'
+    PASSWORD_RESET_EXPIRY = 2  # in hours
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',
+    }
+    MAIL = {
+        #  'host': 'mail.example.com',
+        #  'port': 587,
+        #  'ssl': True,
+        #  'username': 'someone@example.com',
+        #  'password': 'Sekrit',
     }
 
     @staticmethod
