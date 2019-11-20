@@ -1,10 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from email.mime.text import MIMEText
 
 from flask import current_app, jsonify, request
 from flask.views import MethodView
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
+    decode_token,
     get_jwt_identity,
     jwt_refresh_token_required,
     set_access_cookies,
@@ -15,7 +17,13 @@ from flask_security.utils import hash_password, verify_password
 from flask_smorest import Blueprint, abort
 
 from ..models.auth import User
-from ..schemas.auth import LoginSchema, RefreshSchema, TokenSchema, UserSchema
+from ..schemas.auth import (
+    LoginSchema,
+    RefreshSchema,
+    ResetSchema,
+    TokenSchema,
+    UserSchema
+)
 
 blueprint = Blueprint('auth', 'auth')
 
@@ -121,3 +129,50 @@ class AuthRegisterAPI(MethodView):
             user = User(email=email, password=hash_password(password))
         user.save()
         return user
+
+
+@blueprint.route('/reset/request', endpoint='reset_request')
+class AuthResetRequestAPI(MethodView):
+    @blueprint.response(TokenSchema)
+    @blueprint.arguments(TokenSchema(only=('email', )))
+    def post(self, args):
+        """Request user password reset"""
+        try:
+            user = User.get(email=args['email'], active=True)
+            expires = timedelta(
+                hours=current_app.config['PASSWORD_RESET_EXPIRY'],
+            )
+            identity = {
+                'id': user.id,
+                'reset': True,
+            }
+            host = request.headers.get('Origin', request.url_root)
+            resetToken = create_access_token(identity, expires_delta=expires)
+            url = f'{host}/reset/{resetToken}'
+            msg = MIMEText(url, 'plain', 'utf-8')
+            msg['From'] = 'office@example.com'
+            msg['Subject'] = 'Freenit message'
+            to = ['meka@tilda.center']
+            current_app.sendmail(to, msg)
+        except User.DoesNotExist:
+            pass
+        return {}
+
+
+@blueprint.route('/reset', endpoint='reset')
+class AuthResetAPI(MethodView):
+    @blueprint.response(ResetSchema)
+    @blueprint.arguments(ResetSchema)
+    def post(self, args):
+        """Reset user password"""
+        decoded_token = decode_token(args['token'])
+        identity = decoded_token['identity']
+        if not identity.get('reset', False):
+            abort(409, message='Not reset token')
+        try:
+            user = User.get(id=identity['id'], active=True)
+        except User.DoesNotExist:
+            abort(404, message='No such user')
+        user.password = hash_password(args['password'])
+        user.save()
+        return {}

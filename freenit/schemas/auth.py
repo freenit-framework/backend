@@ -60,5 +60,10 @@ class LoginSchema(RefreshSchema):
     refresh = fields.Str()
 
 
+class ResetSchema(BaseSchema):
+    token = fields.String(required=True)
+    password = fields.String(required=True)
+
+
 PageOutSchema(UserSchema, sys.modules[__name__])
 PageOutSchema(RoleSchema, sys.modules[__name__])

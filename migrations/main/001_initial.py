@@ -21,6 +21,7 @@ def migrate(migrator, database, fake=False, **kwargs):
         confirmed_at = pw.DateTimeField(null=True)
         email = pw.TextField(unique=True)
         password = pw.TextField()
+        reset = pw.TextField(null=True)
 
         class Meta:
             table_name = "users"

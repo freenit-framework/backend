@@ -14,6 +14,7 @@ build
 cbsd.conf
 coverage.xml
 database.db
+local_config.py
 project.mk
 site.retry
 test.db
