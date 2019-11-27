@@ -9,7 +9,7 @@ from .methodviews import ProtectedMethodView
 blueprint = Blueprint('roles', 'role')
 
 
-@blueprint.route('', endpoint='roles')
+@blueprint.route('', endpoint='list')
 class RoleListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
     @blueprint.response(RolePageOutSchema)
@@ -26,7 +26,7 @@ class RoleListAPI(ProtectedMethodView):
         return role
 
 
-@blueprint.route('/<role_id>', endpoint='role')
+@blueprint.route('/<role_id>', endpoint='detail')
 class RoleAPI(ProtectedMethodView):
     @blueprint.response(RoleSchema)
     def get(self, role_id):
@@ -62,7 +62,7 @@ class RoleAPI(ProtectedMethodView):
         return role
 
 
-@blueprint.route('/<role_id>/user', endpoint='role_user_assign')
+@blueprint.route('/<role_id>/user', endpoint='user_assign')
 class RoleUserAssignAPI(ProtectedMethodView):
     @blueprint.arguments(UserAssignSchema)
     @blueprint.response(RoleSchema)
@@ -84,7 +84,7 @@ class RoleUserAssignAPI(ProtectedMethodView):
         return user
 
 
-@blueprint.route('/<role_id>/user/<user_id>', endpoint='role_user_deassign')
+@blueprint.route('/<role_id>/user/<user_id>', endpoint='user_deassign')
 class RoleUserDeassignAPI(ProtectedMethodView):
     @blueprint.response(RoleSchema)
     def delete(self, role_id, user_id):

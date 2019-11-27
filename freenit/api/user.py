@@ -9,7 +9,7 @@ from .methodviews import ProtectedMethodView
 blueprint = Blueprint('users', 'user')
 
 
-@blueprint.route('', endpoint='users')
+@blueprint.route('', endpoint='list')
 class UserListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
     @blueprint.response(UserPageOutSchema)
@@ -27,7 +27,7 @@ class UserListAPI(ProtectedMethodView):
         return user
 
 
-@blueprint.route('/<user_id>', endpoint='user')
+@blueprint.route('/<user_id>', endpoint='detail')
 class UserAPI(ProtectedMethodView):
     @blueprint.response(UserSchema)
     def get(self, user_id):
