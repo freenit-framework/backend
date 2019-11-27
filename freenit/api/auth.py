@@ -16,8 +16,8 @@ from flask_jwt_extended import (
 from flask_security.utils import hash_password, verify_password
 from flask_smorest import Blueprint, abort
 
-from ..models.auth import User
-from ..schemas.auth import (
+from ..models.user import User
+from ..schemas.user import (
     LoginSchema,
     RefreshSchema,
     ResetSchema,

@@ -2,8 +2,8 @@ from flask_jwt_extended import get_jwt_identity
 from flask_security.utils import hash_password
 from flask_smorest import Blueprint, abort
 
-from ..models.auth import User
-from ..schemas.auth import UserSchema
+from ..models.user import User
+from ..schemas.user import UserSchema
 from .methodviews import ProtectedMethodView
 
 blueprint = Blueprint('me', 'me')

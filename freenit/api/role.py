@@ -1,11 +1,12 @@
 from flask_smorest import Blueprint, abort
 
-from ..models.auth import Role, User, UserRoles
-from ..schemas.auth import RolePageOutSchema, RoleSchema, UserAssignSchema
+from ..models.role import Role, UserRoles
+from ..models.user import User
 from ..schemas.paging import PageInSchema, paginate
+from ..schemas.role import RolePageOutSchema, RoleSchema, UserAssignSchema
 from .methodviews import ProtectedMethodView
 
-blueprint = Blueprint('role', 'role')
+blueprint = Blueprint('roles', 'role')
 
 
 @blueprint.route('', endpoint='roles')

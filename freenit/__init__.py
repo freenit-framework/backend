@@ -28,7 +28,8 @@ def create_app(config, app=None):
     db.init_app(app)
     app.db = db
 
-    from .models.auth import User, Role, UserRoles
+    from .models.user import User
+    from .models.role import Role, UserRoles
     app.user_datastore = PeeweeUserDatastore(
         app.db,
         User,

@@ -1,13 +1,14 @@
 from importlib import import_module
 
 import click
+
 from flask.cli import AppGroup
 from flask_security.utils import hash_password
 from name import app_name
 from peewee_migrate import Router
 from peewee_migrate.router import DEFAULT_MIGRATE_DIR
 
-auth = import_module(f'{app_name}.models.auth')
+user = import_module(f'{app_name}.models.user')
 
 admin_group = AppGroup('admin', short_help='Manage admin users')
 migration = AppGroup('migration', short_help='Migration operations')
@@ -17,9 +18,9 @@ def register_admin(app):
     @admin_group.command()
     def create():
         try:
-            auth.User.get(email='admin@example.com')
-        except auth.User.DoesNotExist:
-            admin = auth.User(
+            user.User.get(email='admin@example.com')
+        except user.User.DoesNotExist:
+            admin = user.User(
                 email='admin@example.com',
                 admin=True,
                 active=True,

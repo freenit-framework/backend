@@ -1,12 +1,12 @@
 from flask_security.utils import hash_password
 from flask_smorest import Blueprint, abort
 
-from ..models.auth import User
-from ..schemas.auth import UserPageOutSchema, UserSchema
+from ..models.user import User
 from ..schemas.paging import PageInSchema, paginate
+from ..schemas.user import UserPageOutSchema, UserSchema
 from .methodviews import ProtectedMethodView
 
-blueprint = Blueprint('user', 'user')
+blueprint = Blueprint('users', 'user')
 
 
 @blueprint.route('', endpoint='users')
