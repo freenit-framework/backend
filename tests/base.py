@@ -16,12 +16,12 @@ class Base:
             self.headers = Headers()
             self.headers.add_header('X-CSRF-TOKEN', csrf)
 
-    def get(self, endpoint):
-        url = url_for(endpoint)
+    def get(self, endpoint, **kwargs):
+        url = url_for(endpoint, **kwargs)
         return self.client.get(url)
 
-    def post(self, endpoint, data, csrf=None):
-        url = url_for(endpoint)
+    def post(self, endpoint, data, csrf=None, **kwargs):
+        url = url_for(endpoint, **kwargs)
         self.set_csrf(csrf)
         response = self.client.post(
             url,
@@ -32,8 +32,8 @@ class Base:
         self.headers = None
         return response
 
-    def put(self, endpoint, data, csrf=None):
-        url = url_for(endpoint)
+    def put(self, endpoint, data, csrf=None, **kwargs):
+        url = url_for(endpoint, **kwargs)
         self.set_csrf(csrf)
         response = self.client.put(
             url,
@@ -44,20 +44,22 @@ class Base:
         self.headers = None
         return response
 
-    def patch(self, endpoint, data, csrf=None):
-        url = url_for(endpoint)
+    def patch(self, endpoint, data, csrf=None, **kwargs):
+        url = url_for(endpoint, **kwargs)
         self.set_csrf(csrf)
         response = self.client.patch(
             url,
             data=json.dumps(data),
             content_type='application/json',
+            headers=self.headers,
         )
         self.headers = None
         return response
 
-    def delete(self, endpoint):
-        url = url_for(endpoint)
-        return self.client.patch(url)
+    def delete(self, endpoint, csrf=None, **kwargs):
+        url = url_for(endpoint, **kwargs)
+        self.set_csrf(csrf)
+        return self.client.patch(url, headers=self.headers)
 
     def login(self, endpoint, user, password):
         data = {
