@@ -19,3 +19,6 @@ project.mk
 site.retry
 test.db
 vars.mk
+
+dist/
+freenit.egg-info/
