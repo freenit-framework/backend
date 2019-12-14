@@ -20,7 +20,7 @@ setup() {
   if [ "${update}" != "no" ]; then
     pip install -U pip
     pip install -U wheel
-    pip install -U -r requirements.txt
+    pip install -e ${PROJECT_ROOT}
   fi
   if [ -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
     flask migration run
