@@ -1,8 +1,0 @@
-bcrypt
-flask-collect
-flask-cors
-flask-jwt-extended
-flask-security
-flask-smorest
-gunicorn
-peewee-migrate
