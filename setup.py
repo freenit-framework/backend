@@ -9,7 +9,7 @@ README = (PROJECT_ROOT / 'README.md').read_text()
 
 setup(
     name='freenit',
-    version='0.0.1',
+    version='0.0.3',
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -41,6 +41,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     python_requires='>=3.5',
     install_requires=[
+        'bcrypt',
         'flask-collect>=1.3.2',
         'flask-cors>=3.0.8',
         'flask-jwt-extended>=3.24.1',
@@ -48,4 +49,14 @@ setup(
         'flask-smorest>=0.18.2',
         'peewee-migrate>=1.1.6',
     ],
+    include_package_data=True,
+    package_data={
+        '': [
+            'static/swaggerui/*',
+            'templates/*',
+            'project/*',
+            'project/bin/*',
+        ]
+    },
+    scripts=['bin/freenit.sh'],
 )

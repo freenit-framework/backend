@@ -1,17 +1,12 @@
 import os
 import socket
-from importlib import import_module
 
 from config import configs
-from name import app_name
-
-application = import_module(f'{app_name}')
-cli = import_module(f'{app_name}.cli')
+from freenit import create_app
 
 config_name = os.getenv('FLASK_ENV') or 'default'
 config = configs[config_name]
-app = application.create_app(config)
-cli.register(app)
+app = create_app(config)
 hostname = socket.gethostname()
 port = os.environ.get('FLASK_PORT', 5000)
 REDOC_PATH = f'{config.OPENAPI_URL_PREFIX}{config.OPENAPI_REDOC_PATH}'

@@ -12,4 +12,8 @@ else
 fi
 
 
+if [ ! -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
+  flask migration create initial
+  flask migration run
+fi
 flask admin create
