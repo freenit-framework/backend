@@ -22,5 +22,7 @@ setup() {
     pip install -U wheel
     pip install -U -r requirements.txt
   fi
-  flask migration run
+  if [ -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
+    flask migration run
+  fi
 }
