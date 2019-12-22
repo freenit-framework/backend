@@ -15,8 +15,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: |
-            apt-get install -y python3-venv
+          command: apt-get install -y python3-venv
       - run:
           name: Run tests
           command: bin/test.sh ci
@@ -33,3 +32,4 @@ workflows:
       - test:
           requires:
             - build
+
