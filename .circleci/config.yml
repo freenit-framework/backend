@@ -1,18 +1,17 @@
 version: 2
 jobs:
-  build:
-    docker:
-      - image: python:3.6
-    steps:
-      - checkout
   test:
     docker:
-      - image: python:3.6
+      - image: python:3.7
         environment:
           FLASK_ENV: testing
       - image: redis:latest
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get install -y python3-venv
       - run:
           name: Run tests
           command: bin/test.sh ci
@@ -25,7 +24,4 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
       - test:
-          requires:
-            - build
