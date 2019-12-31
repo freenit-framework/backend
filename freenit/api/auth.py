@@ -16,7 +16,6 @@ from flask_jwt_extended import (
 from flask_security.utils import hash_password, verify_password
 from flask_smorest import Blueprint, abort
 
-from ..models.user import User
 from ..schemas.user import (
     LoginSchema,
     RefreshSchema,
@@ -38,6 +37,7 @@ class AuthLoginAPI(MethodView):
         password = args.get('password', None)
         if email is None:
             abort(403, message='Email not provided')
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(email=email)
         except User.DoesNotExist:
@@ -90,6 +90,7 @@ class AuthRefreshAPI(MethodView):
     def post(self):
         """Refresh access token"""
         identity = get_jwt_identity()
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(id=identity)
         except User.DoesNotExist:
@@ -122,6 +123,7 @@ class AuthRegisterAPI(MethodView):
         """Register new user"""
         email = args.get('email')
         password = args.get('password')
+        User = current_app.user_datastore.user_model
         try:
             User.get(email=args.get('email'))
             abort(409, message='User already registered')
@@ -137,6 +139,7 @@ class AuthResetRequestAPI(MethodView):
     @blueprint.arguments(TokenSchema(only=('email', )))
     def post(self, args):
         """Request user password reset"""
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(email=args['email'], active=True)
             expires = timedelta(
@@ -169,6 +172,7 @@ class AuthResetAPI(MethodView):
         identity = decoded_token['identity']
         if not identity.get('reset', False):
             abort(409, message='Not reset token')
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(id=identity['id'], active=True)
         except User.DoesNotExist:

@@ -1,6 +1,5 @@
 import click
 from flask.cli import AppGroup
-
 from flask_security.utils import hash_password
 from freenit.models.user import User
 from peewee_migrate import Router
@@ -49,7 +48,7 @@ def register_migration(app):
     @migration.command()
     @click.argument('name')
     def create(name):
-        router.create(name, 'freenit.models')
+        router.create(name, app.models)
 
     #  @migration.command()
     #  @click.argument('name')
