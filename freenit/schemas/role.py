@@ -1,9 +1,6 @@
-import sys
-
 from marshmallow import fields
 
 from .base import BaseSchema
-from .paging import PageOutSchema
 
 
 class RoleBaseSchema(BaseSchema):
@@ -12,16 +9,13 @@ class RoleBaseSchema(BaseSchema):
     name = fields.String(description='Name')
 
 
-class RoleSchema(RoleBaseSchema):
+class BaseRoleSchema(RoleBaseSchema):
     users = fields.List(fields.Nested('UserSchema'), dump_only=True)
 
 
 class UserRolesSchema(BaseSchema):
-    role = fields.Nested(RoleSchema)
+    role = fields.Nested('RoleSchema')
 
 
 class UserAssignSchema(BaseSchema):
     id = fields.Integer(description='ID')
-
-
-PageOutSchema(RoleSchema, sys.modules[__name__])

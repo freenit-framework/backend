@@ -1,9 +1,6 @@
-import sys
-
 from marshmallow import fields
 
 from .base import BaseSchema
-from .paging import PageOutSchema
 from .role import UserRolesSchema
 
 
@@ -12,7 +9,7 @@ class TokenSchema(BaseSchema):
     password = fields.Str(required=True, description='Password')
 
 
-class UserSchema(BaseSchema):
+class BaseUserSchema(BaseSchema):
     id = fields.Integer(description='ID', dump_only=True)
     active = fields.Boolean(description='Activate the user')
     admin = fields.Boolean(description='Is the user admin?')
@@ -46,6 +43,3 @@ class LoginSchema(RefreshSchema):
 class ResetSchema(BaseSchema):
     token = fields.String(required=True)
     password = fields.String(required=True)
-
-
-PageOutSchema(UserSchema, sys.modules[__name__])
