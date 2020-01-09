@@ -30,11 +30,11 @@ def schema_name_resolver(schema):
             for field in schema.partial:
                 name += field.capitalize()
         name += 'Partial'
-    if schema.only is not None:
+    if schema.only:
         for field in schema.only:
             name += field.capitalize()
         name += 'Only'
-    if schema.exclude is not None:
+    if schema.exclude:
         for field in schema.exclude:
             name += field.capitalize()
         name += 'Exclude'
