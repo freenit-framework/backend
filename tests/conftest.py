@@ -17,7 +17,7 @@ register(RoleFactory)
 @pytest.fixture
 def app():
     config = configs['testing']
-    flask_app = create_app(config)
+    flask_app = create_app(config, 'freenit')
     router = Router(
         flask_app.db.database,
         migrate_dir=f'{DEFAULT_MIGRATE_DIR}/main',
