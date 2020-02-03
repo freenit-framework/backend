@@ -74,7 +74,7 @@ class RoleUserAssignAPI(ProtectedMethodView):
         """Assign user to role"""
         Role = current_app.user_datastore.role_model
         User = current_app.user_datastore.user_model
-        UserRoles = current_app.user_datastore.UserRoles
+        UserRoles = current_app.user_datastore.UserRole
         try:
             role = Role.get(id=role_id)
         except Role.DoesNotExist:
