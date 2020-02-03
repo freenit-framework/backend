@@ -74,18 +74,21 @@ class RoleUserAssignAPI(ProtectedMethodView):
         """Assign user to role"""
         Role = current_app.user_datastore.role_model
         User = current_app.user_datastore.user_model
-        UserRoles = current_app.user_datastore.UserRoles
+        UserRoles = current_app.user_datastore.UserRole
         try:
             role = Role.get(id=role_id)
         except Role.DoesNotExist:
             abort(404, message='No such role')
+
+        for user in role.users:
+            if user.user.id == args['id']:
+                abort(409, message='User already assigned to role')
+
         try:
             user = User.get(id=args['id'])
         except User.DoesNotExist:
             abort(404, message='No such user')
-        for user in role.users:
-            if user.user.id == args['id']:
-                abort(409, message='User already assigned to role')
+
         user_role = UserRoles(user=user, role=role)
         user_role.save()
         return user

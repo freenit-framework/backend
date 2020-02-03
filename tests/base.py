@@ -59,7 +59,7 @@ class Base:
     def delete(self, endpoint, csrf=None, **kwargs):
         url = url_for(endpoint, **kwargs)
         self.set_csrf(csrf)
-        return self.client.patch(url, headers=self.headers)
+        return self.client.delete(url, headers=self.headers)
 
     def login(self, endpoint, user, password):
         data = {
