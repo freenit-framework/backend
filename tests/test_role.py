@@ -77,7 +77,12 @@ class TestRole(Base):
         data = {
             "id": user.id
         }
-        response = self.post('roles.user_assign', data, 'access', role_id=role.id)
+        response = self.post('roles.user_assign',
+                             data, 'access',
+                             role_id=role.id)
         assert response.status_code == 200
-        response = self.delete('roles.user_deassign', 'access', role_id=role.id, user_id=user.id)
+        response = self.delete('roles.user_deassign',
+                               'access',
+                               user_id=user.id,
+                               role_id=role.id)
         assert response.status_code == 200
