@@ -18,4 +18,4 @@ fi
 
 echo "Backend"
 echo "==============="
-flask run -h 0.0.0.0 -p ${FLASK_PORT}
+python wsgi.py
