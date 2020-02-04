@@ -5,8 +5,8 @@ REGGAE_PATH := /usr/local/share/reggae
 
 .include <${REGGAE_PATH}/mk/service.mk>
 
-build:
+build_lib:
 	@sudo cbsd jexec jname=${SERVICE} user=devel cmd=/usr/src/bin/build.sh
 
-publish: build
+publish: build_lib
 	@sudo cbsd jexec jname=${SERVICE} user=devel cmd=/usr/src/bin/publish.sh
