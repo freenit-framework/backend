@@ -1,11 +1,17 @@
+import os
+
+from name import app_name
+
 #  from datetime import timedelta
 
 SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
 
 
 class Config:
+    NAME = app_name
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     DEBUG = False
-    SECURITY_PASSWORD_SALT = 'tilda'
+    SECURITY_PASSWORD_SALT = 'freenit'
     SECRET_KEY = SECRET_KEY
     SECURITY_TRACKABLE = False
     JWT_SECRET_KEY = SECRET_KEY

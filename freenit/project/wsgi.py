@@ -13,8 +13,13 @@ REDOC_PATH = f'{config.OPENAPI_URL_PREFIX}{config.OPENAPI_REDOC_PATH}'
 REDOC_URL = f'http://{hostname}:{port}{REDOC_PATH}'
 SWAGGER_PATH = f'{config.OPENAPI_URL_PREFIX}{config.OPENAPI_SWAGGER_UI_PATH}'
 SWAGGER_URL = f'http://{hostname}:{port}{SWAGGER_PATH}'
-print(' * ReDoc URL:', REDOC_URL)
-print(' * Swagger URL:', SWAGGER_URL)
 
 if __name__ == '__main__':
-    app.run()
+    print(' * ReDoc URL:', REDOC_URL)
+    print(' * Swagger URL:', SWAGGER_URL)
+    app.run(
+        host='0.0.0.0',
+        port=port,
+        debug=True,
+        use_reloader=True,
+    )
