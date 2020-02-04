@@ -1,11 +1,12 @@
 import os
 
 import pytest
+from pytest_factoryboy import register
+
 from config import configs
 from freenit import create_app
 from peewee_migrate import Router
 from peewee_migrate.router import DEFAULT_MIGRATE_DIR
-from pytest_factoryboy import register
 
 from .factories import AdminFactory, RoleFactory, UserFactory
 

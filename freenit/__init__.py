@@ -1,8 +1,9 @@
 import sys
 from importlib import import_module
 
-import freenit.schemas.user
 from flask import Flask, send_file
+
+import freenit.schemas.user
 from flask_collect import Collect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -15,11 +16,10 @@ from .db import db
 from .utils import sendmail
 
 
-def create_app(config, app_name, app=None, auth={}, schemas={}):
+def create_app(config, app=None, schemas={}):
     if app is None:
         app = Flask(__name__)
         app.config.from_object(config)
-    app.models = f'{app_name}.models'
 
     @app.route('/media/<path:path>')
     def send_media(path):
@@ -35,19 +35,10 @@ def create_app(config, app_name, app=None, auth={}, schemas={}):
     db.init_app(app)
     app.db = db
 
-    user_module = auth.get('user', None)
-    if user_module is None:
-        from .models.user import User
-    else:
-        User = import_module(user_module).User
-
-    role_module = auth.get('role', None)
-    if role_module is None:
-        from .models.role import Role, UserRoles
-    else:
-        role_module_imported = import_module(role_module)
-        Role = role_module_imported.Role
-        UserRoles = role_module_imported.UserRoles
+    User = import_module(f"{config.NAME}.models.user").User
+    role_module = import_module(f"{config.NAME}.models.role")
+    Role = role_module.Role
+    UserRoles = role_module.UserRoles
 
     app.user_datastore = PeeweeUserDatastore(
         app.db,

@@ -1,9 +1,9 @@
 import click
 from flask.cli import AppGroup
+
 from flask_security.utils import hash_password
 from freenit.models.user import User
 from peewee_migrate import Router
-from peewee_migrate.router import DEFAULT_MIGRATE_DIR
 
 admin_group = AppGroup('admin', short_help='Manage admin users')
 migration = AppGroup('migration', short_help='Migration operations')
@@ -27,13 +27,15 @@ def register_admin(app):
 
 
 def register_migration(app):
+    project_root = app.config.get('PROJECT_ROOT', '')
+    migrate_dir = f'{project_root}/migrations'
     router = Router(
         app.db.database,
-        migrate_dir=f'{DEFAULT_MIGRATE_DIR}/main',
+        migrate_dir=f'{migrate_dir}/main',
     )
     #  logs_router = Router(
     #      app.logdb.database,
-    #      migrate_dir=f'{DEFAULT_MIGRATE_DIR}/logs',
+    #      migrate_dir=f'{migrate_dir}/main',
     #  )
 
     @migration.command()
@@ -48,7 +50,8 @@ def register_migration(app):
     @migration.command()
     @click.argument('name')
     def create(name):
-        router.create(name, app.models)
+        app_name = app.config.get('NAME', '')
+        router.create(name, f'{app_name}.models')
 
     #  @migration.command()
     #  @click.argument('name')
