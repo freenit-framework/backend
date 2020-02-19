@@ -4,3 +4,4 @@ include config.py
 include name.py
 graft migrations
 graft tests
+graft freenit/project

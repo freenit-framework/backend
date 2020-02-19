@@ -9,7 +9,7 @@ README = (PROJECT_ROOT / 'README.md').read_text()
 
 setup(
     name='freenit',
-    version='0.0.18',
+    version='0.0.19',
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -43,7 +43,7 @@ setup(
     install_requires=[
         'bcrypt',
         'flask-collect>=1.3.2',
-        'flask-cors>=3.0.8',
+        'flask-cors>=2.1.2',
         'flask-jwt-extended>=3.24.1',
         'flask-security>=3.0.0',
         'flask-smorest>=0.18.2',

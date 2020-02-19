@@ -25,16 +25,16 @@ def schema_name_resolver(schema):
     name = schema_cls.__name__
     if name.endswith("Schema"):
         name = name[:-6] or name
-    if schema.partial:
+    if getattr(schema, 'partial', None):
         if isinstance(schema.partial, list):
             for field in schema.partial:
                 name += field.capitalize()
         name += 'Partial'
-    if schema.only:
+    if getattr(schema, 'only', None):
         for field in schema.only:
             name += field.capitalize()
         name += 'Only'
-    if schema.exclude:
+    if getattr(schema, 'exclude', None):
         for field in schema.exclude:
             name += field.capitalize()
         name += 'Exclude'
