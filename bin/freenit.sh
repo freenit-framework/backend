@@ -9,7 +9,7 @@ fi
 
 
 MODULES="schemas"
-PROJECT_ROOT=`python -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
+PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
 
 
 mkdir ${NAME}
