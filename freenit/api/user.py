@@ -1,7 +1,7 @@
+from flask import current_app
 from flask_security.utils import hash_password
 from flask_smorest import Blueprint, abort
 
-from ..models.user import User
 from ..schemas.paging import PageInSchema, paginate
 from ..schemas.user import UserPageOutSchema, UserSchema
 from .methodviews import ProtectedMethodView
@@ -15,12 +15,14 @@ class UserListAPI(ProtectedMethodView):
     @blueprint.response(UserPageOutSchema)
     def get(self, pagination):
         """List users"""
+        User = current_app.user_datastore.user_model
         return paginate(User.select(), pagination)
 
     @blueprint.arguments(UserSchema)
     @blueprint.response(UserSchema)
     def post(self, args):
         """Create user"""
+        User = current_app.user_datastore.user_model
         user = User(**args)
         user.password = hash_password(user.password)
         user.save()
@@ -32,6 +34,7 @@ class UserAPI(ProtectedMethodView):
     @blueprint.response(UserSchema)
     def get(self, user_id):
         """Get user details"""
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
@@ -41,6 +44,7 @@ class UserAPI(ProtectedMethodView):
     @blueprint.arguments(UserSchema(partial=True))
     @blueprint.response(UserSchema)
     def patch(self, args, user_id):
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
@@ -54,6 +58,7 @@ class UserAPI(ProtectedMethodView):
 
     @blueprint.response(UserSchema)
     def delete(self, user_id):
+        User = current_app.user_datastore.user_model
         try:
             user = User.get(id=user_id)
         except User.DoesNotExist:
