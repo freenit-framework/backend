@@ -1,9 +1,8 @@
 import sys
 from importlib import import_module
 
-from flask import Flask, send_file
-
 import freenit.schemas.user
+from flask import Flask, send_file
 from flask_collect import Collect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -23,7 +22,7 @@ def create_app(config, app=None, schemas={}):
 
     @app.route('/media/<path:path>')
     def send_media(path):
-        fullPath = f"../{app.config['MEDIA_PATH']}/{path}"
+        fullPath = f"{app.config['MEDIA_PATH']}/{path}"
         try:
             return send_file(fullPath)
         except FileNotFoundError:

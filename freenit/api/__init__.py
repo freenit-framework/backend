@@ -43,7 +43,7 @@ def schema_name_resolver(schema):
 
 def create_api(app):
     from .auth import blueprint as auth
-    from .me import blueprint as me
+    from .profile import blueprint as profile
     from .role import blueprint as role
     from .user import blueprint as user
 
@@ -59,7 +59,7 @@ def create_api(app):
         '/api/v0',
         [
             auth,
-            me,
+            profile,
             role,
             user,
         ],
