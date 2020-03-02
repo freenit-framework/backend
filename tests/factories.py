@@ -1,7 +1,8 @@
 from importlib import import_module
 
-import factory
 from flask_security.utils import hash_password
+
+import factory
 from name import app_name
 
 user = import_module(f'{app_name}.models.user')

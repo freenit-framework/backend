@@ -7,7 +7,7 @@ class TestAuth(Base):
         user.save()
         response = self.login('auth.login', user, 'Sekrit')
         assert response.status_code == 200
-        response = self.get('me.me')
+        response = self.get('profile.profile')
         assert response.status_code == 200
 
     def test_logout(self, user_factory):
