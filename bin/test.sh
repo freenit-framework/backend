@@ -24,4 +24,4 @@ fi
 rm -rf `find . -name __pycache__`
 rm -rf .pytest_cache
 flake8 .
-py.test --cov=freenit --cov-report=term-missing:skip-covered --cov-report=xml
+py.test --ignore=freenit/project/ --cov=freenit --cov-report=term-missing:skip-covered --cov-report=xml
