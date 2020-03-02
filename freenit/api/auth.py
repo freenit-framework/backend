@@ -121,15 +121,52 @@ class AuthRegisterAPI(MethodView):
     @blueprint.arguments(TokenSchema)
     def post(self, args):
         """Register new user"""
-        email = args.get('email')
-        password = args.get('password')
+        email = args['email']
+        password = args['password']
         User = current_app.user_datastore.user_model
+        user = None
         try:
-            User.get(email=args.get('email'))
+            User.get(email=email)
             abort(409, message='User already registered')
         except User.DoesNotExist:
             user = User(email=email, password=hash_password(password))
-        user.save()
+            user.save()
+        expires = timedelta(
+            hours=current_app.config['ACCOUNT_REQUEST_EXPIRY'],
+        )
+        identity = {
+            'id': user.id,
+            'request': True,
+        }
+        host = request.headers.get('Origin', request.url_root)
+        requestToken = create_access_token(identity, expires_delta=expires)
+        url = f'{host}/register/{requestToken}'
+        msg = MIMEText(url, 'plain', 'utf-8')
+        msg['To'] = user.email
+        msg['From'] = current_app.config['FROM_EMAIL']
+        msg['Subject'] = 'Freenit message'
+        current_app.sendmail(msg)
+        return user
+
+
+@blueprint.route('/register/<token>', endpoint='register')
+class AuthRegisterConfirmAPI(MethodView):
+    @blueprint.response(UserSchema)
+    def get(self, token):
+        """Register new user"""
+        decoded_token = decode_token(token)
+        identity = decoded_token['identity']
+        User = current_app.user_datastore.user_model
+        user = None
+        try:
+            user = User.get(id=identity['id'])
+        except User.DoesNotExist:
+            abort(404, message='User does not exist')
+        text = 'Congratulation, your account is confirmed'
+        msg = MIMEText(text, 'plain', 'utf-8')
+        msg['From'] = current_app.config['FROM_EMAIL']
+        msg['Subject'] = 'Freenit message'
+        current_app.sendmail(user.email, msg)
         return user
 
 

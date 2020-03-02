@@ -28,7 +28,7 @@ def create_app(config, app=None, schemas={}):
         except FileNotFoundError:
             return 'No such file', 404
 
-    app.sendmail = lambda to, message: sendmail(app.config, to, message)
+    app.sendmail = lambda message: sendmail(app.config, message)
 
     app.collect = Collect(app)
     db.init_app(app)
