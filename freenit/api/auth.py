@@ -140,11 +140,13 @@ class AuthRegisterAPI(MethodView):
         }
         host = request.headers.get('Origin', request.url_root)
         requestToken = create_access_token(identity, expires_delta=expires)
-        url = f'{host}/register/{requestToken}'
+        url = f'{host}/confirm/{requestToken}'
         msg = MIMEText(url, 'plain', 'utf-8')
+        config = current_app.config
+        subject = config['SUBJECTS']['prefix'] + config['SUBJECTS']['register']
         msg['To'] = user.email
-        msg['From'] = current_app.config['FROM_EMAIL']
-        msg['Subject'] = 'Freenit message'
+        msg['From'] = config['FROM_EMAIL']
+        msg['Subject'] = subject
         current_app.sendmail(msg)
         return user
 
@@ -162,11 +164,18 @@ class AuthRegisterConfirmAPI(MethodView):
             user = User.get(id=identity['id'])
         except User.DoesNotExist:
             abort(404, message='User does not exist')
+        if user.active:
+            abort(409, message='User already activated')
+        user.active = True
+        user.save()
         text = 'Congratulation, your account is confirmed'
         msg = MIMEText(text, 'plain', 'utf-8')
-        msg['From'] = current_app.config['FROM_EMAIL']
-        msg['Subject'] = 'Freenit message'
-        current_app.sendmail(user.email, msg)
+        config = current_app.config
+        subject = config['SUBJECTS']['prefix'] + config['SUBJECTS']['confirm']
+        msg['To'] = user.email
+        msg['From'] = config['FROM_EMAIL']
+        msg['Subject'] = subject
+        current_app.sendmail(msg)
         return user
 
 
