@@ -14,8 +14,15 @@ def sendmail(config, message):
             server.starttls()
             server.ehlo()
         server.login(username, password)
+        to = message.get('To', [])
+        bcc = message.get('Bcc', [])
+        if not isinstance(to, list):
+            to = [to]
+        if not isinstance(bcc, list):
+            bcc = [bcc]
+        to += bcc
         server.sendmail(
             message['From'],
-            message['To'],
+            to,
             message.as_string().encode('utf-8')
         )
