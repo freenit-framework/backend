@@ -155,7 +155,7 @@ class AuthRegisterAPI(MethodView):
 class AuthRegisterConfirmAPI(MethodView):
     @blueprint.response(UserSchema)
     def get(self, token):
-        """Register new user"""
+        """Confirm new user"""
         decoded_token = decode_token(token)
         identity = decoded_token['identity']
         User = current_app.user_datastore.user_model
@@ -200,9 +200,11 @@ class AuthResetRequestAPI(MethodView):
             url = f'{host}/reset/{resetToken}'
             msg = MIMEText(url, 'plain', 'utf-8')
             msg['From'] = 'office@example.com'
-            msg['Subject'] = 'Freenit message'
-            to = ['meka@tilda.center']
-            current_app.sendmail(to, msg)
+            subjects = current_app.config['SUBJECTS']
+            subject = subjects['prefix'] + subjects['register']
+            msg['Subject'] = subject
+            msg['To'] = user.email
+            current_app.sendmail(msg)
         except User.DoesNotExist:
             pass
         return {}
