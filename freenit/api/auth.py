@@ -140,7 +140,10 @@ class AuthRegisterAPI(MethodView):
         }
         host = request.headers.get('Origin', request.url_root)
         requestToken = create_access_token(identity, expires_delta=expires)
-        url = f'{host}/confirm/{requestToken}'
+        confirm = 'confirm'
+        if host[:-1] != '/':
+            confirm = f'/{confirm}'
+        url = f'{host}{confirm}/{requestToken}'
         msg = MIMEText(url, 'plain', 'utf-8')
         config = current_app.config
         subject = config['SUBJECTS']['prefix'] + config['SUBJECTS']['register']
