@@ -141,7 +141,7 @@ class AuthRegisterAPI(MethodView):
         host = request.headers.get('Origin', request.url_root)
         requestToken = create_access_token(identity, expires_delta=expires)
         confirm = 'confirm'
-        if host[:-1] != '/':
+        if host[-1] != '/':
             confirm = f'/{confirm}'
         url = f'{host}{confirm}/{requestToken}'
         msg = MIMEText(url, 'plain', 'utf-8')
