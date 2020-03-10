@@ -140,7 +140,10 @@ class AuthRegisterAPI(MethodView):
         }
         host = request.headers.get('Origin', request.url_root)
         requestToken = create_access_token(identity, expires_delta=expires)
-        url = f'{host}/confirm/{requestToken}'
+        confirm = 'confirm'
+        if host[:-1] != '/':
+            confirm = f'/{confirm}'
+        url = f'{host}{confirm}/{requestToken}'
         msg = MIMEText(url, 'plain', 'utf-8')
         config = current_app.config
         subject = config['SUBJECTS']['prefix'] + config['SUBJECTS']['register']
@@ -155,7 +158,7 @@ class AuthRegisterAPI(MethodView):
 class AuthRegisterConfirmAPI(MethodView):
     @blueprint.response(UserSchema)
     def get(self, token):
-        """Register new user"""
+        """Confirm new user"""
         decoded_token = decode_token(token)
         identity = decoded_token['identity']
         User = current_app.user_datastore.user_model
@@ -200,9 +203,11 @@ class AuthResetRequestAPI(MethodView):
             url = f'{host}/reset/{resetToken}'
             msg = MIMEText(url, 'plain', 'utf-8')
             msg['From'] = 'office@example.com'
-            msg['Subject'] = 'Freenit message'
-            to = ['meka@tilda.center']
-            current_app.sendmail(to, msg)
+            subjects = current_app.config['SUBJECTS']
+            subject = subjects['prefix'] + subjects['register']
+            msg['Subject'] = subject
+            msg['To'] = user.email
+            current_app.sendmail(msg)
         except User.DoesNotExist:
             pass
         return {}
