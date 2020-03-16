@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 
 NAME="${1}"
 if [ -z "${NAME}" ]; then
@@ -11,6 +13,8 @@ fi
 PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
 
 
+mkdir ${NAME}
+cd ${NAME}
 echo 'freenit' >requirements.txt
 cp -r ${PROJECT_ROOT}/project/* .
 mv project ${NAME}
