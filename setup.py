@@ -9,7 +9,7 @@ README = (PROJECT_ROOT / 'README.md').read_text()
 
 setup(
     name='freenit',
-    version='0.0.29',
+    version='0.0.30',
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -56,9 +56,11 @@ setup(
             'templates/*',
             'project/*',
             'project/bin/*',
-            'project/api/*',
-            'project/models/*',
-            'project/schemas/*',
+            'project/project/*',
+            'project/project/api/*',
+            'project/project/models/*',
+            'project/project/schemas/*',
+            'project/tests/*',
         ]
     },
     scripts=['bin/freenit.sh'],

@@ -10,10 +10,6 @@ if [ "${OFFLINE}" = "yes" ]; then
 else
   setup
 fi
-
-
-if [ ! -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
-  flask migration create initial
-  flask migration run
-fi
+flask migration run
 flask admin create
+flask gallery create
