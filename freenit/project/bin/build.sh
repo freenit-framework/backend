@@ -6,4 +6,3 @@ BIN_DIR=`dirname $0`
 setup
 
 flask collect --verbose
-rm -rf pyser/static
