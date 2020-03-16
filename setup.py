@@ -9,7 +9,7 @@ README = (PROJECT_ROOT / 'README.md').read_text()
 
 setup(
     name='freenit',
-    version='0.0.30',
+    version='0.0.31',
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -52,15 +52,16 @@ setup(
     include_package_data=True,
     package_data={
         '': [
-            'static/swaggerui/*',
-            'templates/*',
             'project/*',
             'project/bin/*',
             'project/project/*',
             'project/project/api/*',
             'project/project/models/*',
             'project/project/schemas/*',
+            'project/project/templates/*',
             'project/tests/*',
+            'static/swaggerui/*',
+            'templates/*',
         ]
     },
     scripts=['bin/freenit.sh'],

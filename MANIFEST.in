@@ -5,3 +5,5 @@ include name.py
 graft migrations
 graft tests
 graft freenit/project
+graft freenit/static
+graft freenit/templates
