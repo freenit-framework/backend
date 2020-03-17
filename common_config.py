@@ -31,6 +31,10 @@ class Config:
         'name': 'database.db',
         'engine': 'SqliteDatabase',
     }
+    MONGODB_SETTINGS = {
+        'host': 'mongodb',
+        'db': 'freenit',
+    }
     MAIL = {
         #  'host': 'mail.example.com',
         #  'port': 587,

@@ -1,10 +1,10 @@
 from marshmallow import fields
 
+from ..fields.objectid import ID
 from .base import BaseSchema
 
 
 class RoleBaseSchema(BaseSchema):
-    id = fields.Integer(description='ID', dump_only=True)
     description = fields.String(description='Description')
     name = fields.String(description='Name')
 
@@ -18,4 +18,4 @@ class UserRolesSchema(BaseSchema):
 
 
 class UserAssignSchema(BaseSchema):
-    id = fields.Integer(description='ID')
+    id = ID(description='ID')

@@ -15,7 +15,10 @@ class RoleListAPI(ProtectedMethodView):
     def get(self, pagination):
         """List roles"""
         Role = current_app.user_datastore.role_model
-        return paginate(Role.select(), pagination)
+        if current_app.dbtype == 'sql':
+            return paginate(Role.select(), pagination)
+        else:
+            return paginate(Role.objects.all(), pagination)
 
     @blueprint.arguments(RoleSchema)
     @blueprint.response(RoleSchema)
@@ -34,7 +37,10 @@ class RoleAPI(ProtectedMethodView):
         """Get role details"""
         Role = current_app.user_datastore.role_model
         try:
-            role = Role.get(id=role_id)
+            if current_app.dbtype == 'sql':
+                role = Role.get(id=role_id)
+            else:
+                role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
             abort(404, message='Role not found')
         role.users = [user.user for user in role.users]
@@ -46,7 +52,10 @@ class RoleAPI(ProtectedMethodView):
         """Edit role"""
         Role = current_app.user_datastore.role_model
         try:
-            role = Role.get(id=role_id)
+            if current_app.dbtype == 'sql':
+                role = Role.get(id=role_id)
+            else:
+                role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
             abort(404, message='Role not found')
         for field in args:
@@ -59,7 +68,10 @@ class RoleAPI(ProtectedMethodView):
         """Remove role"""
         Role = current_app.user_datastore.role_model
         try:
-            role = Role.get(id=role_id)
+            if current_app.dbtype == 'sql':
+                role = Role.get(id=role_id)
+            else:
+                role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
             abort(404, message='Role not found')
         role.delete_instance()
@@ -74,23 +86,18 @@ class RoleUserAssignAPI(ProtectedMethodView):
         """Assign user to role"""
         Role = current_app.user_datastore.role_model
         User = current_app.user_datastore.user_model
-        UserRoles = current_app.user_datastore.UserRole
         try:
-            role = Role.get(id=role_id)
+            if current_app.dbtype == 'sql':
+                role = Role.get(id=role_id)
+            else:
+                role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
             abort(404, message='No such role')
-
-        for user in role.users:
-            if user.user.id == args['id']:
-                abort(409, message='User already assigned to role')
-
         try:
             user = User.get(id=args['id'])
         except User.DoesNotExist:
             abort(404, message='No such user')
-
-        user_role = UserRoles(user=user, role=role)
-        user_role.save()
+        current_app.user_datastore.add_role_to_user(user, role)
         return user
 
 
@@ -102,15 +109,18 @@ class RoleUserDeassignAPI(ProtectedMethodView):
         Role = current_app.user_datastore.role_model
         User = current_app.user_datastore.user_model
         try:
-            role = Role.get(id=role_id)
+            if current_app.dbtype == 'sql':
+                role = Role.get(id=role_id)
+            else:
+                role = Role.objects.get(id=role_id)
         except Role.DoesNotExist:
             abort(404, message='No such role')
         try:
-            user = User.get(user_id)
+            if current_app.dbtype == 'sql':
+                user = User.get(id=user_id)
+            else:
+                user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             abort(404, message='No such user')
-        for user in role.users:
-            if user.user.id == int(user_id):
-                user.delete_instance()
-                return user
-        abort(409, message='User not assigned to role')
+        current_app.user_datastore.remove_role_from_user(user, role)
+        return user

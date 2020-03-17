@@ -1,7 +1,7 @@
 from flask_security import RoleMixin
+from freenit.db import db
 from peewee import CharField, ForeignKeyField, TextField
 
-from ..db import db
 from .user import User
 
 Model = db.Model

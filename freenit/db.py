@@ -1,10 +1,10 @@
 from playhouse.flask_utils import FlaskDB
 
 
-class MyDB(FlaskDB):
+class SQL(FlaskDB):
     def connect_db(self):
         if self.database.is_closed():
-            super(MyDB, self).connect_db()
+            super(SQL, self).connect_db()
 
 
-db = MyDB()
+db = SQL()

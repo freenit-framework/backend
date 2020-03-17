@@ -10,7 +10,6 @@ class TokenSchema(BaseSchema):
 
 
 class BaseUserSchema(BaseSchema):
-    id = fields.Integer(description='ID', dump_only=True)
     active = fields.Boolean(description='Activate the user')
     admin = fields.Boolean(description='Is the user admin?')
     email = fields.Email(required=True, description='Email')
