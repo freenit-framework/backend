@@ -6,10 +6,12 @@ from setuptools import find_packages, setup
 
 PROJECT_ROOT = pathlib.Path(__file__).parent
 README = (PROJECT_ROOT / 'README.md').read_text()
+sql = ['peewee-migrate>=1.1.6']
+mongo = ['flask-mongoengine']
 
 setup(
     name='freenit',
-    version='0.0.32',
+    version='0.1.0',
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -47,8 +49,12 @@ setup(
         'flask-jwt-extended>=3.24.1',
         'flask-security>=3.0.0',
         'flask-smorest>=0.18.2',
-        'peewee-migrate>=1.1.6',
     ],
+    extras_require={
+        'all': sql + mongo,
+        'sql': sql,
+        'mongo': mongo,
+    },
     include_package_data=True,
     package_data={
         '': [
