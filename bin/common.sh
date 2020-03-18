@@ -8,6 +8,7 @@ export VIRTUALENV=${VIRTUALENV:="${app_name}back"}
 export FLASK_ENV=${FLASK_ENV:="production"}
 export PY_VERSION=${PY_VERSION:="3.7"}
 export SYSPKG=${SYSPKG:="no"}
+export DBTYPE=${DBTYPE:="sql"}
 
 
 setup() {
@@ -22,7 +23,7 @@ setup() {
     if [ "${update}" != "no" ]; then
       pip install -U pip
       pip install -U wheel
-      pip install -e .
+      pip install -e ".[${DBTYPE}]"
     fi
   fi
   if [ -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
