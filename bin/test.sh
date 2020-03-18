@@ -6,6 +6,7 @@ set -e
 export BIN_DIR=`dirname $0`
 export PROJECT_ROOT="${BIN_DIR}/.."
 export FLASK_ENV="testing"
+
 . ${BIN_DIR}/common.sh
 setup
 
@@ -21,6 +22,7 @@ if [ "${CI}" = "ci" ]; then
 fi
 
 
+cd "${PROJECT_ROOT}"
 rm -rf `find . -name __pycache__`
 rm -rf .pytest_cache
 flake8 .
