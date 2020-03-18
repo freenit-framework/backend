@@ -16,7 +16,10 @@ class UserListAPI(ProtectedMethodView):
     def get(self, pagination):
         """List users"""
         User = current_app.user_datastore.user_model
-        return paginate(User.select(), pagination)
+        if current_app.dbtype == 'sql':
+            return paginate(User.select(), pagination)
+        else:
+            return paginate(User.objects.all(), pagination)
 
     @blueprint.arguments(UserSchema)
     @blueprint.response(UserSchema)
@@ -36,7 +39,10 @@ class UserAPI(ProtectedMethodView):
         """Get user details"""
         User = current_app.user_datastore.user_model
         try:
-            user = User.get(id=user_id)
+            if current_app.dbtype == 'sql':
+                user = User.get(id=user_id)
+            else:
+                user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             abort(404, message='User not found')
         return user
@@ -46,7 +52,10 @@ class UserAPI(ProtectedMethodView):
     def patch(self, args, user_id):
         User = current_app.user_datastore.user_model
         try:
-            user = User.get(id=user_id)
+            if current_app.dbtype == 'sql':
+                user = User.get(id=user_id)
+            else:
+                user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             abort(404, message='User not found')
         for field in args:
@@ -60,7 +69,10 @@ class UserAPI(ProtectedMethodView):
     def delete(self, user_id):
         User = current_app.user_datastore.user_model
         try:
-            user = User.get(id=user_id)
+            if current_app.dbtype == 'sql':
+                user = User.get(id=user_id)
+            else:
+                user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             abort(404, message='User not found')
         user.delete_instance()

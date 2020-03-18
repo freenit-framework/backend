@@ -5,8 +5,8 @@ from flask_security.utils import hash_password
 import factory
 from name import app_name
 
-user = import_module(f'{app_name}.models.user')
-role = import_module(f'{app_name}.models.role')
+user = import_module(f'{app_name}.models.sql.user')
+role = import_module(f'{app_name}.models.sql.role')
 
 
 class UserFactory(factory.Factory):

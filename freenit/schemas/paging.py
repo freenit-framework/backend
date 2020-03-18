@@ -1,5 +1,6 @@
 from math import ceil
 
+from flask_smorest import abort
 from marshmallow import fields
 
 from .base import BaseSchema
@@ -10,8 +11,15 @@ def paginate(query, pagination):
     per_page = pagination.get('PerPage', 10)
     offset = page * per_page
     total = query.count()
+    if offset > total:
+        abort(409, message='Requested range out of boundaries')
     totalPages = ceil(total / float(per_page))
-    data = query.limit(per_page).offset(offset)
+    data = []
+    if getattr(query, '__sql__', None):
+        data = query.limit(per_page).offset(offset)
+    else:
+        end = offset + per_page
+        data = query[offset:end]
     return {
         'data': data,
         'pages': totalPages,

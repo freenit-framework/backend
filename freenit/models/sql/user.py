@@ -1,7 +1,6 @@
 from flask_security import UserMixin
+from freenit.db import db
 from peewee import BooleanField, DateTimeField, TextField
-
-from ..db import db
 
 Model = db.Model
 

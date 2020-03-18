@@ -39,15 +39,22 @@ class AuthLoginAPI(MethodView):
             abort(403, message='Email not provided')
         User = current_app.user_datastore.user_model
         try:
-            user = User.get(email=email)
+            if current_app.dbtype == 'sql':
+                user = User.get(email=email)
+            else:
+                user = User.objects.get(email=email)
         except User.DoesNotExist:
             abort(403, message='No such user, or wrong password')
         if not user or not user.active:
             abort(403, message='No such user, or wrong password')
         if not verify_password(password, user.password):
             abort(403, message='No such user, or wrong password')
-        access_token = create_access_token(identity=user.id)
-        refresh_token = create_refresh_token(identity=user.id)
+        if current_app.dbtype == 'sql':
+            id = user.id
+        else:
+            id = str(user.id)
+        access_token = create_access_token(identity=id)
+        refresh_token = create_refresh_token(identity=id)
         access_expire = current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
         refresh_expire = current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
         resp = jsonify(
@@ -92,7 +99,10 @@ class AuthRefreshAPI(MethodView):
         identity = get_jwt_identity()
         User = current_app.user_datastore.user_model
         try:
-            user = User.get(id=identity)
+            if current_app.dbtype == 'sql':
+                user = User.get(id=identity)
+            else:
+                user = User.objects.get(id=identity)
         except User.DoesNotExist:
             abort(403, message='No such user, or wrong password')
         if not user.active:
