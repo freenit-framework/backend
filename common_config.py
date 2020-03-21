@@ -22,7 +22,7 @@ class Config:
     OPENAPI_REDOC_PATH = '/redoc'
     OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
     OPENAPI_SWAGGER_UI_URL = '/static/swaggerui/'
-    OPENAPI_VERSION = '2.0.0'
+    OPENAPI_VERSION = '3.0.3'
     MEDIA_URL = '/media'
     MEDIA_PATH = 'media'
     ACCOUNT_REQUEST_EXPIRY = 24  # in hours
