@@ -1,12 +1,12 @@
 import os
 
-from freenit import create_app
+import pytest
 from peewee_migrate import Router
 from peewee_migrate.router import DEFAULT_MIGRATE_DIR
 from pytest_factoryboy import register
 
-import pytest
 from config import configs
+from freenit import create_app
 
 from .factories import AdminFactory, RoleFactory, UserFactory
 
@@ -17,7 +17,7 @@ register(RoleFactory)
 
 @pytest.fixture
 def app():
-    dbtype = os.environ['DBTYPE']
+    dbtype = os.environ.get('DBTYPE', 'sql')
     config = configs['testing']
     flask_app = create_app(config, dbtype=dbtype)
     if dbtype == 'sql':
