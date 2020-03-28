@@ -6,11 +6,13 @@ from setuptools import find_packages, setup
 
 PROJECT_ROOT = pathlib.Path(__file__).parent
 README = (PROJECT_ROOT / 'README.md').read_text()
+
+ldap = ['ldap3']
+mongo = ['flask-mongoengine']
 sql = [
     'peewee',
     'peewee-migrate>=1.1.6',
 ]
-mongo = ['flask-mongoengine']
 
 setup(
     name='freenit',
@@ -54,7 +56,7 @@ setup(
         'flask-smorest>=0.18.2',
     ],
     extras_require={
-        'all': sql + mongo,
+        'all': ldap + mongo + sql,
         'sql': sql,
         'mongo': mongo,
     },

@@ -1,12 +1,13 @@
 import sys
 from importlib import import_module
 
-import freenit.schemas.user
 from flask import Flask, send_file
 from flask_collect import Collect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_security import Security
+
+import freenit.schemas.user
 from freenit.schemas.paging import PageOutSchema
 
 from . import cli
@@ -56,7 +57,7 @@ def create_app(config, app=None, schemas={}, dbtype='sql'):
     app.sendmail = lambda message: sendmail(app.config, message)
     app.collect = Collect(app)
     app.dbtype = dbtype
-    if dbtype == 'sql':
+    if dbtype in ['sql', 'all']:
         sqlinit(app)
     elif dbtype == 'mongo':
         mongoinit(app)
