@@ -1,4 +1,4 @@
-from marshmallow import Schema
+from marshmallow import EXCLUDE, Schema
 
 from ..fields.objectid import ID
 
@@ -9,3 +9,4 @@ class BaseSchema(Schema):
     class Meta:
         strict = True
         ordered = True
+        unknown = EXCLUDE
