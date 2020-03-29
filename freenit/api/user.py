@@ -50,6 +50,7 @@ class UserAPI(ProtectedMethodView):
     @blueprint.arguments(UserSchema(partial=True))
     @blueprint.response(UserSchema)
     def patch(self, args, user_id):
+        """Edit user details"""
         User = current_app.user_datastore.user_model
         try:
             if current_app.dbtype == 'sql':
@@ -67,6 +68,7 @@ class UserAPI(ProtectedMethodView):
 
     @blueprint.response(UserSchema)
     def delete(self, user_id):
+        """Delete user"""
         User = current_app.user_datastore.user_model
         try:
             if current_app.dbtype == 'sql':

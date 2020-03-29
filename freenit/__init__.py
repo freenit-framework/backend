@@ -19,8 +19,8 @@ def sqlinit(app):
     from .db import db
     db.init_app(app)
     app.db = db
-    User = import_module(f"{app.config['NAME']}.models.sql.user").User
-    role_module = import_module(f"{app.config['NAME']}.models.sql.role")
+    User = import_module(f"{app.config['NAME']}.models.user").User
+    role_module = import_module(f"{app.config['NAME']}.models.role")
     Role = role_module.Role
     UserRoles = role_module.UserRoles
     app.user_datastore = PeeweeUserDatastore(
@@ -35,8 +35,8 @@ def mongoinit(app):
     from flask_security import MongoEngineUserDatastore
     from flask_mongoengine import MongoEngine
     app.db = MongoEngine(app)
-    User = import_module(f"{app.config['NAME']}.models.mongo.user").User
-    Role = import_module(f"{app.config['NAME']}.models.mongo.role").Role
+    User = import_module(f"{app.config['NAME']}.models.user").User
+    Role = import_module(f"{app.config['NAME']}.models.role").Role
     app.user_datastore = MongoEngineUserDatastore(app.db, User, Role)
 
 
@@ -56,7 +56,7 @@ def create_app(config, app=None, schemas={}, dbtype='sql'):
     app.sendmail = lambda message: sendmail(app.config, message)
     app.collect = Collect(app)
     app.dbtype = dbtype
-    if dbtype == 'sql':
+    if dbtype in ['sql', 'all']:
         sqlinit(app)
     elif dbtype == 'mongo':
         mongoinit(app)
