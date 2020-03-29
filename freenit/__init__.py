@@ -1,13 +1,12 @@
 import sys
 from importlib import import_module
 
+import freenit.schemas.user
 from flask import Flask, send_file
 from flask_collect import Collect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_security import Security
-
-import freenit.schemas.user
 from freenit.schemas.paging import PageOutSchema
 
 from . import cli
@@ -20,8 +19,8 @@ def sqlinit(app):
     from .db import db
     db.init_app(app)
     app.db = db
-    User = import_module(f"{app.config['NAME']}.models.sql.user").User
-    role_module = import_module(f"{app.config['NAME']}.models.sql.role")
+    User = import_module(f"{app.config['NAME']}.models.user").User
+    role_module = import_module(f"{app.config['NAME']}.models.role")
     Role = role_module.Role
     UserRoles = role_module.UserRoles
     app.user_datastore = PeeweeUserDatastore(
@@ -36,8 +35,8 @@ def mongoinit(app):
     from flask_security import MongoEngineUserDatastore
     from flask_mongoengine import MongoEngine
     app.db = MongoEngine(app)
-    User = import_module(f"{app.config['NAME']}.models.mongo.user").User
-    Role = import_module(f"{app.config['NAME']}.models.mongo.role").Role
+    User = import_module(f"{app.config['NAME']}.models.user").User
+    Role = import_module(f"{app.config['NAME']}.models.role").Role
     app.user_datastore = MongoEngineUserDatastore(app.db, User, Role)
 
 

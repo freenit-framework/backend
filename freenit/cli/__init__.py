@@ -2,7 +2,6 @@ import click
 from flask import current_app
 from flask.cli import AppGroup
 from flask_security.utils import hash_password
-from peewee_migrate import Router
 
 admin_group = AppGroup('admin', short_help='Manage admin users')
 migration = AppGroup('migration', short_help='Migration operations')
@@ -30,6 +29,7 @@ def register_admin(app):
 
 
 def register_migration(app):
+    from peewee_migrate import Router
     project_root = app.config.get('PROJECT_ROOT', '')
     migrate_dir = f'{project_root}/migrations'
     router = Router(
