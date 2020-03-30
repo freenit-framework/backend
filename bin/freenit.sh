@@ -12,7 +12,6 @@ fi
 
 
 PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
-echo "here"
 SED_CMD="sed -i"
 
 case `uname` in
