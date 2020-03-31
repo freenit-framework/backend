@@ -23,7 +23,7 @@ setup() {
     if [ "${update}" != "no" ]; then
       pip install -U pip
       pip install -U wheel
-      pip install -e ".[${DBTYPE}]"
+      pip install -U --upgrade-strategy eager -e ".[${DBTYPE}]"
     fi
   fi
   if [ -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
