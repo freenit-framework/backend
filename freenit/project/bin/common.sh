@@ -24,7 +24,7 @@ setup() {
     if [ "${update}" != "no" ]; then
       pip install -U pip
       pip install -U wheel
-      pip install -U -r requirements.txt
+      pip install -U --upgrade-strategy eager -r requirements.txt
     fi
   fi
 }
