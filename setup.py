@@ -54,6 +54,7 @@ setup(
         'flask-jwt-extended>=3.24.1',
         'flask-security>=3.0.0',
         'flask-smorest>=0.18.2',
+        'email-validator',
     ],
     extras_require={
         'all': ldap + mongo + sql,

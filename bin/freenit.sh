@@ -3,6 +3,12 @@
 set -e
 
 
+if [ "${1}" = "--version" ]; then
+  echo "0.1.6"
+  exit 0
+fi
+
+
 NAME="${1}"
 TYPE="${2}"
 if [ -z "${NAME}" -o -z "${TYPE}" ]; then
