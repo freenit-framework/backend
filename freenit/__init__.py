@@ -1,13 +1,12 @@
 import sys
 from importlib import import_module
 
+import freenit.schemas.user
 from flask import Flask, send_file
 from flask_collect import Collect
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_security import Security
-
-import freenit.schemas.user
 from freenit.schemas.paging import PageOutSchema
 
 from . import cli
@@ -53,9 +52,9 @@ def mongoinit(app):
     app.user_datastore = MongoEngineUserDatastore(app.db, User, Role)
 
 
-def create_app(config, app=None, schemas={}, dbtype='sql'):
+def create_app(config, app=None, schemas={}, dbtype='sql', **kwargs):
     if app is None:
-        app = Flask(__name__)
+        app = Flask(__name__, **kwargs)
         app.config.from_object(config)
 
     @app.route('/media/<path:path>')

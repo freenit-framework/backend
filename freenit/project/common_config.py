@@ -27,6 +27,7 @@ class Config:
     OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
     OPENAPI_SWAGGER_UI_URL = '/static/swaggerui/'
     OPENAPI_VERSION = '3.0.2'
+    COLLECT_STATIC_ROOT = 'static'
     MEDIA_URL = '/media'
     MEDIA_PATH = 'media'
     ACCOUNT_REQUEST_EXPIRY = 24  # in hours
