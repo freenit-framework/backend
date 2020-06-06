@@ -98,7 +98,7 @@ class RoleUserAssignAPI(ProtectedMethodView):
         except User.DoesNotExist:
             abort(404, message='No such user')
         current_app.user_datastore.add_role_to_user(user, role)
-        return user
+        return role
 
 
 @blueprint.route('/<role_id>/user/<user_id>', endpoint='user_deassign')
@@ -123,4 +123,4 @@ class RoleUserDeassignAPI(ProtectedMethodView):
         except User.DoesNotExist:
             abort(404, message='No such user')
         current_app.user_datastore.remove_role_from_user(user, role)
-        return user
+        return role
