@@ -5,6 +5,7 @@ set -e
 
 export BIN_DIR=`dirname $0`
 export PROJECT_ROOT="${BIN_DIR}/.."
+. "${PROJECT_ROOT}/name.py"
 export FLASK_ENV="testing"
 export DBTYPE="all"
 
@@ -29,7 +30,4 @@ rm -rf .pytest_cache
 flake8 .
 
 export DBTYPE="sql"
-py.test --ignore=freenit/project/ --cov=freenit --cov-report=term-missing:skip-covered --cov-report=xml
-
-# export DBTYPE="mongo"
-# py.test --ignore=freenit/project/ --cov=freenit --cov-report=term-missing:skip-covered --cov-report=xml
+py.test --ignore=${app_name}/project/ --cov=${app_name} --cov-report=term-missing:skip-covered --cov-report=xml

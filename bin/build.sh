@@ -14,5 +14,5 @@ if [ "${OFFLINE}" != "yes" ]; then
 fi
 
 cd ${PROJECT_ROOT}
-rm -rf freenit.egg-info build dist
+rm -rf *.egg-info build dist
 python setup.py sdist bdist_wheel

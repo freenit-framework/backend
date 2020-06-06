@@ -2,8 +2,7 @@ import functools
 
 from flask import current_app
 from flask_jwt_extended import get_jwt_identity
-
-from flask_rest_api import abort
+from flask_smorest import abort
 
 
 def get_user():
