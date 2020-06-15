@@ -60,6 +60,8 @@ def create_app(config, app=None, schemas={}, dbtype='sql', **kwargs):
     @app.route('/media/<path:path>')
     def send_media(path):
         fullPath = f"{app.config['MEDIA_PATH']}/{path}"
+        if fullPath[0] != '/':
+            fullPath = f"/{app.config['PROJECT_ROOT']}/{fullPath}"
         try:
             return send_file(fullPath)
         except FileNotFoundError:
