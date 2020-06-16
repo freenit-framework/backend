@@ -16,7 +16,7 @@ sql = [
 
 setup(
     name='freenit',
-    version='0.1.9',
+    version='0.1.10',
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
@@ -74,6 +74,7 @@ setup(
             'project/project/models/*',
             'project/project/schemas/*',
             'project/project/templates/*',
+            'project/templates/*',
             'project/tests/*',
             'static/swaggerui/*',
             'templates/*',
