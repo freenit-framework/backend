@@ -52,9 +52,16 @@ def mongoinit(app):
     app.user_datastore = MongoEngineUserDatastore(app.db, User, Role)
 
 
-def create_app(config, app=None, schemas={}, dbtype='sql', **kwargs):
+def create_app(
+    config,
+    app=None,
+    schemas={},
+    dbtype='sql',
+    name=__name__,
+    **kwargs,
+):
     if app is None:
-        app = Flask(__name__, **kwargs)
+        app = Flask(name, **kwargs)
         app.config.from_object(config)
 
     @app.route('/media/<path:path>')
