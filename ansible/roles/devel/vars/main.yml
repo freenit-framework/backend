@@ -1,3 +1,4 @@
 ---
+python_prefix: "py37-"
 devel_packages:
-  - name: py37-sqlite3
+  - name: {{ python_prefix }}-sqlite3

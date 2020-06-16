@@ -1,11 +1,24 @@
+*.egg-info/
+.coverage
+.pytest_cache
+__pycache__
+coverage.xml
+database.db
+local_config.py
+test.db
+
+# Reggae
 .provisioned
 ansible/group_vars/all
 ansible/inventory/inventory
 ansible/roles/*
 ansible/site.yml
 !ansible/roles/.keep
+fstab
+project.mk
+site.retry
+vars.mk
+
 build/
 cbsd.conf
-site.retry
-project.mk
-vars.mk
+dist/
