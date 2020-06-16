@@ -65,6 +65,9 @@ setup(
     package_data={
         '': [
             'project/*',
+            'project/ansible/group_vars/*',
+            'project/ansible/inventory/*',
+            'project/ansible/roles/devel/*',
             'project/bin/*',
             'project/project/*',
             'project/project/api/*',
