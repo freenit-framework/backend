@@ -7,6 +7,8 @@ SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
 
 class Config:
     NAME = app_name
+    API_TITLE = app_name
+    API_VERSION = 0
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     DEBUG = False
     SECURITY_PASSWORD_SALT = 'freenit'
