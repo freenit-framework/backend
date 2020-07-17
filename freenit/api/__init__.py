@@ -42,7 +42,6 @@ def schema_name_resolver(schema):
 
 
 def create_api(app):
-    from .auth import blueprint as auth
     from .profile import blueprint as profile
     from .role import blueprint as role
     from .user import blueprint as user
@@ -54,11 +53,13 @@ def create_api(app):
         'marshmallow_plugin': marshmallow_plugin,
     }
     app.api = MyApi(app, spec_kwargs=spec_kwargs)
+    if app.config.get('USE_AUTH', True):
+        from .auth import blueprint as auth
+        register_endpoints(app, '/api/v0', [auth])
     register_endpoints(
         app,
         '/api/v0',
         [
-            auth,
             profile,
             role,
             user,
