@@ -1,4 +1,8 @@
 ---
-python_prefix: "py37-"
+python_major: 3
+python_minor: 7
+python_version: "{{ python_major }}.{{ python_minor }}"
+python_version_short: "{{ python_major }}{{ python_minor }}"
+python_prefix: "py{{ python_version_short }}"
 devel_packages:
-  - name: {{ python_prefix }}-sqlite3
+  - name: "{{ python_prefix }}-sqlite3"
