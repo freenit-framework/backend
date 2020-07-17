@@ -37,3 +37,13 @@ mv project ${NAME}
 echo "app_name=\"${NAME}\"  # noqa: E225" >name.py
 echo "ipdb" >requirements_dev.txt
 echo "DEVEL_MODE = YES" >vars.mk
+cat > Makefile << EOF
+.include <name.py>
+
+USE_FREENIT = YES
+SERVICE != echo \${app_name}
+REGGAE_PATH := /usr/local/share/reggae
+SYSPKG := YES
+
+.include <\${REGGAE_PATH}/mk/service.mk>
+EOF
