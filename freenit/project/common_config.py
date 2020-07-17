@@ -13,6 +13,7 @@ class Config:
     API_VERSION = 0
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     DEBUG = False
+    USE_AUTH = True
     SECURITY_PASSWORD_SALT = 'freenit'
     SECRET_KEY = SECRET_KEY
     SECURITY_TRACKABLE = False
