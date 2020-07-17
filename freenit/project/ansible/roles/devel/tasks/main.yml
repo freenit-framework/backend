@@ -1,0 +1,5 @@
+---
+- name: install devel packages
+  with_items: "{{ devel_packages }}"
+  pkgng:
+    name: "{{ item.name }}"
