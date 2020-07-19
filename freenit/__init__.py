@@ -35,6 +35,7 @@ def sqlinit(app):
         Role,
         UserRoles,
     )
+    app.security = Security(app, app.user_datastore)
 
 
 def mongoinit(app):
@@ -50,6 +51,7 @@ def mongoinit(app):
     except ModuleNotFoundError:
         Role = import_module(f"{app.config['NAME']}.models.mongo.role").Role
     app.user_datastore = MongoEngineUserDatastore(app.db, User, Role)
+    app.security = Security(app, app.user_datastore)
 
 
 def create_app(
@@ -81,7 +83,6 @@ def create_app(
         sqlinit(app)
     elif dbtype == 'mongo':
         mongoinit(app)
-    app.security = Security(app, app.user_datastore)
     user_module = schemas.get('user', None)
     if user_module is None:
 
