@@ -58,8 +58,9 @@ setup(
     ],
     extras_require={
         'all': ldap + mongo + sql,
-        'sql': sql,
+        'ldap': ldap,
         'mongo': mongo,
+        'sql': sql,
     },
     include_package_data=True,
     package_data={

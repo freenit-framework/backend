@@ -59,8 +59,6 @@ class AuthLoginAPI(MethodView):
         refresh_expire = current_app.config['JWT_REFRESH_TOKEN_EXPIRES']
         resp = jsonify(
             {
-                'access': access_token,
-                'refresh': refresh_token,
                 'accessExpire': int(access_expire.total_seconds()),
                 'refreshExpire': int(refresh_expire.total_seconds()),
             }
@@ -116,7 +114,6 @@ class AuthRefreshAPI(MethodView):
         refresh_delta = refresh_expire_date - datetime.now()
         resp = jsonify(
             {
-                'access': access_token,
                 'accessExpire': int(access_expire.total_seconds()),
                 'refreshExpire': int(refresh_delta.total_seconds()),
             }
