@@ -30,11 +30,11 @@ class Config:
     OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
     OPENAPI_SWAGGER_UI_URL = '/static/swaggerui/'
     OPENAPI_VERSION = '3.0.2'
-    COLLECT_STATIC_ROOT = 'static'
     MEDIA_URL = '/media'
     MEDIA_PATH = 'media'
     ACCOUNT_REQUEST_EXPIRY = 24  # in hours
     PASSWORD_RESET_EXPIRY = 2  # in hours
+    COLLECT_STATIC_ROOT = os.path.dirname(__file__) + '/static'
     DATABASE = {
         'name': 'database.db',
         'engine': 'SqliteDatabase',

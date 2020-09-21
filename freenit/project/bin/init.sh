@@ -11,7 +11,8 @@ if [ "${OFFLINE}" = "yes" ]; then
 else
   setup
 fi
-if [ ! -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
+
+if [ ! -e migrations/main/001_initial.py ]; then
   flask migration create initial
 fi
 

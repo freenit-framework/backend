@@ -10,7 +10,7 @@ export FLASK_ENV="production"
 
 . ${BIN_DIR}/common.sh
 setup
-pip install -U --upgrade-strategy eager uwsgi
+pip install -U uwsgi
 
 
 cd ${PROJECT_ROOT}
