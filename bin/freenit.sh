@@ -4,7 +4,7 @@ set -e
 
 
 if [ "${1}" = "--version" ]; then
-  echo "0.1.13"
+  echo "0.1.14"
   exit 0
 fi
 
@@ -47,3 +47,17 @@ SYSPKG := YES
 
 .include <\${REGGAE_PATH}/mk/service.mk>
 EOF
+
+echo "- onelove-roles.freebsd_freenit" >>requirements.yml
+if [ "${TYPE}" = "sql" ]; then
+  echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
+  echo "    - onelove-roles.freebsd_freenit_sql" >>templates/site.yml.tpl
+elif [ "${TYPE}" = "mongo" ]; then
+  echo "- onelove-roles.freebsd_freenit_mongoengine" >>requirements.yml
+  echo "    - onelove-roles.freebsd_freenit_mongoengine" >>templates/site.yml.tpl
+elif [ "${TYPE}" = "all" ]; then
+  echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
+  echo "- onelove-roles.freebsd_freenit_mongoengine" >>requirements.yml
+  echo "    - onelove-roles.freebsd_freenit_sql" >>templates/site.yml.tpl
+  echo "    - onelove-roles.freebsd_freenit_mongoengine" >>templates/site.yml.tpl
+fi
