@@ -24,4 +24,4 @@ fi
 
 echo "Backend"
 echo "==============="
-python wsgi.py
+uwsgi --py-autoreload=1 --http-socket=0.0.0.0:5000 --master --vacuum --wsgi-file="./wsgi.py"
