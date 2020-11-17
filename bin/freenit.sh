@@ -4,7 +4,7 @@ set -e
 
 
 if [ "${1}" = "--version" ]; then
-  echo "0.1.16"
+  echo "0.1.17"
   exit 0
 fi
 

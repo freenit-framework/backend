@@ -1,5 +1,5 @@
-from freenit.api import register_endpoints
+from freenit.api import create_api
 
 
-def create_api(app):
-    register_endpoints(app, '/api/v0', [])
+def create_app(app):
+    create_api(app)
