@@ -20,19 +20,22 @@ fi
 PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
 SED_CMD="sed -i"
 
-case `uname` in
-  *BSD)
-    SED_CMD="sed -i ''"
-    ;;
-esac
-
 
 mkdir ${NAME}
 cd ${NAME}
 echo "freenit[${TYPE}]" >requirements.txt
 cp -r ${PROJECT_ROOT}/project/* .
-${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
-${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
+
+case `uname` in
+  *BSD)
+    ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/role.py
+    ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/user.py
+    ;;
+  *)
+    ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
+    ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
+    ;;
+esac
 mv project ${NAME}
 echo "app_name=\"${NAME}\"  # noqa: E225" >name.py
 echo "ipdb" >requirements_dev.txt
@@ -48,6 +51,35 @@ SYSPKG := YES
 .include <\${REGGAE_PATH}/mk/service.mk>
 EOF
 
+cat >.gitignore <<EOF
+.coverage
+.provisioned
+.pytest_cache
+__pycache__
+
+ansible/group_vars/all
+ansible/inventory/inventory
+ansible/roles/*
+ansible/site.yml
+!ansible/roles/.keep
+!ansible/roles/devel
+
+build
+cbsd.conf
+coverage.xml
+database.db
+fstab
+local_config.py
+project.mk
+site.retry
+test.db
+vars.mk
+
+dist/
+*.egg-info/
+EOF
+
+mkdir templates
 echo "- onelove-roles.freebsd_freenit" >>requirements.yml
 if [ "${TYPE}" = "sql" ]; then
   echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
