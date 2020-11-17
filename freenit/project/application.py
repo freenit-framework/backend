@@ -1,4 +1,4 @@
-def init(config_name, websocket=True):
+def init(config_name):
     from importlib import import_module
     from freenit import create_app
     from config import configs
@@ -7,5 +7,5 @@ def init(config_name, websocket=True):
     app = import_module(f'{app_name}')
     config = configs[config_name]
     application = create_app(config)
-    app.create_app(application, websocket)
+    app.create_app(application)
     return application
