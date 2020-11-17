@@ -1,4 +1,4 @@
-from freenit.api import create_api
+from .api import create_api
 
 
 def create_app(app):
