@@ -5,16 +5,15 @@ BIN_DIR=`dirname $0`
 PROJECT_ROOT="${BIN_DIR}/.."
 export FLASK_PORT=${FLASK_PORT:=5000}
 export FLASK_ENV="development"
-API_ROOT="http://`hostname`:${FLASK_PORT}/doc/swaggerui"
 export OFFLINE=${OFFLINE:=no}
 export SYSPKG=${SYSPKG:="no"}
+export WEBSOCKET=${WEBSOCKET:="no"}
 
 
 . ${BIN_DIR}/common.sh
 setup no
 
 
-cd "${PROJECT_ROOT}"
 if [ "${SYSPKG}" = "no" ]; then
   if [ "${OFFLINE}" != "yes" ]; then
     pip install -U -r requirements_dev.txt
@@ -22,6 +21,11 @@ if [ "${SYSPKG}" = "no" ]; then
 fi
 
 
+if [ "${WEBSOCKET}" = "yes" ]; then
+  export WEBSOCKET_FLAGS="--gevent 16 --gevent-monkey-patch --http-websockets"
+fi
+
+
 echo "Backend"
 echo "==============="
-uwsgi --py-autoreload=1 --http-socket=0.0.0.0:5000 --master --vacuum --wsgi-file="./wsgi.py"
+uwsgi --master --http 0.0.0.0:${FLASK_PORT} ${WEBSOCKET_FLAGS} --python-auto-reload 1 --honour-stdin --wsgi-file devel.py
