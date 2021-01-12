@@ -13,6 +13,8 @@ from . import cli
 from .api import create_api
 from .utils import sendmail
 
+VERSION = '0.1.18'
+
 
 def sqlinit(app):
     from flask_security import PeeweeUserDatastore

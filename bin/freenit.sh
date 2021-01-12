@@ -4,7 +4,7 @@ set -e
 
 
 if [ "${1}" = "--version" ]; then
-  echo "0.1.18"
+  python${PY_VERSION} -c 'from freenit import VERSION; print(VERSION)'
   exit 0
 fi
 
@@ -12,7 +12,7 @@ fi
 NAME="${1}"
 TYPE="${2}"
 if [ -z "${NAME}" -o -z "${TYPE}" ]; then
-  echo "Usage: $0 <project name> <project type>" >&2
+  echo "Usage: $0 <project name> <sql|mongodb|ldap|all>" >&2
   exit 1
 fi
 
