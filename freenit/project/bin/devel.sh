@@ -16,7 +16,7 @@ setup no
 
 if [ "${SYSPKG}" = "no" ]; then
   if [ "${OFFLINE}" != "yes" ]; then
-    pip install -U -r requirements_dev.txt
+    pip install -U --upgrade-strategy eager -e ".[dev]"
   fi
 fi
 

@@ -22,6 +22,7 @@ dev = [
     'pytest-flask',
     'twine',
     'uwsgi',
+    'ipdb',
 ]
 
 setup(
