@@ -7,8 +7,8 @@ SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
 
 class Config:
     NAME = app_name
-    API_TITLE = app_name
-    API_VERSION = 0
+    API_TITLE = app_name.capitalize()
+    API_VERSION = 'v0'
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     DEBUG = False
     USE_AUTH = True
@@ -22,8 +22,9 @@ class Config:
     JWT_SESSION_COOKIE = False
     JWT_COOKIE_SECURE = True
     OPENAPI_URL_PREFIX = '/doc'
-    OPENAPI_REDOC_PATH = '/redoc'
-    OPENAPI_SWAGGER_UI_PATH = '/swaggerui'
+    OPENAPI_REDOC_PATH = '/redoc/'
+    OPENAPI_REDOC_URL = '/static/redoc/redoc.min.js'
+    OPENAPI_SWAGGER_UI_PATH = '/swaggerui/'
     OPENAPI_SWAGGER_UI_URL = '/static/swaggerui/'
     OPENAPI_VERSION = '3.0.3'
     MEDIA_URL = '/media'
