@@ -20,4 +20,4 @@ fi
 
 echo "Backend"
 echo "==============="
-python wsgi.py
+uwsgi --master --http 0.0.0.0:${FLASK_PORT} ${WEBSOCKET_FLAGS} --python-auto-reload 1 --honour-stdin --wsgi-file devel.py

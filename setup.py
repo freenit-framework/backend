@@ -3,6 +3,7 @@
 import pathlib
 
 from setuptools import find_packages, setup
+from freenit import VERSION
 
 PROJECT_ROOT = pathlib.Path(__file__).parent
 README = (PROJECT_ROOT / 'README.md').read_text()
@@ -16,7 +17,7 @@ sql = [
 
 setup(
     name='freenit',
-    version='0.1.18',
+    version=VERSION,
     description='REST API framework based on Flask-Smorest',
     long_description=README,
     long_description_content_type='text/markdown',
