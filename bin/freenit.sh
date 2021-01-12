@@ -18,28 +18,37 @@ fi
 
 
 PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
-SED_CMD="sed -i"
+case `uname` in
+  *BSD)
+    export SED_CMD="sed -i ''"
+    ;;
+  *)
+    export SED_CMD="sed -i"
+    ;;
 
 
 mkdir ${NAME}
 cd ${NAME}
-echo "freenit[${TYPE}]" >requirements.txt
 cp -r ${PROJECT_ROOT}/project/* .
-
-case `uname` in
-  *BSD)
-    ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/role.py
-    ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/user.py
-    ;;
-  *)
-    ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
-    ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
-    ;;
-esac
+${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
+${SED_CMD} -e "s/DBTYPE/${TYPE}/g" project/setup.py
+${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
+${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
 mv project ${NAME}
 echo "app_name=\"${NAME}\"  # noqa: E225" >name.py
-echo "ipdb" >requirements_dev.txt
 echo "DEVEL_MODE = YES" >vars.mk
+echo "# ${NAME}" >README.mk
+mkdir templates
+echo "- onelove-roles.freebsd_freenit" >>requirements.yml
+if [ "${TYPE}" = "sql" -o "${TYPE}" = "all" ]; then
+  echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
+  echo "    - onelove-roles.freebsd_freenit_sql" >>templates/site.yml.tpl
+elif [ "${TYPE}" = "mongo" -o "${TYPE}" = "all" ]; then
+  echo "- onelove-roles.freebsd_freenit_mongoengine" >>requirements.yml
+  echo "    - onelove-roles.freebsd_freenit_mongoengine" >>templates/site.yml.tpl
+fi
+
+
 cat > Makefile << EOF
 .include <name.py>
 
@@ -79,17 +88,5 @@ dist/
 *.egg-info/
 EOF
 
-mkdir templates
-echo "- onelove-roles.freebsd_freenit" >>requirements.yml
-if [ "${TYPE}" = "sql" ]; then
-  echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
-  echo "    - onelove-roles.freebsd_freenit_sql" >>templates/site.yml.tpl
-elif [ "${TYPE}" = "mongo" ]; then
-  echo "- onelove-roles.freebsd_freenit_mongoengine" >>requirements.yml
-  echo "    - onelove-roles.freebsd_freenit_mongoengine" >>templates/site.yml.tpl
-elif [ "${TYPE}" = "all" ]; then
-  echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
-  echo "- onelove-roles.freebsd_freenit_mongoengine" >>requirements.yml
-  echo "    - onelove-roles.freebsd_freenit_sql" >>templates/site.yml.tpl
-  echo "    - onelove-roles.freebsd_freenit_mongoengine" >>templates/site.yml.tpl
-fi
+
+echo "Success! Please edit setup.py!"

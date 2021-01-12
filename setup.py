@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import pathlib
 
@@ -22,6 +22,7 @@ dev = [
     'pytest-flask',
     'twine',
     'uwsgi',
+    'ipdb',
 ]
 
 setup(
