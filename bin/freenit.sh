@@ -29,13 +29,15 @@ case `uname` in
 
 mkdir ${NAME}
 cd ${NAME}
-echo "freenit[${TYPE}]" >requirements.txt
 cp -r ${PROJECT_ROOT}/project/* .
+${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
+${SED_CMD} -e "s/DBTYPE/${TYPE}/g" project/setup.py
 ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
 ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
 mv project ${NAME}
 echo "app_name=\"${NAME}\"  # noqa: E225" >name.py
 echo "DEVEL_MODE = YES" >vars.mk
+echo "# ${NAME}" >README.mk
 mkdir templates
 echo "- onelove-roles.freebsd_freenit" >>requirements.yml
 if [ "${TYPE}" = "sql" -o "${TYPE}" = "all" ]; then
@@ -85,3 +87,6 @@ vars.mk
 dist/
 *.egg-info/
 EOF
+
+
+echo "Success! Please edit setup.py!"
