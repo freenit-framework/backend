@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include common_config.py
+include config.py
+include name.py
+graft migrations
+graft tests
