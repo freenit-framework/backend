@@ -18,27 +18,29 @@ fi
 
 
 PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
-case `uname` in
-  *BSD)
-    export SED_CMD="sed -i ''"
-    ;;
-  *)
-    export SED_CMD="sed -i"
-    ;;
-
+export SED_CMD="sed -i"
 
 mkdir ${NAME}
 cd ${NAME}
 cp -r ${PROJECT_ROOT}/project/* .
-${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
-${SED_CMD} -e "s/DBTYPE/${TYPE}/g" project/setup.py
-${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
-${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
+case `uname` in
+  *BSD)
+    ${SED_CMD} '' -e "s/NAME/${NAME}/g" setup.py
+    ${SED_CMD} '' -e "s/DBTYPE/${TYPE}/g" setup.py
+    ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/role.py
+    ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/user.py
+    ;;
+  *)
+    ${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
+    ${SED_CMD} -e "s/DBTYPE/${TYPE}/g" setup.py
+    ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
+    ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
+    ;;
+esac
 mv project ${NAME}
 echo "app_name=\"${NAME}\"  # noqa: E225" >name.py
 echo "DEVEL_MODE = YES" >vars.mk
-echo "# ${NAME}" >README.mk
-mkdir templates
+echo "# ${NAME}" >README.md
 echo "- onelove-roles.freebsd_freenit" >>requirements.yml
 if [ "${TYPE}" = "sql" -o "${TYPE}" = "all" ]; then
   echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
