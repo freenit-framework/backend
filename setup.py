@@ -14,6 +14,15 @@ sql = [
     'peewee',
     'peewee-migrate>=1.1.6',
 ]
+dev = [
+    'factory-boy',
+    'flake8',
+    'pytest-cov',
+    'pytest-factoryboy',
+    'pytest-flask',
+    'twine',
+    'uwsgi',
+]
 
 setup(
     name='freenit',
@@ -62,6 +71,7 @@ setup(
         'ldap': ldap,
         'mongo': mongo,
         'sql': sql,
+        'dev': dev,
     },
     include_package_data=True,
     package_data={

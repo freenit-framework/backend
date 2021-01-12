@@ -1,23 +1,11 @@
 import sys
 from importlib import import_module
 
-import freenit.schemas.user
-from flask import Flask, send_file
-from flask_collect import Collect
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from flask_security import Security
-from freenit.schemas.paging import PageOutSchema
-
-from . import cli
-from .api import create_api
-from .utils import sendmail
-
 VERSION = '0.1.18'
 
 
 def sqlinit(app):
-    from flask_security import PeeweeUserDatastore
+    from flask_security import PeeweeUserDatastore, Security
     from .db import db
     db.init_app(app)
     app.db = db
@@ -41,7 +29,7 @@ def sqlinit(app):
 
 
 def mongoinit(app):
-    from flask_security import MongoEngineUserDatastore
+    from flask_security import Security, MongoEngineUserDatastore
     from flask_mongoengine import MongoEngine
     app.db = MongoEngine(app)
     try:
@@ -64,6 +52,17 @@ def create_app(
     name=__name__,
     **kwargs,
 ):
+    import freenit.schemas.user
+    from flask import Flask, send_file
+    from flask_collect import Collect
+    from flask_cors import CORS
+    from flask_jwt_extended import JWTManager
+    from freenit.schemas.paging import PageOutSchema
+
+    from . import cli
+    from .api import create_api
+    from .utils import sendmail
+
     if app is None:
         app = Flask(name, **kwargs)
         app.config.from_object(config)

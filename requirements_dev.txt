@@ -1,7 +1,0 @@
-factory-boy
-flake8
-pytest-cov
-pytest-factoryboy
-pytest-flask
-twine
-uwsgi
