@@ -24,8 +24,10 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         files: junit.xml
-    # - name: Publish Coverage Report
-      # uses: romeovs/lcov-reporter-action@v0.2.11
-      # with:
-        # github-token: ${{ secrets.GITHUB_TOKEN }}
-        # lcov-file: ./coverage/lcov.info
+    - name: Monitor coverage
+      uses: slavcodev/coverage-monitor-action@1.2.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        clover_file: "coverage.xml"
+        threshold_alert: 10
+        threshold_warning: 50
