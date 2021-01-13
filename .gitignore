@@ -15,6 +15,7 @@ cbsd.conf
 coverage.xml
 database.db
 fstab
+junit.xml
 local_config.py
 project.mk
 site.retry
