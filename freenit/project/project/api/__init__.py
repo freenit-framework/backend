@@ -1,5 +1,5 @@
-from freenit.api import register_endpoints
-
-
 def create_api(app):
-    register_endpoints(app, '/api/v0', [])
+    from freenit.api import register_endpoints
+
+    api_version = app.config.get('API_VERSION', '')
+    register_endpoints(app, f'/api/{api_version}', [])

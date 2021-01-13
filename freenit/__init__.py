@@ -1,7 +1,7 @@
 import sys
 from importlib import import_module
 
-VERSION = '0.1.24'
+VERSION = '0.1.25'
 
 
 def sqlinit(app):
