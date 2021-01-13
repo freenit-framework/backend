@@ -18,6 +18,7 @@ fi
 
 
 PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
+SECRET_KEY=`python${PY_VERSION} -c 'import string; import random; print("".join(random.choices(string.ascii_letters + string.digits, k=64)))'`
 export SED_CMD="sed -i"
 
 mkdir ${NAME}
@@ -29,12 +30,14 @@ case `uname` in
     ${SED_CMD} '' -e "s/DBTYPE/${TYPE}/g" setup.py
     ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/role.py
     ${SED_CMD} '' -e "s/TYPE/${TYPE}/g" project/models/user.py
+    ${SED_CMD} '' -e "s/SECRETKEY/${SECRET_KEY}/g" common_config.py
     ;;
   *)
     ${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
     ${SED_CMD} -e "s/DBTYPE/${TYPE}/g" setup.py
     ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/role.py
     ${SED_CMD} -e "s/TYPE/${TYPE}/g" project/models/user.py
+    ${SED_CMD} -e "s/SECRETKEY/${SECRET_KEY}/g" common_config.py
     ;;
 esac
 mv project ${NAME}

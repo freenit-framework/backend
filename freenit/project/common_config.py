@@ -4,13 +4,14 @@ from name import app_name
 
 #  from datetime import timedelta
 
-SECRET_KEY = 'iQfPvB6sZaNHqVFI5CJa9rM1xOEVHKIM0LwifT04yLsPlZhSSvaDuZXOgJFSpJVq'
+SECRET_KEY = 'SECRETKEY'
+API_VERSION = 'v0'
 
 
 class Config:
     NAME = app_name
     API_TITLE = app_name.capitalize()
-    API_VERSION = 'v0'
+    API_VERSION = API_VERSION
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     DEBUG = False
     USE_AUTH = True
@@ -19,8 +20,8 @@ class Config:
     SECURITY_TRACKABLE = False
     JWT_SECRET_KEY = SECRET_KEY
     JWT_TOKEN_LOCATION = ['cookies']
-    JWT_ACCESS_COOKIE_PATH = '/api/v0'
-    JWT_REFRESH_COOKIE_PATH = '/api/v0/auth/refresh'
+    JWT_ACCESS_COOKIE_PATH = f'/api/{API_VERSION}'
+    JWT_REFRESH_COOKIE_PATH = f'/api/{API_VERSION}/auth/refresh'
     JWT_SESSION_COOKIE = False
     JWT_COOKIE_SECURE = True
     #  JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=1)
