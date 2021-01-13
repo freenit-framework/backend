@@ -19,3 +19,13 @@ jobs:
     - name: Test and lint
       run: |
         bin/test.sh
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1.6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        files: junit.xml
+    # - name: Publish Coverage Report
+      # uses: romeovs/lcov-reporter-action@v0.2.11
+      # with:
+        # github-token: ${{ secrets.GITHUB_TOKEN }}
+        # lcov-file: ./coverage/lcov.info

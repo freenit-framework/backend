@@ -30,4 +30,4 @@ rm -rf .pytest_cache
 flake8 .
 
 export DBTYPE="sql"
-py.test --ignore=${app_name}/project/ --cov=${app_name} --cov-report=term-missing:skip-covered --cov-report=xml
+py.test --ignore=${app_name}/project/ --cov=${app_name} --cov-report=term-missing:skip-covered --cov-report=xml --junitxml=junit.xml
