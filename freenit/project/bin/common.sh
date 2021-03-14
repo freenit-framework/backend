@@ -21,8 +21,8 @@ setup() {
 
     cd ${PROJECT_ROOT}
     if [ "${update}" != "no" ]; then
-      pip install -U pip
-      pip install -U wheel
+      pip install -U --upgrade-strategy eager pip
+      pip install -U --upgrade-strategy eager wheel
       pip install -U --upgrade-strategy eager -e ".[${DBTYPE}]"
     fi
   fi

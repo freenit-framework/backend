@@ -8,10 +8,10 @@ from flask_jwt_extended import (
     create_refresh_token,
     decode_token,
     get_jwt_identity,
-    jwt_refresh_token_required,
+    jwt_required,
     set_access_cookies,
     set_refresh_cookies,
-    unset_jwt_cookies
+    unset_jwt_cookies,
 )
 from flask_security.utils import hash_password, verify_password
 from flask_smorest import Blueprint, abort
@@ -29,7 +29,7 @@ blueprint = Blueprint('auth', 'auth')
 
 @blueprint.route('/login', endpoint='login')
 class AuthLoginAPI(MethodView):
-    @blueprint.response(LoginSchema)
+    @blueprint.response(200, LoginSchema)
     @blueprint.arguments(TokenSchema)
     def post(self, args):
         """Authenticates and generates a token"""
@@ -90,8 +90,8 @@ class AuthLogoutAPI(MethodView):
 
 @blueprint.route('/refresh', endpoint='refresh')
 class AuthRefreshAPI(MethodView):
-    @blueprint.response(RefreshSchema)
-    @jwt_refresh_token_required
+    @blueprint.response(200, RefreshSchema)
+    @jwt_required(refresh=True)
     def post(self):
         """Refresh access token"""
         identity = get_jwt_identity()
@@ -124,7 +124,7 @@ class AuthRefreshAPI(MethodView):
 
 @blueprint.route('/register', endpoint='register')
 class AuthRegisterAPI(MethodView):
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     @blueprint.arguments(TokenSchema)
     def post(self, args):
         """Register new user"""
@@ -163,7 +163,7 @@ class AuthRegisterAPI(MethodView):
 
 @blueprint.route('/register/<token>', endpoint='register')
 class AuthRegisterConfirmAPI(MethodView):
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def get(self, token):
         """Confirm new user"""
         decoded_token = decode_token(token)
@@ -191,7 +191,7 @@ class AuthRegisterConfirmAPI(MethodView):
 
 @blueprint.route('/reset/request', endpoint='reset_request')
 class AuthResetRequestAPI(MethodView):
-    @blueprint.response(TokenSchema)
+    @blueprint.response(200, TokenSchema)
     @blueprint.arguments(TokenSchema(only=('email', )))
     def post(self, args):
         """Request user password reset"""
@@ -222,7 +222,7 @@ class AuthResetRequestAPI(MethodView):
 
 @blueprint.route('/reset', endpoint='reset')
 class AuthResetAPI(MethodView):
-    @blueprint.response(ResetSchema)
+    @blueprint.response(200, ResetSchema)
     @blueprint.arguments(ResetSchema)
     def post(self, args):
         """Reset user password"""
