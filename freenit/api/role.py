@@ -11,7 +11,7 @@ blueprint = Blueprint('roles', 'role')
 @blueprint.route('', endpoint='list')
 class RoleListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
-    @blueprint.response(RolePageOutSchema)
+    @blueprint.response(200, RolePageOutSchema)
     def get(self, pagination):
         """List roles"""
         Role = current_app.user_datastore.role_model
@@ -21,7 +21,7 @@ class RoleListAPI(ProtectedMethodView):
             return paginate(Role.objects.all(), pagination)
 
     @blueprint.arguments(RoleSchema)
-    @blueprint.response(RoleSchema)
+    @blueprint.response(200, RoleSchema)
     def post(self, args):
         """Create role"""
         Role = current_app.user_datastore.role_model
@@ -32,7 +32,7 @@ class RoleListAPI(ProtectedMethodView):
 
 @blueprint.route('/<role_id>', endpoint='detail')
 class RoleAPI(ProtectedMethodView):
-    @blueprint.response(RoleSchema)
+    @blueprint.response(200, RoleSchema)
     def get(self, role_id):
         """Get role details"""
         Role = current_app.user_datastore.role_model
@@ -47,7 +47,7 @@ class RoleAPI(ProtectedMethodView):
         return role
 
     @blueprint.arguments(RoleSchema(partial=True))
-    @blueprint.response(RoleSchema)
+    @blueprint.response(200, RoleSchema)
     def patch(self, args, role_id):
         """Edit role"""
         Role = current_app.user_datastore.role_model
@@ -63,7 +63,7 @@ class RoleAPI(ProtectedMethodView):
         role.save()
         return role
 
-    @blueprint.response(RoleSchema)
+    @blueprint.response(200, RoleSchema)
     def delete(self, role_id):
         """Remove role"""
         Role = current_app.user_datastore.role_model
@@ -81,7 +81,7 @@ class RoleAPI(ProtectedMethodView):
 @blueprint.route('/<role_id>/user', endpoint='user_assign')
 class RoleUserAssignAPI(ProtectedMethodView):
     @blueprint.arguments(UserAssignSchema)
-    @blueprint.response(RoleSchema)
+    @blueprint.response(200, RoleSchema)
     def post(self, args, role_id):
         """Assign user to role"""
         Role = current_app.user_datastore.role_model
@@ -103,7 +103,7 @@ class RoleUserAssignAPI(ProtectedMethodView):
 
 @blueprint.route('/<role_id>/user/<user_id>', endpoint='user_deassign')
 class RoleUserDeassignAPI(ProtectedMethodView):
-    @blueprint.response(RoleSchema)
+    @blueprint.response(200, RoleSchema)
     def delete(self, role_id, user_id):
         """Remove user from role"""
         Role = current_app.user_datastore.role_model

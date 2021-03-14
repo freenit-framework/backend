@@ -12,7 +12,7 @@ blueprint = Blueprint('users', 'user')
 @blueprint.route('', endpoint='list')
 class UserListAPI(ProtectedMethodView):
     @blueprint.arguments(PageInSchema(), location='headers')
-    @blueprint.response(UserPageOutSchema)
+    @blueprint.response(200, UserPageOutSchema)
     def get(self, pagination):
         """List users"""
         User = current_app.user_datastore.user_model
@@ -22,7 +22,7 @@ class UserListAPI(ProtectedMethodView):
             return paginate(User.objects.all(), pagination)
 
     @blueprint.arguments(UserSchema)
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def post(self, args):
         """Create user"""
         User = current_app.user_datastore.user_model
@@ -34,7 +34,7 @@ class UserListAPI(ProtectedMethodView):
 
 @blueprint.route('/<user_id>', endpoint='detail')
 class UserAPI(ProtectedMethodView):
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def get(self, user_id):
         """Get user details"""
         User = current_app.user_datastore.user_model
@@ -48,7 +48,7 @@ class UserAPI(ProtectedMethodView):
         return user
 
     @blueprint.arguments(UserSchema(partial=True))
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def patch(self, args, user_id):
         """Edit user details"""
         User = current_app.user_datastore.user_model
@@ -66,7 +66,7 @@ class UserAPI(ProtectedMethodView):
         user.save()
         return user
 
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def delete(self, user_id):
         """Delete user"""
         User = current_app.user_datastore.user_model

@@ -11,7 +11,7 @@ blueprint = Blueprint('profile', 'profile')
 
 @blueprint.route('', endpoint='profile')
 class ProfileAPI(ProtectedMethodView):
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def get(self):
         """Get user details"""
         User = current_app.user_datastore.user_model
@@ -22,7 +22,7 @@ class ProfileAPI(ProtectedMethodView):
         return user
 
     @blueprint.arguments(UserSchema(partial=True))
-    @blueprint.response(UserSchema)
+    @blueprint.response(200, UserSchema)
     def patch(self, args):
         """Edit user details"""
         User = current_app.user_datastore.user_model
