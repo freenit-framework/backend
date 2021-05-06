@@ -27,6 +27,6 @@ setup() {
     fi
   fi
   if [ -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
-    flask migration run
+    # flask migration run
   fi
 }

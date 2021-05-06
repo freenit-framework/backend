@@ -5,7 +5,7 @@ BIN_DIR=`dirname $0`
 export FLASK_PORT=${FLASK_PORT:=5000}
 export FLASK_ENV="development"
 export OFFLINE=${OFFLINE:="no"}
-export SYSPKG=${SYSPKG:="no"}
+export SYSPKG="no"
 
 
 . ${BIN_DIR}/common.sh
