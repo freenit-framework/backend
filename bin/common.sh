@@ -6,7 +6,7 @@ export PROJECT_ROOT="${BIN_DIR}/.."
 . "${PROJECT_ROOT}/name.py"
 export VIRTUALENV=${VIRTUALENV:="${app_name}"}
 export FLASK_ENV=${FLASK_ENV:="production"}
-export PY_VERSION=${PY_VERSION:="3.7"}
+export PY_VERSION=${PY_VERSION:="3.8"}
 export SYSPKG=${SYSPKG:="no"}
 export DBTYPE=${DBTYPE:="sql"}
 
