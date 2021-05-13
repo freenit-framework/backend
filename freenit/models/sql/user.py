@@ -7,7 +7,7 @@ Model = db.Model
 
 class User(Model, UserMixin):
     class Meta:
-        table_name = 'users'
+        table_name = "users"
 
     active = BooleanField(default=False)
     admin = BooleanField(default=False)

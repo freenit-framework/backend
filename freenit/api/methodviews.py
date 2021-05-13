@@ -6,4 +6,5 @@ class ProtectedMethodView(MethodView):
     """
     Resource protedted by jwt
     """
+
     decorators = [jwt_required()]

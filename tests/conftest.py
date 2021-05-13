@@ -17,17 +17,17 @@ register(RoleFactory)
 
 @pytest.fixture
 def app():
-    dbtype = os.environ.get('DBTYPE', 'sql')
-    config = configs['testing']
+    dbtype = os.environ.get("DBTYPE", "sql")
+    config = configs["testing"]
     flask_app = create_app(config, dbtype=dbtype)
-    if dbtype == 'sql':
+    if dbtype == "sql":
         router = Router(
             flask_app.db.database,
-            migrate_dir=f'{DEFAULT_MIGRATE_DIR}/main',
+            migrate_dir=f"{DEFAULT_MIGRATE_DIR}/main",
         )
         router.run()
     yield flask_app
-    if dbtype == 'sql':
-        flask_app.db.close_db('')
+    if dbtype == "sql":
+        flask_app.db.close_db("")
         current_path = os.path.dirname(__file__)
-        os.remove('{}/../test.db'.format(current_path))
+        os.remove("{}/../test.db".format(current_path))

@@ -6,7 +6,7 @@ from mongoengine.fields import (
     EmailField,
     ListField,
     ReferenceField,
-    StringField
+    StringField,
 )
 
 from .role import Role
@@ -22,4 +22,4 @@ class User(Document, UserMixin):
     roles = ListField(ReferenceField(Role), default=[])
 
     def __repr__(self):
-        return '<User %r>' % self.email
+        return "<User %r>" % self.email

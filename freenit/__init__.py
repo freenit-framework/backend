@@ -1,12 +1,13 @@
 import sys
 from importlib import import_module
 
-VERSION = '0.1.25'
+VERSION = "0.1.26"
 
 
 def sqlinit(app):
     from flask_security import PeeweeUserDatastore, Security
     from .db import db
+
     db.init_app(app)
     app.db = db
     try:
@@ -31,6 +32,7 @@ def sqlinit(app):
 def mongoinit(app):
     from flask_security import Security, MongoEngineUserDatastore
     from flask_mongoengine import MongoEngine
+
     app.db = MongoEngine(app)
     try:
         User = import_module(f"{app.config['NAME']}.models.user").User
@@ -48,7 +50,7 @@ def create_app(
     config,
     app=None,
     schemas={},
-    dbtype='sql',
+    dbtype="sql",
     name=__name__,
     **kwargs,
 ):
@@ -67,41 +69,43 @@ def create_app(
         app = Flask(name, **kwargs)
         app.config.from_object(config)
 
-    @app.route('/media/<path:path>')
+    @app.route("/media/<path:path>")
     def send_media(path):
         fullPath = f"{app.config['MEDIA_PATH']}/{path}"
-        if fullPath[0] != '/':
+        if fullPath[0] != "/":
             fullPath = f"/{app.config['PROJECT_ROOT']}/{fullPath}"
         try:
             return send_file(fullPath)
         except FileNotFoundError:
-            return 'No such file', 404
+            return "No such file", 404
 
     app.sendmail = lambda message: sendmail(app.config, message)
     app.collect = Collect(app)
     app.dbtype = dbtype
-    if dbtype in ['sql', 'all']:
+    if dbtype in ["sql", "all"]:
         sqlinit(app)
-    elif dbtype == 'mongo':
+    elif dbtype == "mongo":
         mongoinit(app)
-    user_module = schemas.get('user', None)
+    user_module = schemas.get("user", None)
     if user_module is None:
 
         class UserSchema(freenit.schemas.user.BaseUserSchema):
             pass
+
     else:
         UserSchema = import_module(user_module).UserSchema
-    setattr(freenit.schemas.user, 'UserSchema', UserSchema)
-    PageOutSchema(UserSchema, sys.modules['freenit.schemas.user'])
-    role_module = schemas.get('role', None)
+    setattr(freenit.schemas.user, "UserSchema", UserSchema)
+    PageOutSchema(UserSchema, sys.modules["freenit.schemas.user"])
+    role_module = schemas.get("role", None)
     if role_module is None:
 
         class RoleSchema(freenit.schemas.role.BaseRoleSchema):
             pass
+
     else:
         RoleSchema = import_module(role_module).RoleSchema
-    setattr(freenit.schemas.role, 'RoleSchema', RoleSchema)
-    PageOutSchema(RoleSchema, sys.modules['freenit.schemas.role'])
+    setattr(freenit.schemas.role, "RoleSchema", RoleSchema)
+    PageOutSchema(RoleSchema, sys.modules["freenit.schemas.role"])
     app.jwt = JWTManager(app)
     create_api(app)
     app.cors = CORS(app, supports_credentials=True)

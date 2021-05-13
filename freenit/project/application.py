@@ -4,7 +4,7 @@ def init(config_name):
     from config import configs
     from name import app_name
 
-    app = import_module(f'{app_name}')
+    app = import_module(f"{app_name}")
     config = configs[config_name]
     application = create_app(config)
     app.create_app(application)

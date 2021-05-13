@@ -9,4 +9,4 @@ class Role(Document, RoleMixin):
     description = StringField(max_length=255)
 
     def __repr__(self):
-        return '<Role %r>' % self.name
+        return "<Role %r>" % self.name

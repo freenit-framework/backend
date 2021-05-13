@@ -14,8 +14,8 @@ except ImportError:
     from common_config import ProdConfig
 
 configs = {
-    'development': DevConfig,
-    'testing': TestConfig,
-    'production': ProdConfig,
-    'default': ProdConfig,
+    "development": DevConfig,
+    "testing": TestConfig,
+    "production": ProdConfig,
+    "default": ProdConfig,
 }

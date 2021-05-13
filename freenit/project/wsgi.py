@@ -1,3 +1,3 @@
 from application import init
 
-application = init('default')
+application = init("default")

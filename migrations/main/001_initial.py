@@ -30,16 +30,16 @@ def migrate(migrator, database, fake=False, **kwargs):
     class UserRoles(pw.Model):
         id = pw.AutoField()
         role = pw.ForeignKeyField(
-            backref='users',
-            column_name='role_id',
-            field='id',
-            model=migrator.orm['role']
+            backref="users",
+            column_name="role_id",
+            field="id",
+            model=migrator.orm["role"],
         )
         user = pw.ForeignKeyField(
-            backref='roles',
-            column_name='user_id',
-            field='id',
-            model=migrator.orm['users']
+            backref="roles",
+            column_name="user_id",
+            field="id",
+            model=migrator.orm["users"],
         )
 
         class Meta:
@@ -47,6 +47,6 @@ def migrate(migrator, database, fake=False, **kwargs):
 
 
 def rollback(migrator, database, fake=False, **kwargs):
-    migrator.remove_model('userroles')
-    migrator.remove_model('users')
-    migrator.remove_model('role')
+    migrator.remove_model("userroles")
+    migrator.remove_model("users")
+    migrator.remove_model("role")

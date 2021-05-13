@@ -5,26 +5,22 @@ from .role import UserRolesSchema
 
 
 class TokenSchema(BaseSchema):
-    email = fields.Email(required=True, description='Email')
-    password = fields.Str(required=True, description='Password')
+    email = fields.Email(required=True, description="Email")
+    password = fields.Str(required=True, description="Password")
 
 
 class BaseUserSchema(BaseSchema):
-    active = fields.Boolean(description='Activate the user')
-    admin = fields.Boolean(description='Is the user admin?')
-    email = fields.Email(required=True, description='Email')
-    password = fields.Str(
-        required=True,
-        description='Password',
-        load_only=True
-    )
+    active = fields.Boolean(description="Activate the user")
+    admin = fields.Boolean(description="Is the user admin?")
+    email = fields.Email(required=True, description="Email")
+    password = fields.Str(required=True, description="Password", load_only=True)
     roles = fields.List(
         fields.Nested(UserRolesSchema),
         many=True,
         dump_only=True,
     )
     confirmed_at = fields.DateTime(
-        description='Time when user was confirmed',
+        description="Time when user was confirmed",
         dump_only=True,
     )
 
