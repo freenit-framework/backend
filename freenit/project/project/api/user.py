@@ -1,11 +1,13 @@
 from fastapi import Request
-from ..models.user import fastapiUsers, UserDB
-from ..auth import cookieAuthentication
-from ..config import getConfig
+
+from freenit.auth import cookieAuthentication
+from freenit.config import getConfig
+
+from ..models.user import UserDB, fastapiUsers
 from .router import api
 
-
 config = getConfig()
+
 
 def on_after_register(user: UserDB, request: Request):
     print(f"User {user.id} has registered.")

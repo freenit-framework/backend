@@ -1,10 +1,6 @@
 include README.md
 include LICENSE
-include common_config.py
-include config.py
 include name.py
-graft migrations
+graft alembic
 graft tests
 graft freenit/project
-graft freenit/static
-graft freenit/templates

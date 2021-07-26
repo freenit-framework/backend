@@ -1,33 +1,22 @@
 import os
-
 import pytest
-from peewee_migrate import Router
-from peewee_migrate.router import DEFAULT_MIGRATE_DIR
 from pytest_factoryboy import register
+from .factories import UserFactory
 
-from config import configs
-from freenit import create_app
-
-from .factories import AdminFactory, RoleFactory, UserFactory
 
 register(UserFactory)
-register(AdminFactory)
-register(RoleFactory)
 
 
 @pytest.fixture
-def app():
-    dbtype = os.environ.get("DBTYPE", "sql")
-    config = configs["testing"]
-    flask_app = create_app(config, dbtype=dbtype)
-    if dbtype == "sql":
-        router = Router(
-            flask_app.db.database,
-            migrate_dir=f"{DEFAULT_MIGRATE_DIR}/main",
-        )
-        router.run()
-    yield flask_app
-    if dbtype == "sql":
-        flask_app.db.close_db("")
-        current_path = os.path.dirname(__file__)
-        os.remove("{}/../test.db".format(current_path))
+def db_setup():
+    from freenit.app import app as fastapp
+    from alembic.config import Config
+    from alembic import command
+
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+
+    yield fastapp
+
+    current_path = os.path.dirname(__file__)
+    os.remove(f'{current_path}/../test.sqlite')

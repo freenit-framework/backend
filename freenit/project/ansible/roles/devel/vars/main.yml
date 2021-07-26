@@ -1,0 +1,3 @@
+---
+devel_packages:
+  - name: "{{ python_prefix }}-freenit"

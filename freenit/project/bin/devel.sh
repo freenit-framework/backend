@@ -1,31 +1,19 @@
 #!/bin/sh
 
-
 BIN_DIR=`dirname $0`
-PROJECT_ROOT="${BIN_DIR}/.."
-export FLASK_PORT=${FLASK_PORT:=5000}
-export FLASK_ENV="development"
-export OFFLINE=${OFFLINE:=no}
-export SYSPKG=${SYSPKG:="no"}
-export WEBSOCKET=${WEBSOCKET:="no"}
+export FREENIT_ENV="dev"
+export OFFLINE=${OFFLINE:="no"}
 
 
 . ${BIN_DIR}/common.sh
 setup no
 
-
-if [ "${SYSPKG}" = "no" ]; then
-  if [ "${OFFLINE}" != "yes" ]; then
-    pip install -U --upgrade-strategy eager -e ".[dev]"
-  fi
+if [ ! -e "alembic/versions" ]; then
+  mkdir alembic/versions
+  alembic revision --autogenerate -m initial
+  alembic upgrade head
 fi
-
-
-if [ "${WEBSOCKET}" = "yes" ]; then
-  export WEBSOCKET_FLAGS="--gevent 16 --gevent-monkey-patch --http-websockets"
-fi
-
 
 echo "Backend"
 echo "==============="
-uwsgi --master --http 0.0.0.0:${FLASK_PORT} ${WEBSOCKET_FLAGS} --python-auto-reload 1 --honour-stdin --wsgi-file devel.py
+uvicorn main:app --host 0.0.0.0 --port 5000 --reload

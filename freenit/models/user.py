@@ -1,8 +1,7 @@
 from fastapi_users import FastAPIUsers, models
 from fastapi_users.db import OrmarBaseUserModel, OrmarUserDatabase
-
-from freenit.auth import authBackends
-from freenit.models.mixins import MainMeta
+from ..auth import authBackends
+from .mixins import MainMeta
 
 
 class User(models.BaseUser):

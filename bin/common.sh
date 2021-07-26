@@ -5,10 +5,8 @@ export BIN_DIR=`dirname $0`
 export PROJECT_ROOT="${BIN_DIR}/.."
 . "${PROJECT_ROOT}/name.py"
 export VIRTUALENV=${VIRTUALENV:="${app_name}"}
-export FLASK_ENV=${FLASK_ENV:="production"}
-export PY_VERSION=${PY_VERSION:="3.8"}
+export FREENIT_ENV=${FREENIT_ENV:="prod"}
 export SYSPKG=${SYSPKG:="no"}
-export DBTYPE=${DBTYPE:="sql"}
 
 
 setup() {
@@ -23,10 +21,7 @@ setup() {
     if [ "${update}" != "no" ]; then
       pip install -U pip
       pip install -U wheel
-      pip install -U --upgrade-strategy eager -e ".[${DBTYPE}]"
+      pip install -U --upgrade-strategy eager -e .
     fi
-  fi
-  if [ -e "${BIN_DIR}/../migrations/main/001_initial.py" ]; then
-    # flask migration run
   fi
 }

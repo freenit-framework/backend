@@ -13,14 +13,13 @@ ansible/site.yml
 build
 cbsd.conf
 coverage.xml
-database.db
 fstab
 junit.xml
 local_config.py
 project.mk
 site.retry
-test.db
 vars.mk
 
 dist/
 *.egg-info/
+*.sqlite

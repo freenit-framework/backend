@@ -1,8 +1,6 @@
 #!/bin/sh
 
-
 export OFFLINE=${OFFLINE:="no"}
-export SYSPKG="no"
 BIN_DIR=`dirname $0`
 . ${BIN_DIR}/common.sh
 
@@ -13,5 +11,6 @@ else
   setup
 fi
 
-
-flask admin create
+# if [ -e "alembic/versions" ]; then
+  # alembic upgrade head
+# fi
