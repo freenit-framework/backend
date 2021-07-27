@@ -34,8 +34,6 @@ mv project ${NAME}
 echo "app_name=\"${NAME}\"  # noqa: E225" >name.py
 echo "DEVEL_MODE = YES" >vars.mk
 echo "# ${NAME}" >README.md
-echo "- onelove-roles.freebsd_freenit" >>requirements.yml
-echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
 
 
 cat >Makefile<< EOF
@@ -75,7 +73,6 @@ dist/
 *.egg-info/
 EOF
 
-mkdir alembic
 cat >alembic/env.py<<EOF
 import os
 import sys

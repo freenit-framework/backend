@@ -28,6 +28,7 @@ setup() {
       pip install -U --upgrade-strategy eager -e "${INSTALL_TARGET}"
     fi
   fi
+
   if [ ! -e "alembic/versions" ]; then
     mkdir alembic/versions
     alembic revision --autogenerate -m initial

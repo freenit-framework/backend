@@ -1,2 +1,2 @@
 from .router import api
-from .user import UserDB
+from freenit.api.user import UserDB
