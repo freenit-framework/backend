@@ -25,4 +25,4 @@ configs[ProdConfig.envname] = ProdConfig()
 
 def getConfig():
     config_name = os.getenv("FREENIT_ENV", "prod")
-    return configs[config_name]
+    return configs.get(config_name, configs["prod"])

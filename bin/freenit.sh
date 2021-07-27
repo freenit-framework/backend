@@ -38,7 +38,7 @@ echo "- onelove-roles.freebsd_freenit" >>requirements.yml
 echo "- onelove-roles.freebsd_freenit_sql" >>requirements.yml
 
 
-cat > Makefile << EOF
+cat >Makefile<< EOF
 .include <name.py>
 
 USE_FREENIT = YES
@@ -73,6 +73,24 @@ vars.mk
 dist/
 *.sqlite
 *.egg-info/
+EOF
+
+cat >alembic/env.py<<EOF
+import os
+import sys
+
+import ${NAME}.app
+from alembic import context
+from freenit.migration import run_migrations_offline, run_migrations_online
+
+
+sys.path.append(os.getcwd())
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
 EOF
 
 

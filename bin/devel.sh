@@ -6,13 +6,7 @@ export OFFLINE=${OFFLINE:="no"}
 
 
 . ${BIN_DIR}/common.sh
-setup no
-
-if [ ! -e "alembic/versions" ]; then
-  mkdir alembic/versions
-  alembic revision --autogenerate -m initial
-  alembic upgrade head
-fi
+setup
 
 echo "Backend"
 echo "==============="
