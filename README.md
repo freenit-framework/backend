@@ -1,1 +1,1 @@
-# fastapi-playground
+# Freenit Backend
