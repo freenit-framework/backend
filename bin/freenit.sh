@@ -25,9 +25,11 @@ cp -r ${PROJECT_ROOT}/project/* .
 case `uname` in
   *BSD)
     ${SED_CMD} '' -e "s/NAME/${NAME}/g" setup.py
+    ${SED_CMD} '' -e "s/NAME/${NAME}/g" main.py
     ;;
   *)
     ${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
+    ${SED_CMD} -e "s/NAME/${NAME}/g" main.py
     ;;
 esac
 mv project ${NAME}
