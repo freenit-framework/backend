@@ -40,6 +40,9 @@ setup(
         'build': [
             'twine',
         ],
+        'dev': [
+            'uvicorn',
+        ],
         'test': [
             'pytest-asyncio',
             'pytest-factoryboy',
