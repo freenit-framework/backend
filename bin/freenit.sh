@@ -75,6 +75,7 @@ dist/
 *.egg-info/
 EOF
 
+mkdir alembic
 cat >alembic/env.py<<EOF
 import os
 import sys
