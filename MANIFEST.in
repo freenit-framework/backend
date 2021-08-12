@@ -1,5 +1,6 @@
 include README.md
 include LICENSE
+include alembic.ini
 include name.py
 graft alembic
 graft tests
