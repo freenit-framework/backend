@@ -1,6 +1,5 @@
 import os
 
-
 try:
     from .local_config import DevConfig
 except ImportError:
@@ -15,7 +14,6 @@ try:
     from .local_config import ProdConfig
 except ImportError:
     from .base_config import ProdConfig
-
 
 configs = {}
 configs[DevConfig.envname] = DevConfig()

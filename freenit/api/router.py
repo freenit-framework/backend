@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from ..config import getConfig
 
-
 config = getConfig()
 api = FastAPI()
 api.state.database = config.database

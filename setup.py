@@ -36,12 +36,9 @@ setup(
     packages=find_packages(exclude=['tests*']),
     python_requires='>=3.8',
     install_requires=[
-        'aiosqlite',
         'alembic',
-        'databases',
-        'email-validator',
-        'fastapi-users',
-        'ormar',
+        'aiosqlite',
+        'fastapi-users-db-ormar',
         'uvicorn',
     ],
     extras_require={

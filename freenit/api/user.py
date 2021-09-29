@@ -1,23 +1,7 @@
 from fastapi import Request
 from ..models.user import fastapiUsers, UserDB
 from ..auth import cookieAuthentication
-from ..config import getConfig
 from .router import api
-
-
-config = getConfig()
-
-def on_after_register(user: UserDB, request: Request):
-    print(f"User {user.id} has registered.")
-
-
-def on_after_forgot_password(user: UserDB, token: str, request: Request):
-    print(f"User {user.id} has forgot their password. Reset token: {token}")
-
-
-def after_verification_request(user: UserDB, token: str, request: Request):
-    print(f"Verification requested for user {user.id}. Verification token: {token}")
-
 
 tags = ["auth"]
 api.include_router(
@@ -26,20 +10,28 @@ api.include_router(
     tags=tags,
 )
 api.include_router(
-    fastapiUsers.get_register_router(on_after_register), prefix="/auth", tags=tags
+    fastapiUsers.get_register_router(on_after_register),
+    prefix="/auth",
+    tags=tags
 )
 api.include_router(
     fastapiUsers.get_reset_password_router(
-        config.secret, after_forgot_password=on_after_forgot_password
+        config.secret,
+        after_forgot_password=on_after_forgot_password
     ),
     prefix="/auth",
     tags=tags,
 )
 api.include_router(
     fastapiUsers.get_verify_router(
-        config.secret, after_verification_request=after_verification_request
+        config.secret,
+        after_verification_request=after_verification_request
     ),
     prefix="/auth",
     tags=tags,
 )
-api.include_router(fastapiUsers.get_users_router(), prefix="/users", tags=["users"])
+api.include_router(
+    fastapiUsers.get_users_router(),
+    prefix="/users",
+    tags=["users"]
+)

@@ -6,7 +6,7 @@ export OFFLINE=${OFFLINE:="no"}
 
 
 . ${BIN_DIR}/common.sh
-setup no
+setup
 
 if [ ! -e "alembic/versions" ]; then
   mkdir alembic/versions
