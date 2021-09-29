@@ -37,6 +37,12 @@ setup(
     python_requires='>=3.8',
     install_requires=['freenit'],
     extras_require={
+        'build': [
+            'twine',
+        ],
+        'dev': [
+            'uvicorn',
+        ],
         'test': [
             'pytest-asyncio',
             'pytest-factoryboy',

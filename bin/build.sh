@@ -2,13 +2,11 @@
 
 BIN_DIR=`dirname $0`
 PROJECT_DIR="${BIN_DIR}"
+export FREENIT_ENV="build"
 . ${BIN_DIR}/common.sh
 
 
 setup no
-pip install -U pip
-pip install -U wheel
-pip install -U --upgrade-strategy eager -e ".[build]"
 
 
 rm -rf *.egg-info build dist

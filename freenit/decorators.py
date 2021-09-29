@@ -52,4 +52,3 @@ class route:
                 destroy = destroyDeco(origDestroy)
 
         return Wrapped
-

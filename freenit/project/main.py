@@ -1,4 +1,4 @@
-from freenit.app import app
+from NAME.app import app
 from freenit.config import getConfig
 
 

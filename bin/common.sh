@@ -17,11 +17,21 @@ setup() {
     fi
     . ${HOME}/.virtualenvs/${VIRTUALENV}/bin/activate
 
+    INSTALL_TARGET=".[${FREENIT_ENV}]"
+    if [ "${FREENIT_ENV}" = "prod" ]; then
+      INSTALL_TARGET="."
+    fi
     cd ${PROJECT_ROOT}
     if [ "${update}" != "no" ]; then
       pip install -U pip
       pip install -U wheel
-      pip install -U --upgrade-strategy eager -e .
+      pip install -U --upgrade-strategy eager -e "${INSTALL_TARGET}"
     fi
   fi
+
+  if [ ! -e "alembic/versions" ]; then
+    mkdir alembic/versions
+    alembic revision --autogenerate -m initial
+  fi
+  alembic upgrade head
 }
