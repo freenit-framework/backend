@@ -1,7 +1,9 @@
-from fastapi import Request
-from ..models.user import fastapiUsers, UserDB
+from ..models.user import fastapiUsers
 from ..auth import cookieAuthentication
+from ..config import getConfig
 from .router import api
+
+config = getConfig()
 
 tags = ["auth"]
 api.include_router(
@@ -10,23 +12,17 @@ api.include_router(
     tags=tags,
 )
 api.include_router(
-    fastapiUsers.get_register_router(on_after_register),
+    fastapiUsers.get_register_router(),
     prefix="/auth",
     tags=tags
 )
 api.include_router(
-    fastapiUsers.get_reset_password_router(
-        config.secret,
-        after_forgot_password=on_after_forgot_password
-    ),
+    fastapiUsers.get_reset_password_router(),
     prefix="/auth",
     tags=tags,
 )
 api.include_router(
-    fastapiUsers.get_verify_router(
-        config.secret,
-        after_verification_request=after_verification_request
-    ),
+    fastapiUsers.get_verify_router(),
     prefix="/auth",
     tags=tags,
 )

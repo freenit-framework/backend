@@ -1,11 +1,6 @@
 from typing import Optional
 
-import ormar
 import pydantic
-
-from ..config import getConfig
-
-config = getConfig()
 
 
 class AllOptional(pydantic.main.ModelMetaclass):
@@ -18,8 +13,3 @@ class AllOptional(pydantic.main.ModelMetaclass):
                 annotations[field] = Optional[annotations[field]]
         namespaces["__annotations__"] = annotations
         return super().__new__(self, name, bases, namespaces, **kwargs)
-
-
-class MainMeta(ormar.ModelMeta):
-    metadata = config.metadata
-    database = config.database

@@ -9,10 +9,10 @@ export OFFLINE=${OFFLINE:="no"}
 setup
 
 if [ ! -e "alembic/versions" ]; then
-  mkdir alembic/versions
+  mkdir -p alembic/versions
   alembic revision --autogenerate -m initial
-  alembic upgrade head
 fi
+alembic upgrade head
 
 echo "Backend"
 echo "==============="

@@ -1,4 +1,5 @@
 from logging.config import fileConfig
+from .models import *
 
 from alembic import context
 from freenit.config import getConfig

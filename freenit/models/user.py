@@ -1,27 +1,20 @@
 from typing import Optional
 
-import databases
-import sqlalchemy
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, models
-from fastapi_users.authentication import JWTAuthentication
 from fastapi_users.db import OrmarBaseUserModel, OrmarUserDatabase
 
+from ..config import getConfig
 from ..auth import authBackends
-from .mixins import MainMeta
 
-SECRET = "SECRET"
-DATABASE_URL = "sqlite:///test.db"
-metadata = sqlalchemy.MetaData()
-database = databases.Database(DATABASE_URL)
-engine = sqlalchemy.create_engine(DATABASE_URL)
+config = getConfig()
 
 
 class UserModel(OrmarBaseUserModel):
     class Meta:
         tablename = "users"
-        metadata = metadata
-        database = database
+        metadata = config.metadata
+        database = config.database
 
 
 class User(models.BaseUser):
@@ -42,8 +35,8 @@ class UserDB(User, models.BaseUserDB):
 
 class UserManager(BaseUserManager[UserCreate, UserDB]):
     user_db_model = UserDB
-    reset_password_token_secret = SECRET
-    verification_token_secret = SECRET
+    reset_password_token_secret = config.secret
+    verification_token_secret = config.secret
 
     async def on_after_register(
         self,
@@ -83,7 +76,7 @@ def get_user_manager(user_db: OrmarUserDatabase = Depends(get_user_db)):
 
 fastapiUsers = FastAPIUsers(
     get_user_manager,
-    [authBackends],
+    authBackends,
     User,
     UserCreate,
     UserUpdate,
