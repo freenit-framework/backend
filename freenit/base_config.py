@@ -1,6 +1,7 @@
 import socket
 import sqlalchemy
 import databases
+from importlib import import_module
 
 
 class BaseConfig:
@@ -17,6 +18,7 @@ class BaseConfig:
     engine = None
     secret = "SECRET"
     cookie_secure = True
+    user = 'freenit.models.user'
 
     def __init__(self):
         self.database = databases.Database(self.dburl)
@@ -26,6 +28,9 @@ class BaseConfig:
         return (
             f"<{self.envname} config: {self.name}({self.version}) on {self.hostname}>"
         )
+
+    def get_user(self):
+        return import_module(self.user)
 
 
 class DevConfig(BaseConfig):

@@ -4,8 +4,8 @@ from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, models
 from fastapi_users.db import OrmarBaseUserModel, OrmarUserDatabase
 
-from ..config import getConfig
 from ..auth import authBackends
+from ..config import getConfig
 
 config = getConfig()
 
@@ -82,5 +82,3 @@ fastapiUsers = FastAPIUsers(
     UserUpdate,
     UserDB,
 )
-
-current_active_user = fastapiUsers.current_user(active=True)
