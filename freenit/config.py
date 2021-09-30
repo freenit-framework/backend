@@ -16,11 +16,11 @@ except ImportError:
     from .base_config import ProdConfig
 
 configs = {}
-configs[DevConfig.envname] = DevConfig()
-configs[TestConfig.envname] = TestConfig()
-configs[ProdConfig.envname] = ProdConfig()
+configs[DevConfig.envname()] = DevConfig()
+configs[TestConfig.envname()] = TestConfig()
+configs[ProdConfig.envname()] = ProdConfig()
 
 
 def getConfig():
-    config_name = os.getenv("FREENIT_ENV", "prod")
-    return configs.get(config_name, configs["prod"])
+    config_name = os.getenv("FREENIT_ENV", ProdConfig.envname())
+    return configs.get(config_name, configs[ProdConfig.envname()])
