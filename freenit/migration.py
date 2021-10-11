@@ -3,6 +3,7 @@ from .models import *
 
 from alembic import context
 from freenit.config import getConfig
+import freenit.app
 
 config = getConfig()
 fileConfig(context.config.config_file_name)

@@ -4,12 +4,13 @@ import pydantic
 
 
 class AllOptional(pydantic.main.ModelMetaclass):
-    def __new__(self, name, bases, namespaces, **kwargs):
+    def __new__(cls, name, bases, namespaces, **kwargs):
         annotations = namespaces.get("__annotations__", {})
         for base in bases:
             annotations = {**annotations, **base.__annotations__}
         for field in annotations:
             if not field.startswith("__"):
-                annotations[field] = Optional[annotations[field]]
+                f = annotations[field]
+                annotations[field] = Optional[f]
         namespaces["__annotations__"] = annotations
-        return super().__new__(self, name, bases, namespaces, **kwargs)
+        return super().__new__(cls, name, bases, namespaces, **kwargs)

@@ -45,6 +45,9 @@ setup(
         'build': [
             'twine',
         ],
+        'dev': [
+            'black',
+        ],
         'test': [
             'pytest-asyncio',
             'pytest-factoryboy',

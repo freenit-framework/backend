@@ -11,10 +11,8 @@ config = getConfig()
 
 
 class UserModel(OrmarBaseUserModel):
-    class Meta:
+    class Meta(config.meta):
         tablename = "users"
-        metadata = config.metadata
-        database = config.database
 
 
 class User(models.BaseUser):

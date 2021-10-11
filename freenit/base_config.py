@@ -17,10 +17,15 @@ class BaseConfig:
     secret = "SECRET"
     cookie_secure = True
     user = 'freenit.models.user'
+    meta = None
 
     def __init__(self):
         self.database = databases.Database(self.dburl)
         self.engine = sqlalchemy.create_engine(self.dburl)
+        class Meta:
+            database = self.database
+            metadata = self.metadata
+        self.meta = Meta
 
     def __repr__(self):
         return (
