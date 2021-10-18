@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from .api import api
 from .config import getConfig
 

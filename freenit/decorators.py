@@ -1,6 +1,6 @@
 def FreenitAPI(app):
     class route:
-        def __init__(self, route, tags=['object'], many=False):
+        def __init__(self, route, tags=["object"], many=False):
             self.app = app
             self.route = route
             self.tags = tags
@@ -15,25 +15,33 @@ def FreenitAPI(app):
             getDeco = self.app.get(
                 self.route,
                 summary=f"Get {self.tags[0]}{getSuffix}",
-                response_model=origGet.__annotations__.get('return') if origGet else None,
+                response_model=origGet.__annotations__.get("return")
+                if origGet
+                else None,
                 tags=self.tags,
             )
             postDeco = self.app.post(
                 self.route,
                 summary=f"Create {self.tags[0]}",
-                response_model=origPost.__annotations__.get('return') if origPost else None,
+                response_model=origPost.__annotations__.get("return")
+                if origPost
+                else None,
                 tags=self.tags,
             )
             patchDeco = self.app.patch(
                 self.route,
                 summary=f"Edit {self.tags[0]}",
-                response_model=origPatch.__annotations__.get('return') if origPatch else None,
+                response_model=origPatch.__annotations__.get("return")
+                if origPatch
+                else None,
                 tags=self.tags,
             )
             deleteDeco = self.app.delete(
                 self.route,
                 summary=f"Destroy {self.tags[0]}",
-                response_model=origDelete.__annotations__.get('return') if origDelete else None,
+                response_model=origDelete.__annotations__.get("return")
+                if origDelete
+                else None,
                 tags=self.tags,
             )
 
@@ -48,4 +56,5 @@ def FreenitAPI(app):
                     delete = deleteDeco(origDelete)
 
             return Wrapped
+
     return route
