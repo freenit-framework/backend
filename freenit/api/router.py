@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from ..decorators import FreenitAPI
+
 from ..config import getConfig
+from ..decorators import FreenitAPI
 
 api = FastAPI()
 route = FreenitAPI(api)
