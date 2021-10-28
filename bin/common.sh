@@ -10,7 +10,8 @@ export SYSPKG=${SYSPKG:="no"}
 
 
 setup() {
-  if [ "${SYSPKG}" = "no" ]; then
+  cd ${PROJECT_ROOT}
+  if [ "${SYSPKG}" != "yes" ]; then
     update=${1}
     if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
         python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"
@@ -21,7 +22,6 @@ setup() {
     if [ "${FREENIT_ENV}" = "prod" ]; then
       INSTALL_TARGET="."
     fi
-    cd ${PROJECT_ROOT}
     if [ "${update}" != "no" ]; then
       pip install -U pip
       pip install -U wheel
