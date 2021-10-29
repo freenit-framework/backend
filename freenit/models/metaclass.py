@@ -1,9 +1,9 @@
 from typing import Optional
 
-import pydantic
+import ormar
 
 
-class AllOptional(pydantic.main.ModelMetaclass):
+class AllOptional(ormar.models.metaclass.ModelMetaclass):
     def __new__(cls, name, bases, namespaces, **kwargs):
         annotations = namespaces.get("__annotations__", {})
         for base in bases:

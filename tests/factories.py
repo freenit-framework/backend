@@ -1,8 +1,14 @@
 import factory
+
 from freenit.models.user import UserModel
+from freenit.config import getConfig
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+config = getConfig()
+auth = config.get_user()
+UserModel = auth.UserModel
 
 
 class UserFactory(factory.Factory):

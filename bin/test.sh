@@ -6,4 +6,4 @@ export FREENIT_ENV="test"
 
 
 setup
-pytest -v
+pytest -v --ignore=freenit/project/

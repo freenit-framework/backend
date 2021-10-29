@@ -1,8 +1,9 @@
 import pytest
 
+from freenit.config import getConfig
 
-class TestUser():
 
+class TestUser:
     @pytest.mark.asyncio
     async def test_get_me(self, client, user_factory):
 
