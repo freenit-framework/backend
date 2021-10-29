@@ -36,9 +36,10 @@ setup(
     packages=find_packages(exclude=['tests*']),
     python_requires='>=3.8',
     install_requires=[
-        'alembic',
         'aiosqlite',
+        'alembic',
         'fastapi-users-db-ormar',
+        'requests',
         'uvicorn',
     ],
     extras_require={
