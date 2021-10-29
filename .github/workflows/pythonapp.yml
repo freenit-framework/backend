@@ -7,25 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7
+        python-version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
     - name: Test and lint
       run: |
         bin/test.sh
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1.6
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        files: junit.xml
-    - name: Monitor coverage
-      uses: slavcodev/coverage-monitor-action@1.2.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        clover_file: "coverage.xml"
-        threshold_alert: 10
-        threshold_warning: 50
