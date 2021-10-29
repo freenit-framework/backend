@@ -8,10 +8,12 @@ from alembic import command
 from alembic.config import Config
 from name import app_name
 
-from .factories import UserFactory
+from .client import Client
+from .factories import SuperUserFactory, UserFactory
 
 alembic_cfg = Config("alembic.ini")
 register(UserFactory)
+register(SuperUserFactory)
 
 
 @pytest.fixture
@@ -24,3 +26,8 @@ def db_setup():
 
     current_path = os.path.dirname(__file__)
     os.remove(f"{current_path}/../test.sqlite")
+
+
+@pytest.fixture
+def client(db_setup):
+    return Client(db_setup)
