@@ -1,10 +1,11 @@
 import os
 import pytest
 from pytest_factoryboy import register
-from .factories import UserFactory
-
+from .factories import UserFactory, SuperUserFactory
+from .client import Client
 
 register(UserFactory)
+register(SuperUserFactory)
 
 
 @pytest.fixture
@@ -20,3 +21,8 @@ def db_setup():
 
     current_path = os.path.dirname(__file__)
     os.remove(f'{current_path}/../test.sqlite')
+
+
+@pytest.fixture
+def client(db_setup):
+    return Client(db_setup)
