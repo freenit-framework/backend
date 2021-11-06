@@ -1,6 +1,4 @@
-from typing import Optional
-
-from fastapi import Depends, Request
+from fastapi import Depends
 from fastapi_users import BaseUserManager, FastAPIUsers
 from fastapi_users.authentication import CookieAuthentication
 from fastapi_users.db import OrmarUserDatabase
@@ -22,21 +20,6 @@ class UserManager(BaseUserManager[auth.UserCreate, auth.UserDB]):
     reset_password_token_secret = config.secret
     verification_token_secret = config.secret
 
-    async def on_after_register(
-        self, user: auth.UserDB, request: Optional[Request] = None
-    ):
-        pass
-
-    async def on_after_forgot_password(
-        self, user: auth.UserDB, token: str, request: Optional[Request] = None
-    ):
-        pass
-
-    async def after_verification_request(
-        self, user: auth.UserDB, token: str, request: Optional[Request] = None
-    ):
-        pass
-
 
 def get_user_db():
     yield OrmarUserDatabase(auth.UserDB, auth.UserModel)
@@ -55,7 +38,14 @@ fastapiUsers = FastAPIUsers(
     auth.UserDB,
 )
 
-current_user = fastapiUsers.current_user()
-current_active_user = fastapiUsers.current_user(active=True)
-current_active_verified_user = fastapiUsers.current_user(active=True, verified=True)
-current_superuser = fastapiUsers.current_user(active=True, superuser=True)
+
+class CurrentUser:
+    def __init__(self) -> None:
+        self.user = fastapiUsers.current_user()
+        self.active = fastapiUsers.current_user(active=True)
+        self.verified = fastapiUsers.current_user(verified=True)
+        self.active_verified = fastapiUsers.current_user(active=True, verified=True)
+        self.superuser = fastapiUsers.current_user(active=True, superuser=True)
+
+
+current_user = CurrentUser()
