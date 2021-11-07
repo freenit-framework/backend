@@ -2,6 +2,7 @@
 .provisioned
 .pytest_cache
 __pycache__
+*.py[c,o]
 
 ansible/group_vars/all
 ansible/inventory/inventory
