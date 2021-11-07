@@ -54,6 +54,7 @@ from typing import List
 
 import ormar
 from fastapi import HTTPException
+from freenit.config import getConfig
 from freenit.router import route
 
 from ..models.blog import Blog, BlogOptional
@@ -66,7 +67,12 @@ class BlogListAPI():
         return await Blog.objects.all()
 
     @staticmethod
-    async def post(blog: Blog) -> Blog:
+    async def post(
+        blog: Blog,
+        user_data: auth.UserDB = Depends(current_user.active),
+    ) -> Blog:
+        user = await auth.UserModel.objects.get(id=user_data.id)
+        blog.user = user
         await blog.save()
         return blog
 
