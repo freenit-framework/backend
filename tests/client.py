@@ -11,7 +11,8 @@ class Client(TestClient):
     }
 
     def url_for(self, name, host=socket.gethostname(), **kwargs):
-        return f'http://{host}:5000{self.app.url_path_for(name, **kwargs)}'
+        return f'http://{host}:5000/api/v1{name}' + \
+                            ''.join([str(f'/{x}') for x in kwargs.values()])
         # figure out how to get automaticly protocol/port
 
     def set_token(self, token_item=None):
@@ -61,7 +62,7 @@ class Client(TestClient):
         self.set_token(token)
         return super().delete(url, headers=self.headers)
 
-    def login(self, user, endpoint='login'):
+    def login(self, user, endpoint='/auth/login'):
         data = {
             'username': user.email,
             'password': 'Sekrit',
