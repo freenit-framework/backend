@@ -16,7 +16,7 @@ class TestAuth():
         await user.save()
         client.login(user=user)
 
-        response = client.post('logout', type='url')
+        response = client.post('/auth/logout', type='url')
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -25,7 +25,7 @@ class TestAuth():
             "email": "user3@example.com",
             "password": "Sekrit",
         }
-        response = client.post('register', data=data)
+        response = client.post('/auth/register', data=data)
         assert response.status_code == 201
 
     @pytest.mark.asyncio
@@ -34,7 +34,7 @@ class TestAuth():
         await user.save()
         client.login(user=user)
 
-        response = client.post('forgot_password', data={'email': user.email})
+        response = client.post('/auth/forgot-password', data={'email': user.email})
 
         assert response.status_code == 202
 
@@ -45,8 +45,7 @@ class TestAuth():
         client.login(user=user)
 
         data = {'email': user.email}
-        response = client.post('request_verify_token', data=data)
-
+        response = client.post('/auth/request-verify-token', data=data)
         assert response.status_code == 202
 
     @pytest.mark.asyncio

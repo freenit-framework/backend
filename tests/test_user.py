@@ -16,7 +16,7 @@ class TestUser:
         await user.save()
         client.login(user=user)
 
-        response = client.get("me")
+        response = client.get("/users/me")
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -33,7 +33,7 @@ class TestUser:
             "is_active": True,
             "is_verified": True,
         }
-        response = client.patch("update_me", data=data)
+        response = client.patch("/users/me", data=data)
         assert response.status_code == 200
         assert response.json()["email"] == data["email"]
 
@@ -45,7 +45,7 @@ class TestUser:
         await admin.save()
         client.login(user=admin)
 
-        response = client.get("get_user", id=str(admin.id))
+        response = client.get("/users", id=str(admin.id))
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -62,7 +62,7 @@ class TestUser:
             "is_active": True,
             "is_verified": True,
         }
-        response = client.patch("update_user", data=data, id=str(admin.id))
+        response = client.patch("/users", data=data, id=str(admin.id))
         assert response.status_code == 200
         assert response.json()["email"] == data["email"]
 
@@ -78,5 +78,5 @@ class TestUser:
         user = user_factory()
         await user.save()
 
-        response = client.delete("delete_user", id=str(user.id))
+        response = client.delete("/users", id=str(user.id))
         assert response.status_code == 204
