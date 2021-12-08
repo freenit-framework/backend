@@ -11,7 +11,7 @@ export SYSPKG=${SYSPKG:="no"}
 
 setup() {
   cd ${PROJECT_ROOT}
-  if [ "${SYSPKG}" != "yes" ]; then
+  if [ "${SYSPKG}" != "YES" ]; then
     update=${1}
     if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
         python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"

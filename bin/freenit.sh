@@ -58,6 +58,7 @@ backend() {
   cat >Makefile<< EOF
 .include <name.py>
 
+SYSPKG = YES
 USE_FREENIT = YES
 SERVICE != echo \${app_name}
 REGGAE_PATH := /usr/local/share/reggae
@@ -216,6 +217,7 @@ cd "\${PROJECT_ROOT}"
 rm -rf build
 ${PACKAGE_MANAGER} build
 EOF
+  chmod +x collect.sh
 
   cd ..
 
@@ -228,7 +230,7 @@ USE_FREENIT = YES
 SERVICE != echo \${app_name}front
 REGGAE_PATH := /usr/local/share/reggae
 
-.include <${REGGAE_PATH}/mk/service.mk>
+.include <\${REGGAE_PATH}/mk/service.mk>
 EOF
 
   mkdir -p templates ansible/{group_vars,inventory,roles}
@@ -410,8 +412,10 @@ SERVICES += backend https://github.com/freenit-framework/backend
 SERVICES += frontend https://github.com/freenit-framework/frontend
 USE_FREENIT = YES
 
-.include <${REGGAE_PATH}/mk/project.mk>
+.include <\${REGGAE_PATH}/mk/project.mk>
 EOF
+
+  echo "DEVEL_MODE = YES" >vars.mk
 }
 
 project
