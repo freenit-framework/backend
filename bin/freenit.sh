@@ -65,31 +65,27 @@ REGGAE_PATH := /usr/local/share/reggae
 .include <\${REGGAE_PATH}/mk/service.mk>
 EOF
 
-  cat >.gitignore <<EOF
-.coverage
-.provisioned
-.pytest_cache
-__pycache__
+  mkdir -p templates ansible/{group_vars,inventory,roles}
+  touch ansible/{group_vars,inventory,roles}/.keep
+  echo ".include <${REGGAE_PATH}/mk/ansible.mk>" >provisioners.yml
 
-ansible/group_vars/all
-ansible/inventory/inventory
-ansible/roles/*
-ansible/site.yml
-!ansible/roles/.keep
-!ansible/roles/devel
+  cat >requirements.yml<<EOF
+- onelove-roles.freebsd-common
+- onelove-roles.freebsd_repo
+- onelove-roles.freebsd_freenit
+EOF
 
-build
-cbsd.conf
-coverage.xml
-fstab
-local_config.py
-project.mk
-site.retry
-vars.mk
+  cat >templates/site.yml.tpl<<EOF
+# -*- mode: ansible -*-
+# vi: set ft=ansible :
 
-dist/
-*.sqlite
-*.egg-info/
+---
+- name: SERVICE provisioning
+  hosts: SERVICE
+  roles:
+    - onelove-roles.freebsd-common
+    - onelove-roles.freebsd_repo
+    - onelove-roles.freebsd_freenit
 EOF
 
   cat >alembic/env.py<<EOF
@@ -110,6 +106,34 @@ else:
     run_migrations_online()
 EOF
 
+  cat >.gitignore<<EOF
+.coverage
+.pytest_cache
+__pycache__
+*.py[c,o]
+
+ansible/group_vars/all
+ansible/inventory/inventory
+ansible/roles/*
+ansible/site.yml
+!ansible/roles/.keep
+!ansible/roles/devel
+
+alembic/versions/*
+build
+cbsd.conf
+coverage.xml
+fstab
+junit.xml
+local_config.py
+project.mk
+site.retry
+vars.mk
+
+dist/
+*.egg-info/
+*.sqlite
+EOF
 
   echo "Success! Please edit setup.py!"
   cd ..
@@ -206,10 +230,36 @@ REGGAE_PATH := /usr/local/share/reggae
 
 .include <${REGGAE_PATH}/mk/service.mk>
 EOF
+
+  mkdir -p templates ansible/{group_vars,inventory,roles}
+  touch ansible/{group_vars,inventory,roles}/.keep
+  echo ".include <${REGGAE_PATH}/mk/ansible.mk>" >provisioners.yml
+
+  cat >requirements.yml<<EOF
+- onelove-roles.freebsd-common
+- onelove-roles.freebsd_repo
+- onelove-roles.freebsd_node
+EOF
+
+  cat >templates/site.yml.tpl<<EOF
+# -*- mode: ansible -*-
+# vi: set ft=ansible :
+
+---
+- name: SERVICE provisioning
+  hosts: SERVICE
+  roles:
+    - onelove-roles.freebsd-common
+    - onelove-roles.freebsd_repo
+    - onelove-roles.freebsd_node
+EOF
 }
 
 react() {
   npx create-react-app "${NAME}"
+  cd "${NAME}"
+  npm install --save @freenit-framework/axios
+  cd ..
 }
 
 svelte() {
