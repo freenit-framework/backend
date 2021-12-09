@@ -142,6 +142,8 @@ EOF
 
 
 frontend_common() {
+  echo "# ${NAME}" >README.md
+
   mkdir bin
   cd bin
   cat >common.sh<<EOF
@@ -235,7 +237,7 @@ EOF
 
   mkdir -p templates ansible/{group_vars,inventory,roles}
   touch ansible/{group_vars,inventory,roles}/.keep
-  echo ".include <${REGGAE_PATH}/mk/ansible.mk>" >provisioners.yml
+  echo ".include <\${REGGAE_PATH}/mk/ansible.mk>" >provisioners.yml
 
   cat >requirements.yml<<EOF
 - onelove-roles.freebsd-common
@@ -254,6 +256,33 @@ EOF
     - onelove-roles.freebsd-common
     - onelove-roles.freebsd_repo
     - onelove-roles.freebsd_node
+EOF
+
+  cat >.gitignore<<EOF
+.DS_Store
+node_modules
+build
+.svelte-kit
+package
+.env
+.env.*
+.vercel
+.output
+dist
+stats.html
+
+.provisioned
+ansible/group_vars/all
+ansible/inventory/inventory
+ansible/roles/*
+ansible/site.yml
+!ansible/roles/.keep
+!ansible/roles/freenit
+build/
+cbsd.conf
+site.retry
+project.mk
+vars.mk
 EOF
 }
 
@@ -327,6 +356,7 @@ project() {
   echo "Creating project"
   mkdir "${NAME}"
   cd "${NAME}"
+  echo "# ${NAME}" >README.md
 
   echo "Creating services"
   mkdir services
