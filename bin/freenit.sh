@@ -151,8 +151,8 @@ frontend_common() {
 export BIN_DIR=\`dirname \$0\`
 export PROJECT_ROOT="\${BIN_DIR}/.."
 export OFFLINE=\${OFFLINE:=no}
-NPM=`which npm 2>/dev/null`
-YARN=`which yarn 2>/dev/null`
+NPM=\`which npm 2>/dev/null\`
+YARN=\`which yarn 2>/dev/null\`
 
 
 if [ ! -z "\${NPM}" ]; then
@@ -403,6 +403,45 @@ else
 fi
 EOF
   chmod +x devel.sh
+
+  cat >download_repos.sh<<EOF
+#!/bin/sh
+
+export BIN_DIR=\`dirname \$0\`
+export PROJECT_ROOT="\${BIN_DIR}/.."
+
+if [ ! -d "\${PROJECT_ROOT}/services" ]; then
+  mkdir "\${PROJECT_ROOT}/services"
+fi
+
+if [ ! -d "\${PROJECT_ROOT}/services/backend" ]; then
+  git clone https://github.com/freenit-framework/backend "\${PROJECT_ROOT}/services/backend"
+
+fi
+if [ ! -d "\${PROJECT_ROOT}/services/frontend" ]; then
+  git clone https://github.com/freenit-framework/frontend "\${PROJECT_ROOT}/services/frontend"
+fi
+EOF
+  chmod +x download_repos.sh
+
+  cat >update_repos.sh<<EOF
+#!/bin/sh
+
+export BIN_DIR=\`dirname \$0\`
+export PROJECT_ROOT="\${BIN_DIR}/.."
+SERVICES_ROOT="\${PROJECT_ROOT}/services"
+
+cd "\${SERVICES_ROOT}"
+ls -1 | while read service; do
+  echo "\${service}"
+  cd "\${service}"
+  git pull
+  cd -
+done
+cd ..
+git pull
+EOF
+  chmod +x update_repos.sh
   cd ..
 
   cat >Makefile<<EOF
@@ -413,6 +452,11 @@ SERVICES += frontend https://github.com/freenit-framework/frontend
 USE_FREENIT = YES
 
 .include <\${REGGAE_PATH}/mk/project.mk>
+EOF
+
+  cat >.gitignore<<EOF
+services/
+vars.mk
 EOF
 
   echo "DEVEL_MODE = YES" >vars.mk
