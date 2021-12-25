@@ -10,7 +10,7 @@ UserModel = auth.UserModel
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-class UserFactory(factory.Factory):
+class User(factory.Factory):
     class Meta:
         model = UserModel
 
@@ -22,13 +22,13 @@ class UserFactory(factory.Factory):
     is_active = True
 
 
-class SuperUserFactory(UserFactory):
+class SuperUser(User):
     is_superuser = True
 
 
-class UnverfiedUserFactory(UserFactory):
+class UnverfiedUser(User):
     is_verified = False
 
 
-class InactiveUserFactory(UserFactory):
+class InactiveUser(User):
     is_active = True

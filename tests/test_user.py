@@ -2,6 +2,8 @@ import pytest
 
 from freenit.config import getConfig
 
+from . import factories
+
 config = getConfig()
 auth = config.get_user()
 UserModel = auth.UserModel
@@ -9,10 +11,10 @@ UserModel = auth.UserModel
 
 class TestUser:
     @pytest.mark.asyncio
-    async def test_get_me(self, client, user_factory):
+    async def test_get_me(self, client):
 
         # setup user
-        user = user_factory()
+        user = factories.User()
         await user.save()
         client.login(user=user)
 
@@ -20,10 +22,10 @@ class TestUser:
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_patch_me(self, client, user_factory):
+    async def test_patch_me(self, client):
 
         # setup user
-        user = user_factory()
+        user = factories.User()
         await user.save()
         client.login(user=user)
 
@@ -38,10 +40,10 @@ class TestUser:
         assert response.json()["email"] == data["email"]
 
     @pytest.mark.asyncio
-    async def test_get_user_by_id(self, client, super_user_factory):
+    async def test_get_user_by_id(self, client):
 
         # setup admin
-        admin = super_user_factory()
+        admin = factories.SuperUser()
         await admin.save()
         client.login(user=admin)
 
@@ -49,10 +51,10 @@ class TestUser:
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_patch_user_by_id(self, client, super_user_factory):
+    async def test_patch_user_by_id(self, client):
 
         # setup admin
-        admin = super_user_factory()
+        admin = factories.SuperUser()
         await admin.save()
         client.login(user=admin)
 
@@ -67,15 +69,15 @@ class TestUser:
         assert response.json()["email"] == data["email"]
 
     @pytest.mark.asyncio
-    async def test_delete_user(self, client, super_user_factory, user_factory):
+    async def test_delete_user(self, client):
 
         # setup admin
-        admin = super_user_factory()
+        admin = factories.SuperUser()
         await admin.save()
         client.login(user=admin)
 
         # setup user
-        user = user_factory()
+        user = factories.User()
         await user.save()
 
         response = client.delete("/users", id=str(user.id))
