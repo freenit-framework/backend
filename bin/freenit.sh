@@ -22,6 +22,15 @@ if [ -z "${TYPE}" ]; then
   help >&2
   exit 1
 fi
+
+case "${TYPE}" in
+  project|backend|react|svelte)
+    ;;
+  *)
+    help >&2
+    exit 1
+    ;;
+esac
 shift
 
 NAME="${1}"
@@ -492,4 +501,5 @@ EOF
   echo "DEVEL_MODE = YES" >vars.mk
 }
 
-project
+
+${TYPE}
