@@ -52,6 +52,8 @@ setup(
             "isort",
         ],
         "test": [
+            "black",
+            "isort",
             "pytest-asyncio",
             "pytest-factoryboy",
         ],
