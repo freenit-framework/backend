@@ -1,19 +1,22 @@
 from fastapi import Depends
 from fastapi_users import BaseUserManager, FastAPIUsers
-from fastapi_users.authentication import CookieAuthentication
+from fastapi_users.authentication import AuthenticationBackend, CookieTransport, JWTStrategy
 from fastapi_users.db import OrmarUserDatabase
 
 from .config import getConfig
 
 config = getConfig()
 auth = config.get_user()
-cookieAuthentication = CookieAuthentication(
-    secret=config.secret,
-    lifetime_seconds=3600,
-    cookie_secure=config.cookie_secure,
-)
-authBackends = [cookieAuthentication]
+cookie_transport = CookieTransport(cookie_max_age=3600,cookie_httponly=True)
 
+def get_jwt_strategy() -> JWTStrategy:
+    return JWTStrategy(secret=config.secret, lifetime_seconds=3600)
+
+authBackend = AuthenticationBackend(
+    name="freenit",
+    transport=cookie_transport,
+    get_strategy=get_jwt_strategy,
+)
 
 class UserManager(BaseUserManager[auth.UserCreate, auth.UserDB]):
     user_db_model = auth.UserDB
@@ -31,7 +34,7 @@ def get_user_manager(user_db: OrmarUserDatabase = Depends(get_user_db)):
 
 fastapiUsers = FastAPIUsers(
     get_user_manager,
-    authBackends,
+    [authBackend],
     auth.User,
     auth.UserCreate,
     auth.UserUpdate,
