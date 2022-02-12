@@ -1,3 +1,5 @@
+import os
+
 from freenit.config import configs
 
 try:
@@ -19,3 +21,8 @@ except ImportError:
 configs[DevConfig.envname()] = DevConfig()
 configs[TestConfig.envname()] = TestConfig()
 configs[ProdConfig.envname()] = ProdConfig()
+
+
+def getConfig():
+    config_name = os.getenv("FREENIT_ENV", "prod")
+    return configs.get(config_name, configs["prod"])

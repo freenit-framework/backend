@@ -7,11 +7,12 @@ export PROJECT_ROOT="${BIN_DIR}/.."
 export VIRTUALENV=${VIRTUALENV:="${app_name}"}
 export FREENIT_ENV=${FREENIT_ENV:="prod"}
 export SYSPKG=${SYSPKG:="no"}
+export SYSPKG=`echo ${SYSPKG} | tr '[:lower:]' '[:upper:]'`
 
 
 setup() {
   cd ${PROJECT_ROOT}
-  if [ "${SYSPKG}" != "yes" ]; then
+  if [ "${SYSPKG}" != "YES" ]; then
     update=${1}
     if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
         python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"
