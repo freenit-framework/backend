@@ -387,7 +387,7 @@ echo "========"
 env BACKEND_URL=\${BACKEND_URL} \${PACKAGE_MANAGER} dev -- --host 0.0.0.0
 EOF
   chmod +x devel.sh
-  cd ..
+  cd ../..
 }
 
 project() {
@@ -395,19 +395,6 @@ project() {
   mkdir "${NAME}"
   cd "${NAME}"
   echo "# ${NAME}" >README.md
-
-  echo "Creating services"
-  mkdir services
-  cd services
-
-  echo "Creating backend"
-  backend
-  mv "${NAME}" backend
-
-  echo "Creating frontend"
-  frontend
-  mv "${NAME}" frontend
-  cd ..
 
   echo "Creating bin"
   mkdir bin
@@ -528,6 +515,27 @@ vars.mk
 EOF
 
   echo "DEVEL_MODE = YES" >vars.mk
+
+  echo "Creating services"
+  mkdir services
+  cd services
+
+  echo "Creating backend"
+  backend
+  mv "${NAME}" backend
+
+  echo "Creating frontend"
+  FRONTEND_TYPE=${FRONTEND_TYPE:=svelte}
+  if [ "${FRONTEND_TYPE}" = "svelte" ]; then
+    svelte
+  elif [ "${FRONTEND_TYPE}" = "react" ]; then
+    react
+  else
+    help >&2
+    exit 1
+  fi
+  mv "${NAME}" frontend
+  cd ..
 }
 
 
