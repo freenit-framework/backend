@@ -40,10 +40,10 @@ if [ -z "${NAME}" ]; then
 fi
 shift
 
+export SED_CMD="sed -i"
 
 backend() {
   PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
-  export SED_CMD="sed -i"
 
   mkdir ${NAME}
   cd ${NAME}
@@ -75,9 +75,12 @@ REGGAE_PATH := /usr/local/share/reggae
 .include <\${REGGAE_PATH}/mk/service.mk>
 EOF
 
-  mkdir -p templates ansible/{group_vars,inventory,roles}
-  touch ansible/{group_vars,inventory,roles}/.keep
-  echo ".include <${REGGAE_PATH}/mk/ansible.mk>" >provisioners.mk
+  mkdir -p templates ansible
+  cd ansible
+  mkdir -p group_vars inventory roles
+  touch group_vars/.keep inventory/.keep roles/.keep
+  cd ..
+  echo ".include <\${REGGAE_PATH}/mk/ansible.mk>" >provisioners.mk
 
   cat >requirements.yml<<EOF
 - onelove-roles.freebsd-common
@@ -103,7 +106,7 @@ import os
 import sys
 
 import ${NAME}.app
-from ${NAME}.config import getConfig
+from freenit.config import getConfig
 from alembic import context
 from freenit.migration import run_migrations_offline, run_migrations_online
 
@@ -154,6 +157,16 @@ EOF
 
 frontend_common() {
   echo "# ${NAME}" >README.md
+  NPM=`which npm 2>/dev/null`
+  YARN=`which yarn 2>/dev/null`
+
+  if [ ! -z "${NPM}" ]; then
+    export PACKAGE_MANAGER="${NPM} run"
+    export PACKAGE_MANAGER_INSTALL="${NPM}"
+  else
+    export PACKAGE_MANAGER="${YARN}"
+    export PACKAGE_MANAGER_INSTALL="${YARN}"
+  fi
 
   mkdir bin
   cd bin
@@ -197,7 +210,7 @@ EOF
 
 export OFFLINE=\${OFFLINE:=no}
 BIN_DIR=\`dirname \$0\`
-. ${BIN_DIR}/common.sh
+. \${BIN_DIR}/common.sh
 
 setup
 EOF
@@ -242,13 +255,17 @@ SYSPKG = YES
 USE_FREENIT = YES
 SERVICE != echo \${app_name}front
 REGGAE_PATH := /usr/local/share/reggae
+DEVEL_MODE = YES
 
 .include <\${REGGAE_PATH}/mk/service.mk>
 EOF
 
-  mkdir -p templates ansible/{group_vars,inventory,roles}
-  touch ansible/{group_vars,inventory,roles}/.keep
-  echo ".include <\${REGGAE_PATH}/mk/ansible.mk>" >provisioners.yml
+  mkdir -p templates ansible
+  cd ansible
+  mkdir -p group_vars inventory roles
+  touch group_vars/.keep inventory/.keep roles/.keep
+  cd ..
+  echo ".include <\${REGGAE_PATH}/mk/ansible.mk>" >provisioners.mk
 
   cat >requirements.yml<<EOF
 - onelove-roles.freebsd-common
@@ -301,36 +318,9 @@ react() {
   npx create-react-app "${NAME}"
   cd "${NAME}"
   npm install --save @freenit-framework/axios
-  cd ..
-}
-
-svelte() {
-  npm init svelte@next "${NAME}"
-  cd "${NAME}"
-  npm install
-  cd ..
-}
-
-frontend() {
-  if [ -z "${FRONTEND}" ]; then
-    FRONTEND="svelte"
-  fi
-
-  if [ "${FRONTEND}" = "svelte" ]; then
-    svelte
-  elif [ "${FRONTEND}" = "react" ]; then
-    react
-  else
-    echo "No such frontend" >&2
-    exit 1
-  fi
-
-  cd "${NAME}"
   frontend_common
-
   cd bin
-  if [ "${FRONTEND}" = "svelte" ]; then
-    cat >devel.sh<<EOF
+  cat >devel.sh<<EOF
 #!/bin/sh
 
 
@@ -340,27 +330,64 @@ setup
 
 echo "Frontend"
 echo "========"
-env \${PACKAGE_MANAGER} dev -- --host 0.0.0.0
+env BACKEND_URL=\${BACKEND_URL} \${PACKAGE_MANAGER} start
 EOF
-  elif [ "${FRONTEND}" = "react" ]; then
-    cat >devel.sh<<EOF
+  chmod +x devel.sh
+  cd ..
+}
+
+svelte() {
+  npm init svelte@next "${NAME}"
+  cd "${NAME}"
+  npm install
+  frontend_common
+  cat >.prettierrc<<EOF
+{
+  "useTabs": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80,
+  "semi": false,
+}
+EOF
+
+  case `uname` in
+    *BSD)
+      ${SED_CMD} '' -e "s/export default config//g" svelte.config.js
+      ;;
+    *)
+      ${SED_CMD} -e "s/export default config//g" svelte.config.js
+      ;;
+  esac
+  cat >>svelte.config.js<<EOF
+if (process.env.BACKEND_URL) {
+  config.kit.vite = {
+    server: {
+      proxy: {
+        '/api': process.env.BACKEND_URL
+      }
+    }
+  }
+}
+
+export default config
+EOF
+  ${PACKAGE_MANAGER} format
+  cd bin
+  cat >devel.sh<<EOF
 #!/bin/sh
 
 
-BIN_DIR=`dirname \$0`
+BIN_DIR=\`dirname \$0\`
 . "\${BIN_DIR}/common.sh"
 setup
 
 echo "Frontend"
 echo "========"
-env \${PACKAGE_MANAGER} start
+env BACKEND_URL=\${BACKEND_URL} \${PACKAGE_MANAGER} dev -- --host 0.0.0.0
 EOF
-  fi
   chmod +x devel.sh
-  cd ..
-
-  cd ..
-
+  cd ../..
 }
 
 project() {
@@ -368,19 +395,6 @@ project() {
   mkdir "${NAME}"
   cd "${NAME}"
   echo "# ${NAME}" >README.md
-
-  echo "Creating services"
-  mkdir services
-  cd services
-
-  echo "Creating backend"
-  backend
-  mv "${NAME}" backend
-
-  echo "Creating frontend"
-  frontend
-  mv "${NAME}" frontend
-  cd ..
 
   echo "Creating bin"
   mkdir bin
@@ -501,6 +515,27 @@ vars.mk
 EOF
 
   echo "DEVEL_MODE = YES" >vars.mk
+
+  echo "Creating services"
+  mkdir services
+  cd services
+
+  echo "Creating backend"
+  backend
+  mv "${NAME}" backend
+
+  echo "Creating frontend"
+  FRONTEND_TYPE=${FRONTEND_TYPE:=svelte}
+  if [ "${FRONTEND_TYPE}" = "svelte" ]; then
+    svelte
+  elif [ "${FRONTEND_TYPE}" = "react" ]; then
+    react
+  else
+    help >&2
+    exit 1
+  fi
+  mv "${NAME}" frontend
+  cd ..
 }
 
 
