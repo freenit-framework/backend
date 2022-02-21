@@ -7,7 +7,7 @@ from .config import getConfig
 
 config = getConfig()
 auth = config.get_user()
-cookie_transport = CookieTransport(cookie_max_age=3600,cookie_httponly=True)
+cookie_transport = CookieTransport(cookie_max_age=3600, cookie_httponly=True, cookie_secure=config.cookie_secure)
 
 def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(secret=config.secret, lifetime_seconds=3600)

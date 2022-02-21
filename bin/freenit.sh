@@ -77,7 +77,7 @@ EOF
 
   mkdir -p templates ansible/{group_vars,inventory,roles}
   touch ansible/{group_vars,inventory,roles}/.keep
-  echo ".include <${REGGAE_PATH}/mk/ansible.mk>" >provisioners.yml
+  echo ".include <${REGGAE_PATH}/mk/ansible.mk>" >provisioners.mk
 
   cat >requirements.yml<<EOF
 - onelove-roles.freebsd-common
@@ -196,7 +196,7 @@ EOF
 
 
 export OFFLINE=\${OFFLINE:=no}
-BIN_DIR=`dirname \$0`
+BIN_DIR=\`dirname \$0\`
 . ${BIN_DIR}/common.sh
 
 setup
@@ -207,7 +207,7 @@ EOF
 #!/bin/sh
 
 
-BIN_DIR=`dirname \$0`
+BIN_DIR=\`dirname \$0\`
 . "\${BIN_DIR}/common.sh"
 setup
 
@@ -219,7 +219,7 @@ EOF
 #!/bin/sh
 
 
-BIN_DIR=`dirname \$0`
+BIN_DIR=\`dirname \$0\`
 . "\${BIN_DIR}/common.sh"
 setup
 
