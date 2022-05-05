@@ -157,16 +157,7 @@ EOF
 
 frontend_common() {
   echo "# ${NAME}" >README.md
-  NPM=`which npm 2>/dev/null`
-  YARN=`which yarn 2>/dev/null`
-
-  if [ ! -z "${NPM}" ]; then
-    export PACKAGE_MANAGER="${NPM} run"
-    export PACKAGE_MANAGER_INSTALL="${NPM}"
-  else
-    export PACKAGE_MANAGER="${YARN}"
-    export PACKAGE_MANAGER_INSTALL="${YARN}"
-  fi
+  npm --save install chota
 
   mkdir bin
   cd bin
@@ -315,10 +306,74 @@ EOF
 }
 
 react() {
-  npx create-react-app "${NAME}"
+  npm init vite@latest "${NAME}" -- --template react-ts
   cd "${NAME}"
-  npm install --save @freenit-framework/axios
+  npm install --save @freenit-framework/axios react-router-dom
   frontend_common
+
+  rm src/App.* src/index.css src/logo.svg
+  mkdir src/routes
+  cat >src/routing.tsx<<EOF
+import React, { Fragment } from 'react'
+import { Route, Routes } from 'react-router-dom'
+
+const PRESERVED = import.meta.globEager('/src/routes/(_app|404).tsx')
+const ROUTES = import.meta.globEager('/src/routes/**/[a-z[]*.tsx')
+
+const preserved: { [key: string]: any } = Object.keys(PRESERVED).reduce((preserved, file) => {
+  const key = file.replace(/\/src\/routes\/|\.tsx$/g, '')
+  return { ...preserved, [key]: PRESERVED[file].default }
+}, {})
+
+const routes = Object.keys(ROUTES).map((route) => {
+  const path = route
+    .replace(/\/src\/routes|index|\.tsx$/g, '')
+    .replace(/\[\.{3}.+\]/, '*')
+    .replace(/\[(.+)\]/, ':')
+
+  return { path, component: ROUTES[route].default }
+})
+
+export const Routing = () => {
+  const NotFound = preserved?.['404'] || Fragment
+
+  return (
+    <Routes>
+      {routes.map(({ path, component: Component = Fragment }) => (
+        <Route key={path} path={path} element={<Component />} />
+      ))}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  )
+}
+EOF
+
+  cat >src/main.tsx<<EOF
+import React, { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import 'chota'
+import { Routing } from './routing'
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(
+  <StrictMode>
+    <BrowserRouter>
+      <Routing />
+    </BrowserRouter>
+  </StrictMode>
+);
+EOF
+
+  cat >src/routes/index.tsx<<EOF
+export default function Landing() {
+  return (
+    <div>Hello World!</div>
+  )
+}
+EOF
+
   cd bin
   cat >devel.sh<<EOF
 #!/bin/sh
@@ -330,7 +385,7 @@ setup
 
 echo "Frontend"
 echo "========"
-env BACKEND_URL=\${BACKEND_URL} \${PACKAGE_MANAGER} start
+env BACKEND_URL=\${BACKEND_URL} npm run dev -- --host 0.0.0.0
 EOF
   chmod +x devel.sh
   cd ..
@@ -372,7 +427,7 @@ if (process.env.BACKEND_URL) {
 
 export default config
 EOF
-  ${PACKAGE_MANAGER} format
+  npm run format
   cd bin
   cat >devel.sh<<EOF
 #!/bin/sh
@@ -384,7 +439,7 @@ setup
 
 echo "Frontend"
 echo "========"
-env BACKEND_URL=\${BACKEND_URL} \${PACKAGE_MANAGER} dev -- --host 0.0.0.0
+env BACKEND_URL=\${BACKEND_URL} npm run dev -- --host 0.0.0.0
 EOF
   chmod +x devel.sh
   cd ../..
