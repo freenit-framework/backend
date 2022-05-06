@@ -374,6 +374,28 @@ export default function Landing() {
 }
 EOF
 
+  case `uname` in
+    *BSD)
+      ${SED_CMD} '' -e "s/})//g" vite.config.ts
+      ${SED_CMD} '' -e "s/plugins: \(.*\)/plugins: \1,/g" vite.config.ts
+      ;;
+    *)
+      ${SED_CMD} -e "s/})//g" vite.config.ts
+      ${SED_CMD} -e "s/plugins: \(.*\)/plugins: \1,/g" vite.config.ts
+      ;;
+  esac
+  cat >>vite.config.ts<<EOF
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND_URL,
+        changeOrigin: true
+      }
+    }
+  }
+})
+EOF
+
   cd bin
   cat >devel.sh<<EOF
 #!/bin/sh
