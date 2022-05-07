@@ -27,6 +27,7 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     keywords=[
         "REST",
@@ -37,21 +38,23 @@ setup(
     packages=find_packages(exclude=["tests*"]),
     python_requires=">=3.8",
     install_requires=[
-        "aiosqlite",
         "alembic",
-        "fastapi-users-db-ormar",
-        "requests",
-        "uvicorn",
+        "fastapi",
+        "ormar",
+        "passlib",
     ],
     extras_require={
         "build": [
             "twine",
         ],
         "dev": [
+            "aiosqlite",
             "black",
             "isort",
+            "uvicorn",
         ],
         "test": [
+            "aiosqlite",
             "black",
             "isort",
             "pytest-asyncio",

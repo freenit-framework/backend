@@ -1,27 +1,13 @@
-from fastapi_users import models
-from fastapi_users.db import OrmarBaseUserModel
+import ormar
 
 from ..config import getConfig
+from .ormar import OrmarUserMixin
 
 config = getConfig()
 
 
-class UserModel(OrmarBaseUserModel):
+class User(OrmarUserMixin):
     class Meta(config.meta):
         tablename = "users"
 
-
-class User(models.BaseUser):
-    pass
-
-
-class UserCreate(models.BaseUserCreate):
-    pass
-
-
-class UserUpdate(User, models.BaseUserUpdate):
-    pass
-
-
-class UserDB(User, models.BaseUserDB):
-    pass
+    id: int = ormar.Integer(primary_key=True)

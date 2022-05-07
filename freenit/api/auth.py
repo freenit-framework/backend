@@ -1,11 +1,20 @@
-from ..auth import authBackend, fastapiUsers
-from ..config import getConfig
-from .router import api
+from typing import List
 
-config = getConfig()
+from freenit.api.router import route
 
-tags = ["auth"]
-api.include_router(fastapiUsers.get_auth_router(authBackend), prefix="/auth", tags=tags)
-api.include_router(fastapiUsers.get_register_router(), prefix="/auth", tags=tags)
-api.include_router(fastapiUsers.get_reset_password_router(), prefix="/auth", tags=tags)
-api.include_router(fastapiUsers.get_verify_router(), prefix="/auth", tags=tags)
+from ..models.user import User
+
+# from fastapi import HTTPException
+
+
+@route("/auth", tags=["auth"], many=True)
+class AuthAPI:
+    @staticmethod
+    async def get() -> List[User]:
+        return await User.objects.all()
+
+    @staticmethod
+    async def post(user: User) -> User:
+        await user.save()
+        return user
+        # raise HTTPException(status_code=404, detail="No such user")
