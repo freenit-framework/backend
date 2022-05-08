@@ -42,6 +42,8 @@ setup(
         "fastapi",
         "ormar",
         "passlib",
+        "pydantic[email]",
+        "pyjwt",
     ],
     extras_require={
         "build": [

@@ -1,8 +1,9 @@
 import ormar
+import pydantic
 
-from .base import UserMixin
 
-
-class OrmarUserMixin(UserMixin):
-    email: str = ormar.Text(unique=True)
+class OrmarUserMixin:
+    id: int = ormar.Integer(primary_key=True)
+    email: pydantic.EmailStr = ormar.Text(unique=True)
     password: str = ormar.Text()
+    active: bool = ormar.Boolean(default=False)

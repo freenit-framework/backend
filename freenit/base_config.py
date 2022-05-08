@@ -4,6 +4,13 @@ import databases
 from importlib import import_module
 
 
+class Auth:
+    def __init__(self, secure = True, expire = 3600, refresh_expire = 7200):
+        self.secure = secure
+        self.expire = expire
+        self.refresh_expire = refresh_expire
+
+
 class BaseConfig:
     name = "App Name"
     version = "0.0.1"
@@ -15,9 +22,9 @@ class BaseConfig:
     database = None
     engine = None
     secret = "SECRET"
-    cookie_secure = True
     user = 'freenit.models.user'
     meta = None
+    auth = Auth()
 
     def __init__(self):
         self.database = databases.Database(self.dburl)
@@ -45,14 +52,14 @@ class BaseConfig:
 
 class DevConfig(BaseConfig):
     debug = True
-    cookie_secure = False
     dburl = "sqlite:///db.sqlite"
+    auth = Auth(False)
 
 
 class TestConfig(BaseConfig):
     debug = True
-    cookie_secure = False
     dburl = "sqlite:///test.sqlite"
+    auth = Auth(False)
 
 
 class ProdConfig(BaseConfig):

@@ -4,11 +4,6 @@ from passlib.hash import pbkdf2_sha256
 from ..config import getConfig
 
 
-def encrypt(password: str) -> str:
-    config = getConfig()
-    return pbkdf2_sha256.hash(f"{config.secret}{password}")
-
-
 class BaseModel(ormar.Model):
     async def patch(self, fields):
         result = {}
@@ -19,27 +14,21 @@ class BaseModel(ormar.Model):
         return await self.update(**result)
 
 
-class UserMixin(BaseModel):
-    def __init__(self, email: str = "", password: str = "") -> None:
+class UserMixin:
+    def __init__(
+        self, email: str = "", password: str = "", active: bool = False
+    ) -> None:
         self.email = email
         self.password = password
+        self.active = active
 
     def __setattr__(self, name: str, value) -> None:
         if name == "password":
-            self.__dict__[name] = encrypt(value)
+            config = getConfig()
+            self.__dict__[name] = pbkdf2_sha256.hash(f"{config.secret}{value}")
         else:
             self.__dict__[name] = value
 
     def check(self, password: str) -> bool:
-        return encrypt(password) == self.password
-
-    @classmethod
-    def get(cls, email: str):
-        return cls(email)
-
-    @classmethod
-    async def login(cls, email: str, password: str):
-        user = cls.get(email)
-        if user.check(password):
-            return user
-        return None
+        config = getConfig()
+        return pbkdf2_sha256.verify(f"{config.secret}{password}", self.password)
