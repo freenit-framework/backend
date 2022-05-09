@@ -61,6 +61,7 @@ setup(
             "isort",
             "pytest-asyncio",
             "pytest-factoryboy",
+            "requests",
         ],
     },
     include_package_data=True,

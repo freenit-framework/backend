@@ -1,73 +1,64 @@
 import json
 import socket
+
 from fastapi.testclient import TestClient
 
 
 class Client(TestClient):
+    def url_for(self, name, host=socket.gethostname()):
+        return f"http://{host}:5000/api/v1{name}"
 
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'accept': 'application/json'
-    }
+    def get_cookies(self):
+        access = getattr(self, "access", "")
+        refresh = getattr(self, "refresh", "")
+        return {
+            "access": access,
+            "refresh": refresh,
+        }
 
-    def url_for(self, name, host=socket.gethostname(), **kwargs):
-        return f'http://{host}:5000/api/v1{name}' + \
-                            ''.join([str(f'/{x}') for x in kwargs.values()])
-        # figure out how to get automaticly protocol/port
+    def get(self, endpoint):
+        url = self.url_for(endpoint)
+        return super().get(url, cookies=self.get_cookies())
 
-    def set_token(self, token_item=None):
-        if token_item is None:
-            token = getattr(self, 'token', '')
-            self.headers.update({'Cookie': token})
-
-    def get(self, endpoint, token=None, **kwargs):
-        self.set_token(token)
-        url = self.url_for(endpoint, **kwargs)
-        return super().get(url, headers=self.headers)
-
-    def post(self, endpoint, data=None, token=None, type='json', **kwargs):
-        self.set_token(token)
-        url = self.url_for(endpoint, **kwargs)
+    def post(self, endpoint, data=None, type="json"):
+        url = self.url_for(endpoint)
         response = super().post(
             url,
-            data=json.dumps(data) if type == 'json' else data,
+            data=json.dumps(data) if type == "json" else data,
             headers=self.headers,
+            cookies=self.get_cookies(),
         )
 
         return response
 
-    def put(self, endpoint, data=None, token=None, **kwargs):
-        url = self.url_for(endpoint, **kwargs)
-        self.set_token(token)
+    def put(self, endpoint, data=None):
+        url = self.url_for(endpoint)
         response = super().put(
             url,
             data=json.dumps(data),
-            headers=self.headers,
+            cookies=self.get_cookies(),
         )
         return response
 
-    def patch(self, endpoint, data=None, token=None, **kwargs):
-        url = self.url_for(endpoint, **kwargs)
-        self.set_token(token)
-        response = super().patch(
-            url,
-            data=json.dumps(data),
-            headers=self.headers
-        )
+    def patch(self, endpoint, data=None):
+        url = self.url_for(endpoint)
+        response = super().patch(url, data=json.dumps(data), cookies=self.get_cookies())
 
         return response
 
-    def delete(self, endpoint, token=None, **kwargs):
-        url = self.url_for(endpoint, **kwargs)
-        self.set_token(token)
-        return super().delete(url, headers=self.headers)
+    def delete(self, endpoint):
+        url = self.url_for(endpoint)
+        return super().delete(url, cookies=self.get_cookies())
 
-    def login(self, user, endpoint='/auth/login'):
+    def login(self, user, endpoint="/auth/login"):
         data = {
-            'username': user.email,
-            'password': 'Sekrit',
+            "email": user.email,
+            "password": "Sekrit",
         }
-        response = self.post(endpoint, data, type='url')
-        value = response.headers.get('set-cookie', []).split(';')[0]
-        setattr(self, 'token', value)
+        response = self.post(endpoint, data)
+        cookies = response.headers.get("set-cookie", []).split(",")
+        access = cookies[0].split(";")[0].strip().split("=")[1]
+        refresh = cookies[1].split(";")[0].strip().split("=")[1]
+        setattr(self, "access", access)
+        setattr(self, "refresh", refresh)
         return response

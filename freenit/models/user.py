@@ -2,22 +2,21 @@ import ormar
 from passlib.hash import pbkdf2_sha256
 
 from ..config import getConfig
-from .base import UserMixin
+from .metaclass import AllOptional
 from .ormar import OrmarUserMixin
 
 config = getConfig()
 
 
-class User(ormar.Model, UserMixin, OrmarUserMixin):
+class User(ormar.Model, OrmarUserMixin):
     class Meta(config.meta):
         tablename = "users"
 
-    def __init__(self, *args, **kwargs):
-        ormar.Model.__init__(self, *args, **kwargs)
-        email = kwargs.get("email", "")
-        password = kwargs.get("password", "")
-        active = kwargs.get("active", False)
-        UserMixin.__init__(self, email, password, active)
+    def check(self, password: str) -> bool:
+        config = getConfig()
+        result = pbkdf2_sha256.verify(f"{config.secret}{password}", self.password)
+        return result
 
-    def __setattr__(self, name: str, value) -> None:
-        UserMixin.__setattr__(self, name, value)
+
+class UserOptional(User, metaclass=AllOptional):
+    pass

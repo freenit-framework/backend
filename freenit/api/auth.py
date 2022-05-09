@@ -5,10 +5,12 @@ import pydantic
 from fastapi import HTTPException, Request, Response
 
 from freenit.api.router import api
+from freenit.auth import authorize, decode
 from freenit.config import getConfig
 
 config = getConfig()
 User = config.get_user().User
+tags = ["auth"]
 
 
 class LoginInput(pydantic.BaseModel):
@@ -33,29 +35,7 @@ class Verification(pydantic.BaseModel):
     verification: str
 
 
-async def decode(token):
-    try:
-        data = jwt.decode(token, config.secret, algorithms="HS256")
-    except:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-    pk = data.get("pk", None)
-    if pk is None:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-    try:
-        user = await User.objects.get(pk=pk)
-        return user
-    except ormar.exceptions.NoMatch:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-
-
-async def authorize(request: Request, cookie="access"):
-    token = request.cookies.get(cookie)
-    if not token:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-    return await decode(token)
-
-
-@api.post("/auth/login", response_model=LoginResponse)
+@api.post("/auth/login", response_model=LoginResponse, tags=tags)
 async def login(credentials: LoginInput, response: Response):
     try:
         user = await User.objects.get(email=credentials.email)
@@ -81,7 +61,7 @@ async def login(credentials: LoginInput, response: Response):
     raise HTTPException(status_code=403, detail="Failed to login")
 
 
-@api.post("/auth/register", response_model=Verification)
+@api.post("/auth/register", response_model=Verification, tags=tags)
 async def register(credentials: LoginInput):
     user = User(email=credentials.email, password=credentials.password, active=False)
     await user.save()
@@ -89,14 +69,14 @@ async def register(credentials: LoginInput):
     return {"verification": verification}
 
 
-@api.post("/auth/verify", response_model=UserResponse)
+@api.post("/auth/verify", response_model=UserResponse, tags=tags)
 async def verify(verification: Verification):
     user = await decode(verification.verification)
     await user.update(active=True)
     return user
 
 
-@api.post("/auth/refresh", response_model=LoginResponse)
+@api.post("/auth/refresh", response_model=LoginResponse, tags=tags)
 async def refresh(request: Request, response: Response):
     user = await authorize(request, "refresh")
     access = jwt.encode({"pk": user.pk}, config.secret, algorithm="HS256")

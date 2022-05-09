@@ -13,39 +13,19 @@ class TestAuth:
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_logout(self, client):
-        user = factories.User()
-        await user.save()
-        client.login(user=user)
-
-        response = client.post("/auth/logout", type="url")
-        assert response.status_code == 200
-
-    @pytest.mark.asyncio
     async def test_register(self, client):
         data = {
             "email": "user3@example.com",
             "password": "Sekrit",
         }
         response = client.post("/auth/register", data=data)
-        assert response.status_code == 201
+        assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_forgot_password(self, client):
+    async def test_refresh(self, client):
         user = factories.User()
         await user.save()
         client.login(user=user)
-
-        response = client.post("/auth/forgot-password", data={"email": user.email})
-
-        assert response.status_code == 202
-
-    @pytest.mark.asyncio
-    async def test_request_verify_token(self, client):
-        user = factories.User()
-        await user.save()
-        client.login(user=user)
-
-        data = {"email": user.email}
-        response = client.post("/auth/request-verify-token", data=data)
-        assert response.status_code == 202
+        # print("refresh token sent:", self.token)
+        response = client.post("/auth/refresh")
+        assert response.status_code == 200
