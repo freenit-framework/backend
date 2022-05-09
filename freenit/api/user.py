@@ -35,15 +35,9 @@ class UserDetailAPI:
 
     @staticmethod
     async def patch(id: int, user_data: UserOptional) -> User:
-        data = {}
-        update_data = user_data.dict(exclude={"id", "password", "active"})
-        for key in update_data:
-            value = update_data[key]
-            if value != None:
-                data[key] = value
         try:
             user = await UserDB.objects.get(pk=id)
-            await user.update(**data)
+            await user.patch(user_data)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
         return user

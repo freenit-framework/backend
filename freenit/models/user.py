@@ -1,21 +1,17 @@
-import ormar
-from passlib.hash import pbkdf2_sha256
-
+from ..auth import verify
 from ..config import getConfig
 from .metaclass import AllOptional
-from .ormar import OrmarUserMixin
+from .ormar import OrmarBaseModel, OrmarUserMixin
 
 config = getConfig()
 
 
-class User(ormar.Model, OrmarUserMixin):
+class User(OrmarBaseModel, OrmarUserMixin):
     class Meta(config.meta):
         tablename = "users"
 
     def check(self, password: str) -> bool:
-        config = getConfig()
-        result = pbkdf2_sha256.verify(f"{config.secret}{password}", self.password)
-        return result
+        return verify(password, self.password)
 
 
 class UserOptional(User, metaclass=AllOptional):

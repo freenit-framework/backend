@@ -2,6 +2,7 @@ import jwt
 import ormar
 import ormar.exceptions
 from fastapi import HTTPException, Request
+from passlib.hash import pbkdf2_sha256
 
 from freenit.config import getConfig
 
@@ -23,8 +24,19 @@ async def decode(token):
         raise HTTPException(status_code=403, detail="Unauthorized")
 
 
+def encode(user):
+    config = getConfig()
+    payload = {"pk": user.pk}
+    return jwt.encode(payload, config.secret, algorithm="HS256")
+
+
 async def authorize(request: Request, cookie="access"):
     token = request.cookies.get(cookie)
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
     return await decode(token)
+
+
+def verify(password, encpassword):
+    config = getConfig()
+    return pbkdf2_sha256.verify(f"{config.secret}{password}", encpassword)

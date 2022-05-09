@@ -5,7 +5,7 @@ import pydantic
 from fastapi import HTTPException, Request, Response
 
 from freenit.api.router import api
-from freenit.auth import authorize, decode
+from freenit.auth import authorize, decode, encode
 from freenit.config import getConfig
 
 config = getConfig()
@@ -41,8 +41,8 @@ async def login(credentials: LoginInput, response: Response):
         user = await User.objects.get(email=credentials.email)
         valid = user.check(credentials.password)
         if valid:
-            access = jwt.encode({"pk": user.pk}, config.secret, algorithm="HS256")
-            refresh = jwt.encode({"pk": user.pk}, config.secret, algorithm="HS256")
+            access = encode(user)
+            refresh = encode(user)
             response.set_cookie(
                 "access", access, httponly=True, secure=config.auth.secure
             )
@@ -65,8 +65,7 @@ async def login(credentials: LoginInput, response: Response):
 async def register(credentials: LoginInput):
     user = User(email=credentials.email, password=credentials.password, active=False)
     await user.save()
-    verification = jwt.encode({"pk": user.pk}, config.secret, algorithm="HS256")
-    return {"verification": verification}
+    return {"verification": encode(user)}
 
 
 @api.post("/auth/verify", response_model=UserResponse, tags=tags)
@@ -79,7 +78,7 @@ async def verify(verification: Verification):
 @api.post("/auth/refresh", response_model=LoginResponse, tags=tags)
 async def refresh(request: Request, response: Response):
     user = await authorize(request, "refresh")
-    access = jwt.encode({"pk": user.pk}, config.secret, algorithm="HS256")
+    access = encode(user)
     response.set_cookie("access", access, httponly=True, secure=config.auth.secure)
     return {
         "user": user.dict(exclude={"password"}),
