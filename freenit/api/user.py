@@ -6,12 +6,9 @@ from fastapi import HTTPException, Request
 
 from freenit.api.router import route
 from freenit.auth import authorize, encrypt
-from freenit.config import getConfig
+from freenit.models.user import User as UserDB
+from freenit.models.user import UserOptional
 
-config = getConfig()
-auth = config.get_user()
-UserDB = auth.User
-UserOptional = auth.UserOptional
 User = UserDB.get_pydantic(exclude={"password"})
 
 

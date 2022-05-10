@@ -1,3 +1,4 @@
+from freenit.base_config import Auth
 from freenit.base_config import BaseConfig as FreenitBaseConfig
 
 
@@ -8,13 +9,13 @@ class BaseConfig(FreenitBaseConfig):
 
 class DevConfig(BaseConfig):
     debug = True
-    cookie_secure = False
+    auth = Auth(False)
     dburl = "sqlite:///db.sqlite"
 
 
 class TestConfig(BaseConfig):
     debug = True
-    cookie_secure = False
+    auth = Auth(False)
     dburl = "sqlite:///test.sqlite"
 
 

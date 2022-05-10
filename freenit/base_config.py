@@ -30,7 +30,7 @@ class BaseConfig:
     database = None
     engine = None
     secret = "SECRET"
-    user = "freenit.models.user"
+    user = "freenit.models.ormar"
     meta = None
     auth = Auth()
 

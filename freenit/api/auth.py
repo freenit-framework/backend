@@ -6,9 +6,9 @@ from fastapi import HTTPException, Request, Response
 from freenit.api.router import api
 from freenit.auth import authorize, decode, encode, encrypt
 from freenit.config import getConfig
+from freenit.models.user import User
 
 config = getConfig()
-User = config.get_user().User
 tags = ["auth"]
 
 
