@@ -23,10 +23,11 @@ class UserListAPI:
         return await UserDB.objects.all()
 
 
-@route("/users/{id}", tags=["user"], many=True)
+@route("/users/{id}", tags=["user"])
 class UserDetailAPI:
     @staticmethod
-    async def get(id: int) -> User:
+    async def get(id: int, request: Request) -> User:
+        await authorize(request)
         try:
             user = await UserDB.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -34,19 +35,25 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def patch(id: int, user_data: UserOptional) -> User:
-        try:
-            user = await UserDB.objects.get(pk=id)
-            await user.patch(user_data)
-        except ormar.exceptions.NoMatch:
-            raise HTTPException(status_code=404, detail="No such user")
-        return user
-
-    @staticmethod
-    async def delete(id: int) -> User:
+    async def delete(id: int, request: Request) -> User:
+        await authorize(request)
         try:
             user = await UserDB.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
         await user.delete()
         return user
+
+
+@route("/profile", tags=["profile"])
+class ProfileDetailAPI:
+    @staticmethod
+    async def get(request: Request) -> User:
+        profile = await authorize(request)
+        return profile
+
+    @staticmethod
+    async def patch(profile_data: UserOptional, request: Request) -> User:
+        profile = await authorize(request)
+        await profile.patch(profile_data)
+        return profile

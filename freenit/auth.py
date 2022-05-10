@@ -40,3 +40,8 @@ async def authorize(request: Request, cookie="access"):
 def verify(password, encpassword):
     config = getConfig()
     return pbkdf2_sha256.verify(f"{config.secret}{password}", encpassword)
+
+
+def encrypt(password):
+    config = getConfig()
+    return pbkdf2_sha256.hash(f"{config.secret}{password}")

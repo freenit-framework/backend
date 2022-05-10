@@ -1,11 +1,18 @@
 import socket
-import sqlalchemy
-import databases
 from importlib import import_module
+
+import databases
+import sqlalchemy
+
+second = 1
+minute = 60 * second
+hour = 60 * minute
+day = 24 * hour
+year = 365 * day
 
 
 class Auth:
-    def __init__(self, secure = True, expire = 3600, refresh_expire = 7200):
+    def __init__(self, secure=True, expire=hour, refresh_expire=year):
         self.secure = secure
         self.expire = expire
         self.refresh_expire = refresh_expire
@@ -14,6 +21,7 @@ class Auth:
 class BaseConfig:
     name = "App Name"
     version = "0.0.1"
+    api_root = "/api/v1"
     hostname = socket.gethostname()
     port = 5000
     debug = False
@@ -22,16 +30,18 @@ class BaseConfig:
     database = None
     engine = None
     secret = "SECRET"
-    user = 'freenit.models.user'
+    user = "freenit.models.user"
     meta = None
     auth = Auth()
 
     def __init__(self):
         self.database = databases.Database(self.dburl)
         self.engine = sqlalchemy.create_engine(self.dburl)
+
         class Meta:
             database = self.database
             metadata = self.metadata
+
         self.meta = Meta
 
     def __repr__(self):
@@ -45,8 +55,8 @@ class BaseConfig:
     @classmethod
     def envname(cls):
         classname = cls.__name__.lower()
-        if classname.endswith('config'):
-            return classname[:-len('config')]
+        if classname.endswith("config"):
+            return classname[: -len("config")]
         return classname
 
 

@@ -19,4 +19,4 @@ async def shutdown() -> None:
         await config.database.disconnect()
 
 
-app.mount("/api/v1", api)
+app.mount(config.api_root, api)

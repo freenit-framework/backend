@@ -1,11 +1,10 @@
-import jwt
 import ormar
 import ormar.exceptions
 import pydantic
 from fastapi import HTTPException, Request, Response
 
 from freenit.api.router import api
-from freenit.auth import authorize, decode, encode
+from freenit.auth import authorize, decode, encode, encrypt
 from freenit.config import getConfig
 
 config = getConfig()
@@ -44,10 +43,16 @@ async def login(credentials: LoginInput, response: Response):
             access = encode(user)
             refresh = encode(user)
             response.set_cookie(
-                "access", access, httponly=True, secure=config.auth.secure
+                "access",
+                access,
+                httponly=True,
+                secure=config.auth.secure,
             )
             response.set_cookie(
-                "refresh", refresh, httponly=True, secure=config.auth.secure
+                "refresh",
+                refresh,
+                httponly=True,
+                secure=config.auth.secure,
             )
             return {
                 "user": user.dict(exclude={"password"}),
@@ -63,7 +68,11 @@ async def login(credentials: LoginInput, response: Response):
 
 @api.post("/auth/register", response_model=Verification, tags=tags)
 async def register(credentials: LoginInput):
-    user = User(email=credentials.email, password=credentials.password, active=False)
+    user = User(
+        email=credentials.email,
+        password=encrypt(credentials.password),
+        active=False,
+    )
     await user.save()
     return {"verification": encode(user)}
 
