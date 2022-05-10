@@ -5,7 +5,7 @@ import ormar.exceptions
 from fastapi import HTTPException, Request
 
 from freenit.api.router import route
-from freenit.auth import authorize
+from freenit.auth import authorize, encrypt
 from freenit.config import getConfig
 
 config = getConfig()
@@ -53,7 +53,9 @@ class ProfileDetailAPI:
         return profile
 
     @staticmethod
-    async def patch(profile_data: UserOptional, request: Request) -> User:
+    async def patch(data: UserOptional, request: Request) -> User:
         profile = await authorize(request)
-        await profile.patch(profile_data)
+        if data.password:
+            data.password = encrypt(data.password)
+        await profile.patch(data)
         return profile
