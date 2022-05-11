@@ -38,9 +38,7 @@ setup(
     packages=find_packages(exclude=["tests*"]),
     python_requires=">=3.8",
     install_requires=[
-        "alembic",
         "fastapi",
-        "ormar",
         "passlib",
         "pydantic[email]",
         "pyjwt",
@@ -62,6 +60,13 @@ setup(
             "pytest-asyncio",
             "pytest-factoryboy",
             "requests",
+        ],
+        "ormar": [
+            "alembic",
+            "ormar",
+        ],
+        "beanie": [
+            "beanie",
         ],
     },
     include_package_data=True,
