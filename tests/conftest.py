@@ -11,6 +11,8 @@ from .client import Client
 
 alembic_cfg = Config("alembic.ini")
 
+os.environ["FREENIT_ENV"] = "test"
+
 
 @pytest.fixture
 def db_setup():

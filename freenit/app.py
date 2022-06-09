@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 
-from .api import api
-from .config import getConfig
+import freenit.config
 
-config = getConfig()
+from .api import api
+
+config = freenit.config.getConfig()
 app = FastAPI()
 
 
