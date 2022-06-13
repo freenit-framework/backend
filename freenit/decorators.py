@@ -1,10 +1,12 @@
+import functools
+
+
 def FreenitAPI(app):
     class route:
-        def __init__(self, route, tags=["object"], many=False, responses={}):
+        def __init__(self, route, tags=["object"], responses={}):
             self.app = app
             self.route = route
             self.tags = tags
-            self.many = many
             self.responses = responses
 
         def __call__(self, cls):
@@ -12,52 +14,66 @@ def FreenitAPI(app):
             origPost = getattr(cls, "post", None)
             origPatch = getattr(cls, "patch", None)
             origDelete = getattr(cls, "delete", None)
-            getSuffix = " list" if self.many else ""
             app = self.app
             responses = self.responses
 
             class Wrapped(cls):
                 if callable(origGet):
-                    anotated_model = origGet.__annotations__.get("return")
-                    model = responses.get("get") or anotated_model
-                    deco = app.get(
+                    _deco = app.get(
                         self.route,
-                        summary=f"Get {self.tags[0]}{getSuffix}",
-                        response_model=model,
+                        summary=getattr(origGet, "description", f"Get {self.tags[0]}"),
+                        response_model=responses.get("get")
+                        or origGet.__annotations__.get("return"),
                         tags=self.tags,
                     )
-                    get = deco(origGet)
+                    get = _deco(origGet)
                 if callable(origPost):
-                    anotated_model = origPost.__annotations__.get("return")
-                    model = responses.get("post") or anotated_model
-                    deco = self.app.post(
+                    _deco = self.app.post(
                         self.route,
-                        summary=f"Create {self.tags[0]}",
-                        response_model=model,
+                        summary=getattr(
+                            origPost, "description", f"Create {self.tags[0]}"
+                        ),
+                        response_model=responses.get("post")
+                        or origPost.__annotations__.get("return"),
                         tags=self.tags,
                     )
-                    post = deco(origPost)
+                    post = _deco(origPost)
                 if callable(origPatch):
-                    anotated_model = origPatch.__annotations__.get("return")
-                    model = responses.get("patch") or anotated_model
-                    deco = self.app.patch(
+                    _deco = self.app.patch(
                         self.route,
-                        summary=f"Edit {self.tags[0]}",
-                        response_model=model,
+                        summary=getattr(
+                            origPatch, "description", f"Edit {self.tags[0]}"
+                        ),
+                        response_model=responses.get("patch")
+                        or origPatch.__annotations__.get("return"),
                         tags=self.tags,
                     )
-                    patch = deco(origPatch)
+                    patch = _deco(origPatch)
                 if callable(origDelete):
-                    anotated_model = origDelete.__annotations__.get("return")
-                    model = responses.get("delete") or anotated_model
-                    deco = self.app.delete(
+                    _deco = self.app.delete(
                         self.route,
-                        summary=f"Destroy {self.tags[0]}",
-                        response_model=model,
+                        summary=getattr(
+                            origDelete, "description", f"Destroy {self.tags[0]}"
+                        ),
+                        response_model=responses.get("delete")
+                        or origDelete.__annotations__.get("return"),
                         tags=self.tags,
                     )
-                    delete = deco(origDelete)
+                    delete = _deco(origDelete)
+                _deco = None
 
             return Wrapped
 
     return route
+
+
+def description(desc: str):
+    def decorator(func):
+        @functools.wraps(func)
+        async def endpoint(*args, **kwargs):
+            return await func(*args, **kwargs)
+
+        setattr(endpoint, "description", desc)
+        return endpoint
+
+    return decorator

@@ -6,12 +6,14 @@ from fastapi import HTTPException, Request
 
 from freenit.api.router import route
 from freenit.auth import authorize, encrypt
+from freenit.decorators import description
 from freenit.models.user import User, UserOptional, UserSafe
 
 
-@route("/users", tags=["user"], many=True)
+@route("/users", tags=["user"])
 class UserListAPI:
     @staticmethod
+    @description("Get users")
     async def get(request: Request) -> List[UserSafe]:
         await authorize(request)
         return await User.objects.all()
@@ -42,11 +44,13 @@ class UserDetailAPI:
 @route("/profile", tags=["profile"])
 class ProfileDetailAPI:
     @staticmethod
+    @description("Get my user")
     async def get(request: Request) -> UserSafe:
         profile = await authorize(request)
         return profile
 
     @staticmethod
+    @description("Edit my user")
     async def patch(data: UserOptional, request: Request) -> UserSafe:
         profile = await authorize(request)
         if data.password:

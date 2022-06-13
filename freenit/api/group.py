@@ -6,13 +6,15 @@ from fastapi import HTTPException, Request
 
 from freenit.api.router import route
 from freenit.auth import authorize
+from freenit.decorators import description
 from freenit.models.group import Group, GroupOptional, GroupUser, GroupUserSafe
 from freenit.models.user import User
 
 
-@route("/groups", tags=["group"], many=True)
+@route("/groups", tags=["group"])
 class GroupListAPI:
     @staticmethod
+    @description("Get groups")
     async def get(request: Request) -> List[Group]:
         await authorize(request)
         return await Group.objects.all()
@@ -56,9 +58,10 @@ class GroupDetailAPI:
         return group
 
 
-@route("/groups/{group_id}/{user_id}", tags=["group"], many=True)
+@route("/groups/{group_id}/{user_id}", tags=["group"])
 class GroupUserAPI:
     @staticmethod
+    @description("Assign user to group")
     async def post(group_id: int, user_id: int, request: Request) -> GroupUserSafe:
         await authorize(request)
         try:
