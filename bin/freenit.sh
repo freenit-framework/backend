@@ -168,29 +168,13 @@ frontend_common() {
 export BIN_DIR=\`dirname \$0\`
 export PROJECT_ROOT="\${BIN_DIR}/.."
 export OFFLINE=\${OFFLINE:=no}
-NPM=\`which npm 2>/dev/null\`
-YARN=\`which yarn 2>/dev/null\`
-
-
-if [ ! -z "\${NPM}" ]; then
-  export PACKAGE_MANAGER="\${NPM} run"
-  export PACKAGE_MANAGER_INSTALL="\${NPM}"
-else
-  export PACKAGE_MANAGER="\${YARN}"
-  export PACKAGE_MANAGER_INSTALL="\${YARN}"
-fi
 
 
 setup() {
-  if [ -z "\${PACKAGE_MANAGER}" ]; then
-    echo "Install npm or yarn" >&2
-    exit 1
-  fi
-
   cd \${PROJECT_ROOT}
   update=\${1}
   if [ "\${OFFLINE}" != "yes" -a "\${update}" != "no" ]; then
-    \${PACKAGE_MANAGER_INSTALL} install
+    npm install
   fi
 }
 EOF
@@ -215,7 +199,7 @@ BIN_DIR=\`dirname \$0\`
 . "\${BIN_DIR}/common.sh"
 setup
 
-env CI=true "\${PACKAGE_MANAGER}" test
+env CI=true npm run test
 EOF
   chmod +x test.sh
 
@@ -232,7 +216,7 @@ echo "Frontend"
 echo "========"
 cd "\${PROJECT_ROOT}"
 rm -rf build
-${PACKAGE_MANAGER} build
+npm run build
 EOF
   chmod +x collect.sh
 
@@ -308,7 +292,7 @@ EOF
 react() {
   npm init vite@latest "${NAME}" -- --template react-ts
   cd "${NAME}"
-  npm install --save @freenit-framework/axios react-router-dom
+  npm install --save @freenit-framework/axios react-router-dom @mdi/js
   frontend_common
 
   rm src/App.* src/index.css src/logo.svg

@@ -30,7 +30,8 @@ class BaseConfig:
     database = None
     engine = None
     secret = "SECRET"
-    user = "freenit.models.ormar"
+    user = "freenit.models.ormar.user"
+    group = "freenit.models.ormar.group"
     meta = None
     auth = Auth()
 
@@ -51,6 +52,9 @@ class BaseConfig:
 
     def get_user(self):
         return import_module(self.user)
+
+    def get_group(self):
+        return import_module(self.group)
 
     @classmethod
     def envname(cls):

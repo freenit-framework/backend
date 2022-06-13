@@ -6,36 +6,33 @@ from fastapi import HTTPException, Request
 
 from freenit.api.router import route
 from freenit.auth import authorize, encrypt
-from freenit.models.user import User as UserDB
-from freenit.models.user import UserOptional
-
-User = UserDB.get_pydantic(exclude={"password"})
+from freenit.models.user import User, UserOptional, UserSafe
 
 
 @route("/users", tags=["user"], many=True)
 class UserListAPI:
     @staticmethod
-    async def get(request: Request) -> List[User]:
+    async def get(request: Request) -> List[UserSafe]:
         await authorize(request)
-        return await UserDB.objects.all()
+        return await User.objects.all()
 
 
 @route("/users/{id}", tags=["user"])
 class UserDetailAPI:
     @staticmethod
-    async def get(id: int, request: Request) -> User:
+    async def get(id: int, request: Request) -> UserSafe:
         await authorize(request)
         try:
-            user = await UserDB.objects.get(pk=id)
+            user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
         return user
 
     @staticmethod
-    async def delete(id: int, request: Request) -> User:
+    async def delete(id: int, request: Request) -> UserSafe:
         await authorize(request)
         try:
-            user = await UserDB.objects.get(pk=id)
+            user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
         await user.delete()
@@ -45,12 +42,12 @@ class UserDetailAPI:
 @route("/profile", tags=["profile"])
 class ProfileDetailAPI:
     @staticmethod
-    async def get(request: Request) -> User:
+    async def get(request: Request) -> UserSafe:
         profile = await authorize(request)
         return profile
 
     @staticmethod
-    async def patch(data: UserOptional, request: Request) -> User:
+    async def patch(data: UserOptional, request: Request) -> UserSafe:
         profile = await authorize(request)
         if data.password:
             data.password = encrypt(data.password)

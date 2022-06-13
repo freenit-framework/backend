@@ -6,10 +6,9 @@ from fastapi import HTTPException, Request, Response
 from freenit.api.router import api
 from freenit.auth import authorize, decode, encode, encrypt
 from freenit.config import getConfig
-from freenit.models.user import User
+from freenit.models.user import User, UserSafe
 
 config = getConfig()
-tags = ["auth"]
 
 
 class LoginInput(pydantic.BaseModel):
@@ -22,11 +21,8 @@ class TokenExpire(pydantic.BaseModel):
     refresh: int
 
 
-UserResponse = User.get_pydantic(exclude={"password": ...})
-
-
 class LoginResponse(pydantic.BaseModel):
-    user: UserResponse
+    user: UserSafe
     expire: TokenExpire
 
 
@@ -34,7 +30,7 @@ class Verification(pydantic.BaseModel):
     verification: str
 
 
-@api.post("/auth/login", response_model=LoginResponse, tags=tags)
+@api.post("/auth/login", response_model=LoginResponse, tags=["auth"])
 async def login(credentials: LoginInput, response: Response):
     try:
         user = await User.objects.get(email=credentials.email)
@@ -66,31 +62,38 @@ async def login(credentials: LoginInput, response: Response):
     raise HTTPException(status_code=403, detail="Failed to login")
 
 
-@api.post("/auth/register", response_model=Verification, tags=tags)
+@api.post("/auth/register", tags=["auth"])
 async def register(credentials: LoginInput):
+    try:
+        user = await User.objects.get(email=credentials.email)
+        print(user)
+        raise HTTPException(status_code=409, detail="User already registered")
+    except ormar.exceptions.NoMatch:
+        pass
     user = User(
         email=credentials.email,
         password=encrypt(credentials.password),
         active=False,
     )
     await user.save()
-    return {"verification": encode(user)}
+    print(encode(user))
+    return {"status": True}
 
 
-@api.post("/auth/verify", response_model=UserResponse, tags=tags)
+@api.post("/auth/verify", response_model=UserSafe, tags=["auth"])
 async def verify(verification: Verification):
     user = await decode(verification.verification)
     await user.update(active=True)
     return user
 
 
-@api.post("/auth/refresh", response_model=LoginResponse, tags=tags)
+@api.post("/auth/refresh", response_model=LoginResponse, tags=["auth"])
 async def refresh(request: Request, response: Response):
     user = await authorize(request, "refresh")
     access = encode(user)
     response.set_cookie("access", access, httponly=True, secure=config.auth.secure)
     return {
-        "user": user.dict(exclude={"password"}),
+        "user": user,
         "expire": {
             "access": config.auth.expire,
             "refresh": config.auth.refresh_expire,
