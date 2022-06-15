@@ -1,5 +1,9 @@
 import functools
 
+from fastapi import HTTPException, Request
+
+from freenit.auth import authorize
+
 
 def FreenitAPI(app):
     class route:

@@ -2,26 +2,26 @@ from typing import List
 
 import ormar
 import ormar.exceptions
-from fastapi import HTTPException, Request
+from fastapi import Depends, HTTPException
 
 from freenit.api.router import route
-from freenit.auth import authorize
+from freenit.auth import permissions
 from freenit.decorators import description
 from freenit.models.group import Group, GroupOptional, GroupUser, GroupUserSafe
 from freenit.models.user import User
+
+group_permissions = permissions()
 
 
 @route("/groups", tags=["group"])
 class GroupListAPI:
     @staticmethod
     @description("Get groups")
-    async def get(request: Request) -> List[Group]:
-        await authorize(request)
+    async def get(_: User = Depends(group_permissions)) -> List[Group]:
         return await Group.objects.all()
 
     @staticmethod
-    async def post(group: Group, request: Request) -> Group:
-        await authorize(request)
+    async def post(group: Group, _: User = Depends(group_permissions)) -> Group:
         await group.save()
         return group
 
@@ -29,8 +29,7 @@ class GroupListAPI:
 @route("/groups/{id}", tags=["group"])
 class GroupDetailAPI:
     @staticmethod
-    async def get(id: int, request: Request) -> Group:
-        await authorize(request)
+    async def get(id: int, _: User = Depends(group_permissions)) -> Group:
         try:
             group = await Group.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -38,8 +37,9 @@ class GroupDetailAPI:
         return group
 
     @staticmethod
-    async def patch(id: int, group_data: GroupOptional, request: Request) -> Group:
-        await authorize(request)
+    async def patch(
+        id: int, group_data: GroupOptional, _: User = Depends(group_permissions)
+    ) -> Group:
         try:
             group = await Group.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -48,8 +48,7 @@ class GroupDetailAPI:
         return group
 
     @staticmethod
-    async def delete(id: int, request: Request) -> Group:
-        await authorize(request)
+    async def delete(id: int, _: User = Depends(group_permissions)) -> Group:
         try:
             group = await Group.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -62,8 +61,9 @@ class GroupDetailAPI:
 class GroupUserAPI:
     @staticmethod
     @description("Assign user to group")
-    async def post(group_id: int, user_id: int, request: Request) -> GroupUserSafe:
-        await authorize(request)
+    async def post(
+        group_id: int, user_id: int, _: User = Depends(group_permissions)
+    ) -> GroupUserSafe:
         try:
             group = await Group.objects.get(pk=group_id)
         except ormar.exceptions.NoMatch:

@@ -2,28 +2,29 @@ from typing import List
 
 import ormar
 import ormar.exceptions
-from fastapi import HTTPException, Request
+from fastapi import Depends, HTTPException
 
 from freenit.api.router import route
-from freenit.auth import authorize, encrypt
+from freenit.auth import encrypt, permissions
 from freenit.decorators import description
 from freenit.models.user import User, UserOptional, UserSafe
+
+profile_permissions = permissions()
+user_permissions = permissions()
 
 
 @route("/users", tags=["user"])
 class UserListAPI:
     @staticmethod
     @description("Get users")
-    async def get(request: Request) -> List[UserSafe]:
-        await authorize(request)
+    async def get(_: User = Depends(user_permissions)) -> List[UserSafe]:
         return await User.objects.all()
 
 
 @route("/users/{id}", tags=["user"])
 class UserDetailAPI:
     @staticmethod
-    async def get(id: int, request: Request) -> UserSafe:
-        await authorize(request)
+    async def get(id: int, _: User = Depends(user_permissions)) -> UserSafe:
         try:
             user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -31,8 +32,7 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def delete(id: int, request: Request) -> UserSafe:
-        await authorize(request)
+    async def delete(id: int, _: User = Depends(user_permissions)) -> UserSafe:
         try:
             user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -45,15 +45,15 @@ class UserDetailAPI:
 class ProfileDetailAPI:
     @staticmethod
     @description("Get my user")
-    async def get(request: Request) -> UserSafe:
-        profile = await authorize(request)
-        return profile
+    async def get(user: User = Depends(profile_permissions)) -> UserSafe:
+        return user
 
     @staticmethod
     @description("Edit my user")
-    async def patch(data: UserOptional, request: Request) -> UserSafe:
-        profile = await authorize(request)
+    async def patch(
+        data: UserOptional, user: User = Depends(profile_permissions)
+    ) -> UserSafe:
         if data.password:
             data.password = encrypt(data.password)
-        await profile.patch(data)
-        return profile
+        await user.patch(data)
+        return user

@@ -11,7 +11,7 @@ async def decode(token):
     config = getConfig()
     User = config.get_user().User
     try:
-        data = jwt.decode(token, config.secret, algorithms="HS256")
+        data = jwt.decode(token, config.secret, algorithms=["HS256"])
     except:
         raise HTTPException(status_code=403, detail="Unauthorized")
     pk = data.get("pk", None)
@@ -30,11 +30,26 @@ def encode(user):
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 
-async def authorize(request: Request, cookie="access"):
+async def authorize(request: Request, groups=[], allof=[], cookie="access"):
     token = request.cookies.get(cookie)
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    return await decode(token)
+    user = await decode(token)
+    if user.groupusers is None:
+        if len(groups) > 0 or len(allof) > 0:
+            raise HTTPException(status_code=403, detail="Permission denied")
+    else:
+        found = False
+        for groupuser in user.groupusers:
+            if groupuser.group.name in groups:
+                found = True
+                break
+        if not found:
+            raise HTTPException(status_code=403, detail="Permission denied")
+        for groupuser in user.groupusers:
+            if groupuser.group.name not in allof:
+                raise HTTPException(status_code=403, detail="Permission denied")
+    return user
 
 
 def verify(password, encpassword):
@@ -45,3 +60,11 @@ def verify(password, encpassword):
 def encrypt(password):
     config = getConfig()
     return pbkdf2_sha256.hash(f"{config.secret}{password}")
+
+
+def permissions(groups=[], allof=[]):
+    async def handler(request: Request):
+        user = await authorize(request, groups, allof)
+        return user
+
+    return handler
