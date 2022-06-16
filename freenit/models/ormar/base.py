@@ -21,9 +21,9 @@ class OrmarUserMixin:
     email: pydantic.EmailStr = ormar.Text(unique=True)
     password: str = ormar.Text()
     active: bool = ormar.Boolean(default=False)
+    admin: bool = ormar.Boolean(default=False)
 
 
 class OrmarGroupMixin:
     id: int = ormar.Integer(primary_key=True)
     name: str = ormar.Text()
-    active: bool = ormar.Boolean(default=False)

@@ -35,6 +35,10 @@ async def authorize(request: Request, groups=[], allof=[], cookie="access"):
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = await decode(token)
+    if not user.active:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    if user.admin:
+        return user
     if user.groupusers is None:
         if len(groups) > 0 or len(allof) > 0:
             raise HTTPException(status_code=403, detail="Permission denied")

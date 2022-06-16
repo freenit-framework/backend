@@ -89,7 +89,7 @@ async def verify(verification: Verification):
 
 @api.post("/auth/refresh", response_model=LoginResponse, tags=["auth"])
 async def refresh(request: Request, response: Response):
-    user = await authorize(request, "refresh")
+    user = await authorize(request, cookie="refresh")
     access = encode(user)
     response.set_cookie("access", access, httponly=True, secure=config.auth.secure)
     return {
