@@ -10,12 +10,12 @@ export SYSPKG=${SYSPKG:="no"}
 export SYSPKG=`echo ${SYSPKG} | tr '[:lower:]' '[:upper:]'`
 export DB_TYPE=${DB_TYPE:="ormar"}
 export PIP_INSTALL="pip install -U --upgrade-strategy eager"
+export OFFLINE=${OFFLINE:="no"}
 
 
 setup() {
   cd ${PROJECT_ROOT}
   if [ "${SYSPKG}" != "YES" ]; then
-    update=${1}
     if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
         python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"
     fi
@@ -26,7 +26,7 @@ setup() {
       INSTALL_TARGET="${INSTALL_TARGET},${FREENIT_ENV}"
     fi
     INSTALL_TARGET="${INSTALL_TARGET}]"
-    if [ "${update}" != "no" ]; then
+    if [ "${1}" != "no" -a "${OFFLINE}" != "yes" ]; then
       ${PIP_INSTALL} pip wheel
       ${PIP_INSTALL} -e "${INSTALL_TARGET}"
     fi

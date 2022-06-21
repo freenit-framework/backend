@@ -1,12 +1,14 @@
 import pytest
 
+from freenit.models.user import User
+
 from . import factories
 
 
 class TestAuth:
     @pytest.mark.asyncio
     async def test_login(self, client):
-        user = factories.User()
+        user: User = factories.User()
         await user.save()
         response = client.login(user=user)
 
@@ -23,9 +25,8 @@ class TestAuth:
 
     @pytest.mark.asyncio
     async def test_refresh(self, client):
-        user = factories.User()
+        user: User = factories.User()
         await user.save()
         client.login(user=user)
-        # print("refresh token sent:", self.token)
         response = client.post("/auth/refresh")
         assert response.status_code == 200
