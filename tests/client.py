@@ -12,11 +12,11 @@ class Client(TestClient):
         url = self.url_for(endpoint)
         return super().get(url, cookies=self.cookies)
 
-    def post(self, endpoint, data=None, type="json"):
+    def post(self, endpoint, data=None):
         url = self.url_for(endpoint)
         response = super().post(
             url,
-            data=json.dumps(data) if type == "json" else data,
+            json=data,
             headers=self.headers,
             cookies=self.cookies,
         )
@@ -25,17 +25,12 @@ class Client(TestClient):
 
     def put(self, endpoint, data=None):
         url = self.url_for(endpoint)
-        response = super().put(
-            url,
-            data=json.dumps(data),
-            cookies=self.cookies,
-        )
+        response = super().put(url, json=data, cookies=self.cookies)
         return response
 
     def patch(self, endpoint, data=None):
         url = self.url_for(endpoint)
-        response = super().patch(url, data=json.dumps(data), cookies=self.cookies)
-
+        response = super().patch(url, json=data, cookies=self.cookies)
         return response
 
     def delete(self, endpoint):
