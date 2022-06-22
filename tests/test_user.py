@@ -1,11 +1,8 @@
 import pytest
 
-from freenit.config import getConfig
 from freenit.models.user import User
 
 from . import factories
-
-config = getConfig()
 
 
 class TestUser:

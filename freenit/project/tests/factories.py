@@ -1,17 +1,28 @@
 import factory
+from passlib.hash import pbkdf2_sha256
 
 from freenit.config import getConfig
+from freenit.models.role import Role as RoleModel
 
 config = getConfig()
 auth = config.get_user()
-UserModel = auth.UserModel
 
 
-class UserFactory(factory.Factory):
+class User(factory.Factory):
     class Meta:
-        model = UserModel
+        model = auth.User
 
-    id = factory.Faker("uuid4")
-    is_active = True
     email = factory.Faker("email")
-    hashed_password = "Sekrit"
+    password = pbkdf2_sha256.hash(f"{config.secret}Sekrit")
+    active = True
+
+
+class InactiveUser(User):
+    active = False
+
+
+class Role(factory.Factory):
+    class Meta:
+        model = RoleModel
+
+    name = factory.Faker("pystr")
