@@ -2,7 +2,7 @@ import factory
 from passlib.hash import pbkdf2_sha256
 
 from freenit.config import getConfig
-from freenit.models.group import Group as GroupModel
+from freenit.models.role import Role as RoleModel
 
 config = getConfig()
 auth = config.get_user()
@@ -21,8 +21,8 @@ class InactiveUser(User):
     active = False
 
 
-class Group(factory.Factory):
+class Role(factory.Factory):
     class Meta:
-        model = GroupModel
+        model = RoleModel
 
     name = factory.Faker("pystr")

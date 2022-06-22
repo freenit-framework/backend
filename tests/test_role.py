@@ -1,56 +1,56 @@
 import pytest
 
-from freenit.models.group import Group
+from freenit.models.role import Role
 from freenit.models.user import User
 
 from . import factories
 
 
-class TestGroup:
+class TestRole:
     @pytest.mark.asyncio
-    async def test_get_group_list(self, client):
+    async def test_get_role_list(self, client):
         user: User = factories.User()
         await user.save()
         client.login(user=user)
-        response = client.get(f"/groups")
+        response = client.get(f"/roles")
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_create_group(self, client):
+    async def test_create_role(self, client):
         user: User = factories.User()
         await user.save()
         client.login(user=user)
-        data = {"name": "mygroup"}
-        response = client.post(f"/groups", data=data)
+        data = {"name": "myrole"}
+        response = client.post(f"/roles", data=data)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_get_group_by_id(self, client):
+    async def test_get_role_by_id(self, client):
         user: User = factories.User()
         await user.save()
         client.login(user=user)
-        group: Group = factories.Group()
-        await group.save()
-        response = client.get(f"/groups/{group.id}")
+        role: Role = factories.Role()
+        await role.save()
+        response = client.get(f"/roles/{role.id}")
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_edit_group(self, client):
+    async def test_edit_role(self, client):
         user: User = factories.User()
         await user.save()
         client.login(user=user)
-        group: Group = factories.Group()
-        await group.save()
-        data = {"name": "mygroup"}
-        response = client.patch(f"/groups/{group.id}", data=data)
+        role: Role = factories.Role()
+        await role.save()
+        data = {"name": "myrole"}
+        response = client.patch(f"/roles/{role.id}", data=data)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
-    async def test_delete_group(self, client):
+    async def test_delete_role(self, client):
         user: User = factories.User()
         await user.save()
         client.login(user=user)
-        group: Group = factories.Group()
-        await group.save()
-        response = client.delete(f"/groups/{group.id}")
+        role: Role = factories.Role()
+        await role.save()
+        response = client.delete(f"/roles/{role.id}")
         assert response.status_code == 200

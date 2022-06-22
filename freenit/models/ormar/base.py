@@ -24,6 +24,6 @@ class OrmarUserMixin:
     admin: bool = ormar.Boolean(default=False)
 
 
-class OrmarGroupMixin:
+class OrmarRoleMixin:
     id: int = ormar.Integer(primary_key=True)
     name: str = ormar.Text()

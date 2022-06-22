@@ -30,29 +30,32 @@ def encode(user):
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 
-async def authorize(request: Request, groups=[], allof=[], cookie="access"):
+async def authorize(request: Request, roles=[], allof=[], cookie="access"):
     token = request.cookies.get(cookie)
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = await decode(token)
+    await user.load_all()
     if not user.active:
         raise HTTPException(status_code=403, detail="Permission denied")
     if user.admin:
         return user
-    if user.groupusers is None:
-        if len(groups) > 0 or len(allof) > 0:
+    if len(user.roles) == 0:
+        if len(roles) > 0 or len(allof) > 0:
             raise HTTPException(status_code=403, detail="Permission denied")
     else:
-        found = False
-        for groupuser in user.groupusers:
-            if groupuser.group.name in groups:
-                found = True
-                break
-        if not found:
-            raise HTTPException(status_code=403, detail="Permission denied")
-        for groupuser in user.groupusers:
-            if groupuser.group.name not in allof:
+        if len(roles) > 0:
+            found = False
+            for role in user.roles:
+                if role.name in roles:
+                    found = True
+                    break
+            if not found:
                 raise HTTPException(status_code=403, detail="Permission denied")
+        if len(allof) > 0:
+            for role in user.roles:
+                if role.name not in allof:
+                    raise HTTPException(status_code=403, detail="Permission denied")
     return user
 
 
@@ -66,9 +69,9 @@ def encrypt(password):
     return pbkdf2_sha256.hash(f"{config.secret}{password}")
 
 
-def permissions(groups=[], allof=[]):
+def permissions(roles=[], allof=[]):
     async def handler(request: Request):
-        user = await authorize(request, groups, allof)
+        user = await authorize(request, roles, allof)
         return user
 
     return handler

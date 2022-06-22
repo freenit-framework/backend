@@ -19,7 +19,7 @@ class Auth:
 
 
 class BaseConfig:
-    name = "App Name"
+    name = "Freenit"
     version = "0.0.1"
     api_root = "/api/v1"
     hostname = socket.gethostname()
@@ -31,7 +31,7 @@ class BaseConfig:
     engine = None
     secret = "SECRET"
     user = "freenit.models.ormar.user"
-    group = "freenit.models.ormar.group"
+    role = "freenit.models.ormar.role"
     meta = None
     auth = Auth()
 
@@ -53,8 +53,8 @@ class BaseConfig:
     def get_user(self):
         return import_module(self.user)
 
-    def get_group(self):
-        return import_module(self.group)
+    def get_role(self):
+        return import_module(self.role)
 
     @classmethod
     def envname(cls):

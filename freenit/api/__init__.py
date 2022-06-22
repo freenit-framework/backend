@@ -1,5 +1,5 @@
 import freenit.api.auth
-import freenit.api.group
+import freenit.api.role
 import freenit.api.user
 
 from .router import api
