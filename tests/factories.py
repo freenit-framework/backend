@@ -25,4 +25,4 @@ class Group(factory.Factory):
     class Meta:
         model = GroupModel
 
-    name = factory.Faker("name")
+    name = factory.Faker("pystr")
