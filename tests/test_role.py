@@ -1,12 +1,9 @@
-import pytest
-
 from freenit.models.role import Role
 from freenit.models.user import User
 
 from . import factories
 
 
-@pytest.mark.asyncio
 class TestRole:
     async def test_get_role_list(self, client):
         user: User = factories.User()
