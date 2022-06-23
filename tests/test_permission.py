@@ -15,8 +15,8 @@ def prepareRequest(user):
     return request
 
 
+@pytest.mark.asyncio
 class TestPermission:
-    @pytest.mark.asyncio
     async def test_encode_decode(self, client):
         user: User = factories.User()
         await user.save()
@@ -27,7 +27,6 @@ class TestPermission:
         token_user = await decode(token)
         assert token_user == user
 
-    @pytest.mark.asyncio
     async def test_permissions(self, client):
         user: User = factories.User()
         await user.save()
@@ -37,7 +36,6 @@ class TestPermission:
         token_user = await perms(request)
         assert user == token_user
 
-    @pytest.mark.asyncio
     async def test_role_permissions(self, client):
         user: User = factories.User()
         await user.save()
@@ -50,7 +48,6 @@ class TestPermission:
         api_user = await perms(request)
         assert user == api_user
 
-    @pytest.mark.asyncio
     async def test_role_fail_permissions(self, client):
         user: User = factories.User()
         await user.save()

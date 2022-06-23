@@ -5,8 +5,8 @@ from freenit.models.user import User
 from . import factories
 
 
+@pytest.mark.asyncio
 class TestUser:
-    @pytest.mark.asyncio
     async def test_get_profile(self, client):
         user: User = factories.User()
         await user.save()
@@ -14,7 +14,6 @@ class TestUser:
         response = client.get("/profile")
         assert response.status_code == 200
 
-    @pytest.mark.asyncio
     async def test_patch_profile(self, client):
         admin: User = factories.User()
         await admin.save()
@@ -27,7 +26,6 @@ class TestUser:
         assert response.status_code == 200
         assert response.json()["email"] == data["email"]
 
-    @pytest.mark.asyncio
     async def test_get_user_list(self, client):
         admin: User = factories.User()
         await admin.save()
@@ -35,7 +33,6 @@ class TestUser:
         response = client.get(f"/users")
         assert response.status_code == 200
 
-    @pytest.mark.asyncio
     async def test_get_user_by_id(self, client):
         admin: User = factories.User()
         await admin.save()
@@ -43,7 +40,6 @@ class TestUser:
         response = client.get(f"/users/{admin.id}")
         assert response.status_code == 200
 
-    @pytest.mark.asyncio
     async def test_delete_user(self, client):
         admin: User = factories.User()
         await admin.save()
