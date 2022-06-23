@@ -45,6 +45,9 @@ setup(
         "pyjwt",
     ],
     extras_require={
+        "beanie": [
+            "beanie",
+        ],
         "build": [
             "twine",
         ],
@@ -54,6 +57,10 @@ setup(
             "isort",
             "uvicorn",
         ],
+        "ormar": [
+            "alembic",
+            "ormar",
+        ],
         "test": [
             "aiosqlite",
             "black",
@@ -61,13 +68,6 @@ setup(
             "pytest-asyncio",
             "pytest-factoryboy",
             "requests",
-        ],
-        "ormar": [
-            "alembic",
-            "ormar",
-        ],
-        "beanie": [
-            "beanie",
         ],
     },
     include_package_data=True,
