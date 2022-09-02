@@ -1,8 +1,11 @@
+import pytest
+
 from freenit.models.user import User
 
 from . import factories
 
 
+@pytest.mark.asyncio
 class TestAuth:
     async def test_login(self, client):
         user: User = factories.User()

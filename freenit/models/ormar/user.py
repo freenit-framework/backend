@@ -2,10 +2,9 @@ import ormar
 
 from freenit.auth import verify
 from freenit.config import getConfig
+from freenit.models.metaclass import AllOptional
+from freenit.models.ormar.base import OrmarBaseModel, OrmarUserMixin
 from freenit.models.role import Role
-
-from ..metaclass import AllOptional
-from .base import OrmarBaseModel, OrmarUserMixin
 
 config = getConfig()
 

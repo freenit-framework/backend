@@ -1,8 +1,11 @@
+import pytest
+
 from freenit.models.user import User
 
 from . import factories
 
 
+@pytest.mark.asyncio
 class TestUser:
     async def test_get_profile(self, client):
         user: User = factories.User()

@@ -15,6 +15,7 @@ def prepareRequest(user):
     return request
 
 
+@pytest.mark.asyncio
 class TestPermission:
     async def test_encode_decode(self, client):
         user: User = factories.User()
