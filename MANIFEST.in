@@ -2,6 +2,7 @@ include README.md
 include LICENSE
 include alembic.ini
 include name.py
+include pytest.ini
 graft alembic
 graft tests
 graft freenit/project
