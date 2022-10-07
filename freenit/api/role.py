@@ -1,4 +1,4 @@
-from typing import List, NewType
+from typing import List
 
 import ormar
 import ormar.exceptions

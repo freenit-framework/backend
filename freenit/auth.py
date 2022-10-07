@@ -9,7 +9,7 @@ from freenit.config import getConfig
 
 async def decode(token):
     config = getConfig()
-    User = config.get_user().User
+    User = config.get_model("user").User
     try:
         data = jwt.decode(token, config.secret, algorithms=["HS256"])
     except:
