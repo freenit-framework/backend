@@ -32,6 +32,7 @@ class BaseConfig:
     secret = "SECRET"
     user = "freenit.models.ormar.user"
     role = "freenit.models.ormar.role"
+    theme = "freenit.models.ormar.theme"
     meta = None
     auth = Auth()
 
@@ -50,11 +51,9 @@ class BaseConfig:
             f"<{self.envname()} config: {self.name}({self.version}) on {self.hostname}>"
         )
 
-    def get_user(self):
-        return import_module(self.user)
-
-    def get_role(self):
-        return import_module(self.role)
+    def get_model(self, model):
+        mymodel = getattr(self, model)
+        return import_module(mymodel)
 
     @classmethod
     def envname(cls):

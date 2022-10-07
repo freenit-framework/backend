@@ -5,7 +5,7 @@ from freenit.config import getConfig
 from freenit.models.role import Role as RoleModel
 
 config = getConfig()
-auth = config.get_user()
+auth = config.get_model("user")
 
 
 class User(factory.Factory):
