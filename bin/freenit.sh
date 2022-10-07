@@ -482,7 +482,7 @@ for service in \${SERVICES}; do
     firstone="no"
     if [ "\${REGGAE}" = "yes" ]; then
       export backend_hostname=\$(sudo cbsd jexec user=devel "jname=\${backend_app_name}" hostname)
-      sudo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel"
+      sudo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel offline=\${OFFLINE}"
     else
       export backend_hostname="localhost"
       tmux new-session -s "\${backend_app_name}" -d "env OFFLINE=\${OFFLINE} SYSPKG=\${SYSPKG} \${PROJECT_ROOT}/services/\${service}/bin/devel.sh"
@@ -497,13 +497,13 @@ for service in \${SERVICES}; do
   if [ "\${firstone}" = "yes" ]; then
     firstone="no"
     if [ "\${REGGAE}" = "yes" ]; then
-      sudo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel"
+      sudo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel offline=\${OFFLINE}"
     else
       tmux new-session -s "\${backend_app_name}" -d "env OFFLINE=\${OFFLINE} SYSPKG=\${SYSPKG} \${PROJECT_ROOT}/services/\${service}/bin/devel.sh"
     fi
   else
     if [ "\${REGGAE}" = "yes" ]; then
-      sudo tmux split-window -h -p 50 -t 0 "make -C services/\${service} BACKEND_URL=http://\${backend_hostname}:5000 devel"
+      sudo tmux split-window -h -p 50 -t 0 "make -C services/\${service} BACKEND_URL=http://\${backend_hostname}:5000 devel offline=\${OFFLINE}"
     else
       tmux split-window -h -p 50 -t 0 "env OFFLINE=\${OFFLINE} BACKEND_URL=http://\${backend_hostname}:5000 \${PROJECT_ROOT}/services/\${service}/bin/devel.sh"
     fi
