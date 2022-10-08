@@ -33,6 +33,7 @@ class BaseConfig:
     user = "freenit.models.ormar.user"
     role = "freenit.models.ormar.role"
     theme = "freenit.models.ormar.theme"
+    theme_name = "Freenit"
     meta = None
     auth = Auth()
 
