@@ -3,7 +3,6 @@ from typing import List
 import ormar
 import ormar.exceptions
 from fastapi import Depends, HTTPException
-
 from freenit.api.router import route
 from freenit.auth import encrypt
 from freenit.decorators import description
@@ -30,6 +29,19 @@ class UserDetailAPI:
             user = await User.objects.select_all().get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
+        return user
+
+    @staticmethod
+    async def patch(
+        id: int, data: UserOptional, _: User = Depends(user_perms)
+    ) -> UserSafe:
+        if data.password:
+            data.password = encrypt(data.password)
+        try:
+            user = await User.objects.select_all().get(pk=id)
+        except ormar.exceptions.NoMatch:
+            raise HTTPException(status_code=404, detail="No such user")
+        await user.patch(data)
         return user
 
     @staticmethod
