@@ -157,7 +157,7 @@ EOF
 
 frontend_common() {
   echo "# ${NAME}" >README.md
-  yarn add chota
+  yarn add --dev chota
 
   mkdir bin
   cd bin
@@ -414,19 +414,17 @@ EOF
 
   case `uname` in
     *BSD)
-      ${SED_CMD} '' -e "s/export default config//g" svelte.config.js
+      ${SED_CMD} '' -e "s/export default config//g" vite.config.ts
       ;;
     *)
-      ${SED_CMD} -e "s/export default config//g" svelte.config.js
+      ${SED_CMD} -e "s/export default config//g" vite.config.ts
       ;;
   esac
-  cat >>svelte.config.js<<EOF
+  cat >>vite.config.ts<<EOF
 if (process.env.BACKEND_URL) {
-  config.kit.vite = {
-    server: {
-      proxy: {
-        '/api': process.env.BACKEND_URL
-      }
+  config.server = {
+    proxy: {
+      '/api': process.env.BACKEND_URL
     }
   }
 }
