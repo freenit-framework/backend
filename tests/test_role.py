@@ -50,3 +50,22 @@ class TestRole:
         await role.save()
         response = client.delete(f"/roles/{role.id}")
         assert response.status_code == 200
+
+    async def test_role_assign_user(self, client):
+        user: User = factories.User()
+        await user.save()
+        client.login(user=user)
+        role: Role = factories.Role()
+        await role.save()
+        response = client.post(f"/roles/{role.id}/{user.id}")
+        assert response.status_code == 200
+
+    async def test_role_deassign_user(self, client):
+        user: User = factories.User()
+        await user.save()
+        client.login(user=user)
+        role: Role = factories.Role()
+        await role.save()
+        await user.roles.add(role)
+        response = client.delete(f"/roles/{role.id}/{user.id}")
+        assert response.status_code == 200

@@ -48,3 +48,15 @@ class TestUser:
         await user.save()
         response = client.delete(f"/users/{user.id}")
         assert response.status_code == 200
+
+    async def test_edit_user(self, client):
+        admin: User = factories.User()
+        await admin.save()
+        client.login(user=admin)
+        data = {
+            "password": "Sekrit",
+            "email": "user2@example.com",
+        }
+        response = client.patch(f"/users/{admin.id}", data=data)
+        assert response.status_code == 200
+        assert response.json()["email"] == data["email"]

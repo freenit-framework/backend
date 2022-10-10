@@ -78,3 +78,22 @@ class RoleUserAPI:
             raise HTTPException(status_code=404, detail="No such role")
         await user.roles.add(role)
         return user
+
+    @staticmethod
+    @description("Deassign user to role")
+    async def delete(
+        role_id: int, user_id: int, _: User = Depends(role_perms)
+    ) -> UserSafe:
+        try:
+            user = await User.objects.select_all().get(pk=user_id)
+        except ormar.exceptions.NoMatch:
+            raise HTTPException(status_code=404, detail="No such user")
+        try:
+            role = await Role.objects.get(pk=role_id)
+        except ormar.exceptions.NoMatch:
+            raise HTTPException(status_code=404, detail="No such role")
+        try:
+            await user.roles.remove(role)
+        except ormar.exceptions.NoMatch:
+            raise HTTPException(status_code=404, detail="User is not part of role")
+        return user
