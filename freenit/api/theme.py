@@ -2,11 +2,12 @@ from typing import List
 
 import ormar
 import ormar.exceptions
-from fastapi import Depends, HTTPException
+from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
 from freenit.config import getConfig
 from freenit.decorators import description
+from freenit.models.pagination import Page, paginate
 from freenit.models.theme import Theme, ThemeOptional
 from freenit.models.user import User
 from freenit.permissions import theme_perms
@@ -36,8 +37,12 @@ default_theme = {
 class ThemeListAPI:
     @staticmethod
     @description("Get themes")
-    async def get() -> List[Theme]:
-        return await Theme.objects.select_all().all()
+    async def get(
+        page: int = Header(default=1),
+        perpage: int = Header(default=10),
+    ) -> Page[Theme]:
+        themes = Theme.objects
+        return await paginate(themes, page, perpage)
 
     @staticmethod
     async def post(theme: Theme, _: User = Depends(theme_perms)) -> Theme:
