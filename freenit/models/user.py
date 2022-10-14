@@ -1,3 +1,7 @@
+from typing import List
+
+from pydantic import BaseModel
+
 from freenit.config import getConfig
 
 config = getConfig()

@@ -2,10 +2,11 @@ from typing import List
 
 import ormar
 import ormar.exceptions
-from fastapi import Depends, HTTPException
+from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
 from freenit.decorators import description
+from freenit.models.pagination import Page, paginate
 from freenit.models.role import Role, RoleOptional
 from freenit.models.safe import RoleSafe, UserSafe
 from freenit.models.user import User
@@ -18,8 +19,13 @@ tags = ["role"]
 class RoleListAPI:
     @staticmethod
     @description("Get roles")
-    async def get(_: User = Depends(role_perms)) -> List[RoleSafe]:
-        return await Role.objects.select_all().exclude_fields(["password"]).all()
+    async def get(
+        page: int = Header(default=1),
+        perpage: int = Header(default=10),
+        _: User = Depends(role_perms),
+    ) -> Page[RoleSafe]:
+        roles = Role.objects
+        return await paginate(roles, page, perpage)
 
     @staticmethod
     async def post(role: Role, _: User = Depends(role_perms)) -> RoleSafe:
@@ -32,7 +38,7 @@ class RoleDetailAPI:
     @staticmethod
     async def get(id: int, _: User = Depends(role_perms)) -> RoleSafe:
         try:
-            role = await Role.objects.select_all().get(pk=id)
+            role = await Role.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such role")
         return role
@@ -42,7 +48,7 @@ class RoleDetailAPI:
         id: int, role_data: RoleOptional, _: User = Depends(role_perms)
     ) -> RoleSafe:
         try:
-            role = await Role.objects.select_all().get(pk=id)
+            role = await Role.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such role")
         await role.patch(role_data)
@@ -51,7 +57,7 @@ class RoleDetailAPI:
     @staticmethod
     async def delete(id: int, _: User = Depends(role_perms)) -> RoleSafe:
         try:
-            role = await Role.objects.select_all().get(pk=id)
+            role = await Role.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such role")
         await role.delete()
@@ -66,9 +72,10 @@ class RoleUserAPI:
         role_id: int, user_id: int, _: User = Depends(role_perms)
     ) -> UserSafe:
         try:
-            user = await User.objects.select_all().get(pk=user_id)
+            user = await User.objects.get(pk=user_id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
+        await user.load_all()
         for role in user.roles:
             if role.id == role_id:
                 raise HTTPException(status_code=409, detail="User already assigned")
@@ -85,13 +92,14 @@ class RoleUserAPI:
         role_id: int, user_id: int, _: User = Depends(role_perms)
     ) -> UserSafe:
         try:
-            user = await User.objects.select_all().get(pk=user_id)
+            user = await User.objects.get(pk=user_id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
         try:
             role = await Role.objects.get(pk=role_id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such role")
+        await user.load_all()
         try:
             await user.roles.remove(role)
         except ormar.exceptions.NoMatch:
