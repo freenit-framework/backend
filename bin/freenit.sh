@@ -402,6 +402,7 @@ svelte() {
   cd "${NAME}"
   yarn install
   frontend_common
+  yarn add --dev @zerodevx/svelte-toast @freenit-framework/svelte-base
   cat >.prettierrc<<EOF
 {
   "useTabs": false,
@@ -424,13 +425,119 @@ EOF
 if (process.env.BACKEND_URL) {
   config.server = {
     proxy: {
-      '/api': process.env.BACKEND_URL
+      '/api': {
+        target: process.env.BACKEND_URL,
+        changeOrigin: true,
+      }
     }
   }
 }
 
 export default config
 EOF
+
+  rm -rf src/lib
+  rm -rf src/routes/about src/routes/sverdle src/routes/*.svelte
+
+  cat >src/routes/styles.css<<EOF
+:root {
+  font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-color: #ffffff;
+  --bg-secondary-color: #f3f3f6;
+  --color-primary: #14854F;
+  --color-lightGrey: #d2d6dd;
+  --color-grey: #747681;
+  --color-darkGrey: #3f4144;
+  --color-error: #d43939;
+  --color-success: #28bd14;
+  --grid-maxWidth: 120rem;
+  --grid-gutter: 2rem;
+  --font-size: 1.6rem;
+  --font-color: #333333;
+  --font-family-sans: sans-serif;
+  --font-family-mono: monaco, "Consolas", "Lucida Console", monospace;
+}
+EOF
+
+  cat >src/routes/+layout.svelte<<EOF
+<script>
+  import './styles.css'
+  import 'chota'
+  import { store } from '@freenit-framework/svelte-base'
+  import { SvelteToast } from '@zerodevx/svelte-toast'
+
+  const options = {}
+
+  // First invocation of this function creates store, next invocations return
+  // existing one, so only first invocation takes "prefix" argument into account
+  store('/api/v1')
+</script>
+
+<svelte:head>
+  <title>Freenit App</title>
+  <meta name="Freenit" content="Freenit for Svelte" />
+</svelte:head>
+
+<SvelteToast {options} />
+<div class="main">
+  <slot />
+</div>
+
+<style>
+  .main {
+    height: 100vh;
+    width: 100vw;
+  }
+</style>
+EOF
+
+  echo '<div class="root">Landing Page in src/routes/+page.svelte</div>' >src/routes/+page.svelte
+
+  mkdir src/routes/login
+  cat >src/routes/login/+page.svelte <<EOF
+<script lang="ts">
+  import { Login } from '@freenit-framework/svelte-base'
+</script>
+
+<Login />
+EOF
+
+  mkdir src/routes/register
+  cat >src/routes/register/+page.svelte <<EOF
+<script lang="ts">
+  import { Register } from '@freenit-framework/svelte-base'
+</script>
+
+<Register />
+EOF
+
+  mkdir -p 'src/routes/verify/[token]'
+  cat >'src/routes/verify/[token]/+page.svelte' <<EOF
+<script lang="ts">
+  import { onMount } from 'svelte'
+  import { page } from '\$app/stores'
+  import { goto } from '\$app/navigation'
+  import { store } from '@freenit-framework/svelte-base'
+
+  onMount(async () => {
+    const response = await store().auth.verify(\$page.params.token)
+    if (response.ok) {
+      goto('/login')
+    }
+  })
+</script>
+EOF
+
   yarn run format
   cd bin
   cat >devel.sh<<EOF
