@@ -2,7 +2,6 @@ import ormar
 import ormar.exceptions
 import pydantic
 from fastapi import HTTPException, Request, Response
-
 from freenit.api.router import api
 from freenit.auth import authorize, decode, encode, encrypt
 from freenit.config import getConfig
@@ -67,7 +66,6 @@ async def login(credentials: LoginInput, response: Response):
 async def register(credentials: LoginInput):
     try:
         user = await User.objects.get(email=credentials.email)
-        print(user)
         raise HTTPException(status_code=409, detail="User already registered")
     except ormar.exceptions.NoMatch:
         pass
