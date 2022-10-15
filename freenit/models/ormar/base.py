@@ -1,6 +1,5 @@
 import ormar
 import pydantic
-
 from freenit.config import getConfig
 
 config = getConfig()
@@ -26,4 +25,4 @@ class OrmarUserMixin:
 
 class OrmarRoleMixin:
     id: int = ormar.Integer(primary_key=True)
-    name: str = ormar.Text()
+    name: str = ormar.Text(unique=True)

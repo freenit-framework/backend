@@ -33,7 +33,7 @@ class Verification(pydantic.BaseModel):
 @api.post("/auth/login", response_model=LoginResponse, tags=["auth"])
 async def login(credentials: LoginInput, response: Response):
     try:
-        user = await User.objects.get(email=credentials.email)
+        user = await User.objects.get(email=credentials.email, active=True)
         valid = user.check(credentials.password)
         if valid:
             access = encode(user)
@@ -65,7 +65,7 @@ async def login(credentials: LoginInput, response: Response):
 @api.post("/auth/register", tags=["auth"])
 async def register(credentials: LoginInput):
     try:
-        user = await User.objects.get(email=credentials.email)
+        user = await User.objects.get(email=credentials.email, active=True)
         raise HTTPException(status_code=409, detail="User already registered")
     except ormar.exceptions.NoMatch:
         pass
