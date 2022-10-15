@@ -12,10 +12,17 @@ year = 365 * day
 
 
 class Auth:
-    def __init__(self, secure=True, expire=hour, refresh_expire=year):
+    def __init__(self, secure=True, expire=hour, refresh_expire=year) -> None:
         self.secure = secure
         self.expire = expire
         self.refresh_expire = refresh_expire
+
+
+class Mail:
+    def __init__(self, server="mail.example.com", port=587, tls=True) -> None:
+        self.server = server
+        self.port = port
+        self.tls = tls
 
 
 class BaseConfig:
@@ -36,6 +43,7 @@ class BaseConfig:
     theme_name = "Freenit"
     meta = None
     auth = Auth()
+    mail = Mail()
 
     def __init__(self):
         self.database = databases.Database(self.dburl)
@@ -67,13 +75,15 @@ class BaseConfig:
 class DevConfig(BaseConfig):
     debug = True
     dburl = "sqlite:///db.sqlite"
-    auth = Auth(False)
+    auth = Auth(secure=False)
+    mail = None
 
 
 class TestConfig(BaseConfig):
     debug = True
     dburl = "sqlite:///test.sqlite"
-    auth = Auth(False)
+    auth = Auth(secure=False)
+    mail = None
 
 
 class ProdConfig(BaseConfig):
