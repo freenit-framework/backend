@@ -1,7 +1,6 @@
 import ormar
 import ormar.exceptions
 from fastapi import Depends, Header, HTTPException
-
 from freenit.api.router import route
 from freenit.auth import encrypt
 from freenit.decorators import description
@@ -33,6 +32,7 @@ class UserDetailAPI:
             user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
+        await user.load_all(follow=True)
         return user
 
     @staticmethod

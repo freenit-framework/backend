@@ -3,7 +3,6 @@ from typing import List
 import ormar
 import ormar.exceptions
 from fastapi import Depends, Header, HTTPException
-
 from freenit.api.router import route
 from freenit.decorators import description
 from freenit.models.pagination import Page, paginate
@@ -41,6 +40,7 @@ class RoleDetailAPI:
             role = await Role.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such role")
+        await role.load_all(follow=True)
         return role
 
     @staticmethod
