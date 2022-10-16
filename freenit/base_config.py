@@ -19,10 +19,32 @@ class Auth:
 
 
 class Mail:
-    def __init__(self, server="mail.example.com", port=587, tls=True) -> None:
+    def __init__(
+        self,
+        server="mail.example.com",
+        user="user@example.com",
+        password="Secrit",
+        port=587,
+        tls=True,
+        from_addr="no-reply@mail.com",
+        register_subject="[Freenit] User Registration",
+        register_message="""Hello,
+
+Please confirm user registration by following this link
+
+{}
+
+Regards,
+Freenit""",
+    ) -> None:
         self.server = server
+        self.user = user
+        self.password = password
         self.port = port
         self.tls = tls
+        self.from_addr = from_addr
+        self.register_subject = register_subject
+        self.register_message = register_message
 
 
 class BaseConfig:
