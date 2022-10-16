@@ -1,6 +1,7 @@
 import ormar
 import ormar.exceptions
 from fastapi import Depends, Header, HTTPException
+
 from freenit.api.router import route
 from freenit.auth import encrypt
 from freenit.decorators import description
