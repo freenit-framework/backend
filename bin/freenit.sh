@@ -45,8 +45,8 @@ export SED_CMD="sed -i"
 backend() {
   PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
 
-  mkdir ${NAME}
-  cd ${NAME}
+  mkdir backend
+  cd backend
   cp -r ${PROJECT_ROOT}/project/* .
   case `uname` in
     *BSD)
@@ -391,7 +391,7 @@ setup
 
 echo "Frontend"
 echo "========"
-env BACKEND_URL=\${BACKEND_URL} yarn run dev -- --host 0.0.0.0
+env BACKEND_URL=\${BACKEND_URL} yarn run dev --host 0.0.0.0
 EOF
   chmod +x devel.sh
   cd ..
@@ -399,7 +399,8 @@ EOF
 
 svelte() {
   yarn create svelte "${NAME}"
-  cd "${NAME}"
+  mv "${NAME}" frontend
+  cd frontend
   yarn install
   frontend_common
   yarn add --dev @zerodevx/svelte-toast @freenit-framework/svelte-base
@@ -415,13 +416,13 @@ EOF
 
   case `uname` in
     *BSD)
-      ${SED_CMD} '' -e "s/export default config//g" vite.config.ts
+      ${SED_CMD} '' -e "s/export default config//g" vite.config.js
       ;;
     *)
-      ${SED_CMD} -e "s/export default config//g" vite.config.ts
+      ${SED_CMD} -e "s/export default config//g" vite.config.js
       ;;
   esac
-  cat >>vite.config.ts<<EOF
+  cat >>vite.config.js<<EOF
 if (process.env.BACKEND_URL) {
   config.server = {
     proxy: {
@@ -550,7 +551,7 @@ setup
 
 echo "Frontend"
 echo "========"
-env BACKEND_URL=\${BACKEND_URL} yarn run dev -- --host 0.0.0.0
+env BACKEND_URL=\${BACKEND_URL} yarn run dev --host 0.0.0.0
 EOF
   chmod +x devel.sh
   cd ../..
@@ -688,7 +689,6 @@ EOF
 
   echo "Creating backend"
   backend
-  mv "${NAME}" backend
 
   echo "Creating frontend"
   FRONTEND_TYPE=${FRONTEND_TYPE:=svelte}
@@ -700,7 +700,6 @@ EOF
     help >&2
     exit 1
   fi
-  mv "${NAME}" frontend
   cd ..
 }
 
