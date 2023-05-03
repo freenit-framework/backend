@@ -412,13 +412,13 @@ EOF
 
   case `uname` in
     *BSD)
-      ${SED_CMD} '' -e "s/export default config//g" vite.config.js
+      ${SED_CMD} '' -e "s/export default defineConfig/const config = defineConfig/g" vite.config.ts
       ;;
     *)
-      ${SED_CMD} -e "s/export default config//g" vite.config.js
+      ${SED_CMD} -e "s/export default defineConfig/const config = defineConfig/g" vite.config.ts
       ;;
   esac
-  cat >>vite.config.js<<EOF
+  cat >>vite.config.ts<<EOF
 if (process.env.BACKEND_URL) {
   config.server = {
     proxy: {
