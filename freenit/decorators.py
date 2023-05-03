@@ -3,61 +3,46 @@ import functools
 
 def FreenitAPI(app):
     class route:
-        def __init__(self, route, tags=["object"], responses={}):
+        def __init__(self, route, tags=["object"]):
             self.app = app
             self.route = route
             self.tags = tags
-            self.responses = responses
 
         def __call__(self, cls):
             origGet = getattr(cls, "get", None)
             origPost = getattr(cls, "post", None)
             origPatch = getattr(cls, "patch", None)
             origDelete = getattr(cls, "delete", None)
-            app = self.app
-            responses = self.responses
 
             class Wrapped(cls):
+                tags = self.tags
+                tag = tags[0]
                 if callable(origGet):
-                    _deco = app.get(
+                    _deco = self.app.get(
                         self.route,
-                        summary=getattr(origGet, "description", f"Get {self.tags[0]}"),
-                        response_model=responses.get("get")
-                        or origGet.__annotations__.get("return"),
-                        tags=self.tags,
+                        summary=getattr(origGet, "description", f"Get {tag}"),
+                        tags=tags,
                     )
                     get = _deco(origGet)
                 if callable(origPost):
                     _deco = self.app.post(
                         self.route,
-                        summary=getattr(
-                            origPost, "description", f"Create {self.tags[0]}"
-                        ),
-                        response_model=responses.get("post")
-                        or origPost.__annotations__.get("return"),
-                        tags=self.tags,
+                        summary=getattr(origPost, "description", f"Create {tag}"),
+                        tags=tags,
                     )
                     post = _deco(origPost)
                 if callable(origPatch):
                     _deco = self.app.patch(
                         self.route,
-                        summary=getattr(
-                            origPatch, "description", f"Edit {self.tags[0]}"
-                        ),
-                        response_model=responses.get("patch")
-                        or origPatch.__annotations__.get("return"),
-                        tags=self.tags,
+                        summary=getattr(origPatch, "description", f"Edit {tag}"),
+                        tags=tags,
                     )
                     patch = _deco(origPatch)
                 if callable(origDelete):
                     _deco = self.app.delete(
                         self.route,
-                        summary=getattr(
-                            origDelete, "description", f"Destroy {self.tags[0]}"
-                        ),
-                        response_model=responses.get("delete")
-                        or origDelete.__annotations__.get("return"),
-                        tags=self.tags,
+                        summary=getattr(origDelete, "description", f"Destroy {tag}"),
+                        tags=tags,
                     )
                     delete = _deco(origDelete)
                 _deco = None
