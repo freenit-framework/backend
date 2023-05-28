@@ -1,5 +1,6 @@
 import ormar
 import pydantic
+
 from freenit.config import getConfig
 
 config = getConfig()

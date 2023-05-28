@@ -1,7 +1,5 @@
 from email.mime.text import MIMEText
 
-import ormar
-import ormar.exceptions
 import pydantic
 from fastapi import Header, HTTPException, Request, Response
 
@@ -36,38 +34,94 @@ class Verification(pydantic.BaseModel):
 
 @api.post("/auth/login", response_model=LoginResponse, tags=["auth"])
 async def login(credentials: LoginInput, response: Response):
-    try:
-        user = await User.objects.get(email=credentials.email, active=True)
-        valid = user.check(credentials.password)
-        if valid:
-            access = encode(user)
-            refresh = encode(user)
-            response.set_cookie(
-                "access",
-                access,
-                httponly=True,
-                secure=config.auth.secure,
-            )
-            response.set_cookie(
-                "refresh",
-                refresh,
-                httponly=True,
-                secure=config.auth.secure,
-            )
-            return {
-                "user": user.dict(exclude={"password"}),
-                "expire": {
-                    "access": config.auth.expire,
-                    "refresh": config.auth.refresh_expire,
-                },
-            }
-    except ormar.exceptions.NoMatch:
-        pass
+    if User.Meta.type == "ormar":
+        import ormar
+        import ormar.exceptions
+
+        try:
+            user = await User.objects.get(email=credentials.email, active=True)
+            valid = user.check(credentials.password)
+            if valid:
+                access = encode(user)
+                refresh = encode(user)
+                response.set_cookie(
+                    "access",
+                    access,
+                    httponly=True,
+                    secure=config.auth.secure,
+                )
+                response.set_cookie(
+                    "refresh",
+                    refresh,
+                    httponly=True,
+                    secure=config.auth.secure,
+                )
+                return {
+                    "user": user.dict(exclude={"password"}),
+                    "expire": {
+                        "access": config.auth.expire,
+                        "refresh": config.auth.refresh_expire,
+                    },
+                }
+        except ormar.exceptions.NoMatch:
+            raise HTTPException(status_code=403, detail="Failed to login")
+    elif User.Meta.type == "bonsai":
+        import bonsai
+
+        username, domain = credentials.email.split("@")
+        client = bonsai.LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
+        client.set_credentials(
+            "SIMPLE",
+            user=config.ldap.base.format(username, domain),
+            password=credentials.password,
+        )
+        try:
+            async with client.connect(is_async=True) as conn:
+                res = await conn.search(
+                    f"uid={username},ou={domain},dc=account,dc=ldap",
+                    bonsai.LDAPSearchScope.BASE,
+                    "objectClass=person",
+                )
+        except bonsai.errors.AuthenticationError:
+            raise HTTPException(status_code=403, detail="Failed to login")
+
+        data = res[0]
+        user = User(
+            email=credentials.email,
+            sn=data["sn"][0],
+            cn=data["cn"][0],
+            dn=str(data["dn"]),
+            uid=data["uid"][0],
+            password=data["userPassword"][0],
+        )
+        access = encode(user)
+        refresh = encode(user)
+        response.set_cookie(
+            "access",
+            access,
+            httponly=True,
+            secure=config.auth.secure,
+        )
+        response.set_cookie(
+            "refresh",
+            refresh,
+            httponly=True,
+            secure=config.auth.secure,
+        )
+        return {
+            "user": dict(user),
+            "expire": {
+                "access": config.auth.expire,
+                "refresh": config.auth.refresh_expire,
+            },
+        }
     raise HTTPException(status_code=403, detail="Failed to login")
 
 
 @api.post("/auth/register", tags=["auth"])
 async def register(credentials: LoginInput, host=Header(default="")):
+    import ormar.exceptions
+
     print("host", host)
     try:
         user = await User.objects.get(email=credentials.email)

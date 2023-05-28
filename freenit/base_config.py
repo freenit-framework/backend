@@ -9,6 +9,15 @@ minute = 60 * second
 hour = 60 * minute
 day = 24 * hour
 year = 365 * day
+register_message = """Hello,
+
+Please confirm user registration by following this link
+
+{}
+
+Regards,
+Freenit
+"""
 
 
 class Auth:
@@ -28,14 +37,7 @@ class Mail:
         tls=True,
         from_addr="no-reply@mail.com",
         register_subject="[Freenit] User Registration",
-        register_message="""Hello,
-
-Please confirm user registration by following this link
-
-{}
-
-Regards,
-Freenit""",
+        register_message=register_message,
     ) -> None:
         self.server = server
         self.user = user
@@ -45,6 +47,15 @@ Freenit""",
         self.from_addr = from_addr
         self.register_subject = register_subject
         self.register_message = register_message
+
+
+class LDAP:
+    def __init__(
+        self, host="ldap.example.com", tls=True, base="uid={},ou={},dc=account,dc=ldap"
+    ):
+        self.host = host
+        self.tls = tls
+        self.base = base
 
 
 class BaseConfig:
@@ -66,6 +77,7 @@ class BaseConfig:
     meta = None
     auth = Auth()
     mail = Mail()
+    ldap = LDAP()
 
     def __init__(self):
         self.database = databases.Database(self.dburl)

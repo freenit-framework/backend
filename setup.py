@@ -57,6 +57,9 @@ setup(
             "isort",
             "uvicorn",
         ],
+        "ldap": [
+            "bonsai",
+        ],
         "ormar": [
             "alembic",
             "ormar",

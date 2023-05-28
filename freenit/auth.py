@@ -1,6 +1,4 @@
 import jwt
-import ormar
-import ormar.exceptions
 from fastapi import HTTPException, Request
 from passlib.hash import pbkdf2_sha256
 
@@ -17,16 +15,44 @@ async def decode(token):
     pk = data.get("pk", None)
     if pk is None:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    try:
-        user = await User.objects.get(pk=pk)
+    if User.Meta.type == "ormar":
+        import ormar
+        import ormar.exceptions
+
+        try:
+            user = await User.objects.get(pk=pk)
+            return user
+        except ormar.exceptions.NoMatch:
+            raise HTTPException(status_code=403, detail="Unauthorized")
+    elif User.Meta.type == "bonsai":
+        import bonsai
+
+        client = bonsai.LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
+        async with client.connect(is_async=True) as conn:
+            res = await conn.search(
+                pk,
+                bonsai.LDAPSearchScope.BASE,
+                "objectClass=person",
+            )
+        data = res[0]
+        user = User(
+            email=data["mail"][0],
+            sn=data["sn"][0],
+            cn=data["cn"][0],
+            dn=str(data["dn"]),
+            uid=data["uid"][0],
+        )
         return user
-    except ormar.exceptions.NoMatch:
-        raise HTTPException(status_code=403, detail="Unauthorized")
+    raise HTTPException(status_code=409, detail="Unknown user type")
 
 
 def encode(user):
     config = getConfig()
-    payload = {"pk": user.pk}
+    payload = {}
+    if user.Meta.type == "ormar":
+        payload = {"pk": user.pk, "type": user.Meta.type}
+    elif user.Meta.type == "bonsai":
+        payload = {"pk": user.dn, "type": user.Meta.type}
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 
@@ -35,27 +61,31 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = await decode(token)
-    await user.load_all()
-    if not user.active:
-        raise HTTPException(status_code=403, detail="Permission denied")
-    if user.admin:
-        return user
-    if len(user.roles) == 0:
-        if len(roles) > 0 or len(allof) > 0:
+    if user.Meta.type == "ormar":
+        await user.load_all()
+        if not user.active:
             raise HTTPException(status_code=403, detail="Permission denied")
-    else:
-        if len(roles) > 0:
-            found = False
-            for role in user.roles:
-                if role.name in roles:
-                    found = True
-                    break
-            if not found:
+        if user.admin:
+            return user
+        if len(user.roles) == 0:
+            if len(roles) > 0 or len(allof) > 0:
                 raise HTTPException(status_code=403, detail="Permission denied")
-        if len(allof) > 0:
-            for role in user.roles:
-                if role.name not in allof:
+        else:
+            if len(roles) > 0:
+                found = False
+                for role in user.roles:
+                    if role.name in roles:
+                        found = True
+                        break
+                if not found:
                     raise HTTPException(status_code=403, detail="Permission denied")
+            if len(allof) > 0:
+                for role in user.roles:
+                    if role.name not in allof:
+                        raise HTTPException(status_code=403, detail="Permission denied")
+        return user
+    # elif user.Meta.type == "bonsai":
+    #     pass
     return user
 
 

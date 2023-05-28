@@ -45,8 +45,8 @@ export SED_CMD="sed -i"
 backend() {
   PROJECT_ROOT=`python${PY_VERSION} -c 'import os; import freenit; print(os.path.dirname(os.path.abspath(freenit.__file__)))'`
 
-  mkdir backend
-  cd backend
+  mkdir "${NAME}"
+  cd "${NAME}"
   cp -r ${PROJECT_ROOT}/project/* .
   case `uname` in
     *BSD)
@@ -215,6 +215,7 @@ echo "========"
 cd "\${PROJECT_ROOT}"
 rm -rf build
 yarn run build
+touch build/.keep
 EOF
   chmod +x collect.sh
 
@@ -395,8 +396,7 @@ EOF
 
 svelte() {
   yarn create svelte "${NAME}"
-  mv "${NAME}" frontend
-  cd frontend
+  cd "${NAME}"
   yarn install
   frontend_common
   yarn add --dev @zerodevx/svelte-toast @freenit-framework/svelte-base
@@ -677,14 +677,13 @@ services/
 vars.mk
 EOF
 
-  echo "DEVEL_MODE = YES" >vars.mk
-
   echo "Creating services"
   mkdir services
   cd services
 
   echo "Creating backend"
   backend
+  mv "${NAME}" backend
 
   echo "Creating frontend"
   FRONTEND_TYPE=${FRONTEND_TYPE:=svelte}
@@ -696,6 +695,7 @@ EOF
     help >&2
     exit 1
   fi
+  mv "${NAME}" frontend
   cd ..
 }
 

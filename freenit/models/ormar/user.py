@@ -11,6 +11,7 @@ config = getConfig()
 
 class User(OrmarBaseModel, OrmarUserMixin):
     class Meta(config.meta):
+        type = "ormar"
         tablename = "users"
 
     roles = ormar.ManyToMany(Role, unique=True)
@@ -21,3 +22,6 @@ class User(OrmarBaseModel, OrmarUserMixin):
 
 class UserOptional(User, metaclass=AllOptional):
     pass
+
+
+UserOptionalPydantic = UserOptional.get_pydantic(exclude={"admin", "active"})
