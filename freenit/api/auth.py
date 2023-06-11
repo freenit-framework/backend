@@ -122,7 +122,6 @@ async def login(credentials: LoginInput, response: Response):
 async def register(credentials: LoginInput, host=Header(default="")):
     import ormar.exceptions
 
-    print("host", host)
     try:
         user = await User.objects.get(email=credentials.email)
         raise HTTPException(status_code=409, detail="User already registered")

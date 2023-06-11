@@ -21,14 +21,9 @@ setup() {
     fi
     . ${HOME}/.virtualenvs/${VIRTUALENV}/bin/activate
 
-    INSTALL_TARGET=".[${DB_TYPE}"
-    if [ "${FREENIT_ENV}" != "prod" ]; then
-      INSTALL_TARGET="${INSTALL_TARGET},${FREENIT_ENV}"
-    fi
-    INSTALL_TARGET="${INSTALL_TARGET}]"
     if [ "${1}" != "no" -a "${OFFLINE}" != "yes" ]; then
       ${PIP_INSTALL} pip wheel
-      ${PIP_INSTALL} -e "${INSTALL_TARGET}"
+      ${PIP_INSTALL} -e ".[${DB_TYPE},${FREENIT_ENV}]"
     fi
   fi
 
