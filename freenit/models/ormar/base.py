@@ -1,10 +1,6 @@
 import ormar
 import pydantic
 
-from freenit.config import getConfig
-
-config = getConfig()
-
 
 class OrmarBaseModel(ormar.Model):
     async def patch(self, fields):

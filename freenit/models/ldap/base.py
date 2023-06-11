@@ -12,7 +12,7 @@ class LDAPBaseModel(generics.GenericModel, Generic[T]):
     dn: str = Field("", description=("Distinguished name"))
 
 
-class LDAPUserMixin(generics.GenericModel, Generic[T]):
+class LDAPUserMixin:
     uid: str = Field("", description=("User ID"))
     email: EmailStr = Field("", description=("Email"))
     cn: str = Field("", description=("Common name"))
