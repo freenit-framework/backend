@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from bonsai import LDAPClient, LDAPSearchScope, errors
 from fastapi import HTTPException
 from pydantic import Field
@@ -10,7 +12,7 @@ config = getConfig()
 
 class UserSafe(LDAPBaseModel, LDAPUserMixin):
     @classmethod
-    async def login(cls, credentials):
+    async def _login(cls, credentials) -> dict:
         username, domain = credentials.email.split("@")
         client = LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
         dn = config.ldap.base.format(username, domain)
@@ -22,6 +24,11 @@ class UserSafe(LDAPBaseModel, LDAPUserMixin):
             raise HTTPException(status_code=403, detail="Failed to login")
 
         data = res[0]
+        return data
+
+    @classmethod
+    async def login(cls, credentials) -> UserSafe:
+        data = await cls._login(credentials)
         user = cls(
             dn=str(data["dn"]),
             email=credentials.email,

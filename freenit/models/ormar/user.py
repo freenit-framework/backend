@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ormar
 import ormar.exceptions
 from fastapi import HTTPException
@@ -16,7 +18,7 @@ class BaseUser(OrmarBaseModel, OrmarUserMixin):
         return verify(password, self.password)
 
     @classmethod
-    async def login(cls, credentials):
+    async def login(cls, credentials) -> BaseUser:
         try:
             user = await cls.objects.get(email=credentials.email, active=True)
         except ormar.exceptions.NoMatch:
