@@ -1,7 +1,5 @@
 from email.mime.text import MIMEText
 
-import ormar
-import ormar.exceptions
 import pydantic
 from fastapi import Header, HTTPException, Request, Response
 
@@ -36,39 +34,34 @@ class Verification(pydantic.BaseModel):
 
 @api.post("/auth/login", response_model=LoginResponse, tags=["auth"])
 async def login(credentials: LoginInput, response: Response):
-    try:
-        user = await User.objects.get(email=credentials.email, active=True)
-        valid = user.check(credentials.password)
-        if valid:
-            access = encode(user)
-            refresh = encode(user)
-            response.set_cookie(
-                "access",
-                access,
-                httponly=True,
-                secure=config.auth.secure,
-            )
-            response.set_cookie(
-                "refresh",
-                refresh,
-                httponly=True,
-                secure=config.auth.secure,
-            )
-            return {
-                "user": user.dict(exclude={"password"}),
-                "expire": {
-                    "access": config.auth.expire,
-                    "refresh": config.auth.refresh_expire,
-                },
-            }
-    except ormar.exceptions.NoMatch:
-        pass
-    raise HTTPException(status_code=403, detail="Failed to login")
+    user = await User.login(credentials)
+    access = encode(user)
+    refresh = encode(user)
+    response.set_cookie(
+        "access",
+        access,
+        httponly=True,
+        secure=config.auth.secure,
+    )
+    response.set_cookie(
+        "refresh",
+        refresh,
+        httponly=True,
+        secure=config.auth.secure,
+    )
+    return {
+        "user": user,
+        "expire": {
+            "access": config.auth.expire,
+            "refresh": config.auth.refresh_expire,
+        },
+    }
 
 
 @api.post("/auth/register", tags=["auth"])
 async def register(credentials: LoginInput, host=Header(default="")):
-    print("host", host)
+    import ormar.exceptions
+
     try:
         user = await User.objects.get(email=credentials.email)
         raise HTTPException(status_code=409, detail="User already registered")

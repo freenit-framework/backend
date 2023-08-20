@@ -9,6 +9,40 @@ from freenit.version import version
 PROJECT_ROOT = pathlib.Path(__file__).parent
 README = (PROJECT_ROOT / "README.md").read_text()
 
+extras_require = {
+    "beanie": [
+        "beanie",
+    ],
+    "build": [
+        "twine",
+    ],
+    "dev": [
+        "aiosqlite",
+        "black",
+        "isort",
+        "uvicorn",
+    ],
+    "ldap": [
+        "bonsai",
+    ],
+    "ormar": [
+        "alembic",
+        "ormar",
+    ],
+    "test": [
+        "aiosqlite",
+        "black",
+        "isort",
+        "pytest-asyncio",
+        "pytest-factoryboy",
+        "requests",
+    ],
+}
+
+extras_require["all"] = (
+    extras_require["beanie"] + extras_require["ldap"] + extras_require["ormar"]
+)
+
 setup(
     name="freenit",
     version=version,
@@ -44,32 +78,7 @@ setup(
         "pydantic[email]",
         "pyjwt",
     ],
-    extras_require={
-        "beanie": [
-            "beanie",
-        ],
-        "build": [
-            "twine",
-        ],
-        "dev": [
-            "aiosqlite",
-            "black",
-            "isort",
-            "uvicorn",
-        ],
-        "ormar": [
-            "alembic",
-            "ormar",
-        ],
-        "test": [
-            "aiosqlite",
-            "black",
-            "isort",
-            "pytest-asyncio",
-            "pytest-factoryboy",
-            "requests",
-        ],
-    },
+    extras_require=extras_require,
     include_package_data=True,
     package_data={
         "": [

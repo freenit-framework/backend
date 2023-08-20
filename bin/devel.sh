@@ -1,7 +1,7 @@
 #!/bin/sh
 
 BIN_DIR=`dirname $0`
-export FREENIT_ENV="dev"
+export FREENIT_ENV="dev,all"
 export OFFLINE=${OFFLINE:="no"}
 
 
