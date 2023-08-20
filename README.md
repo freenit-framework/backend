@@ -9,3 +9,4 @@ Freenit is based on
 
 * [FastAPI](https://fastapi.tiangolo.com/)
 * [Ormar](https://github.com/collerek/ormar)
+* [Svelte](https://svelte.dev)
