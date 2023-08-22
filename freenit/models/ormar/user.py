@@ -28,7 +28,7 @@ class BaseUser(OrmarBaseModel, OrmarUserMixin):
         raise HTTPException(status_code=403, detail="Failed to login")
 
 
-class User(OrmarBaseModel, OrmarUserMixin):
+class User(BaseUser, OrmarUserMixin):
     class Meta(config.meta):
         type = "ormar"
         tablename = "users"
