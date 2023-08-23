@@ -32,6 +32,7 @@ extras_require = {
     "test": [
         "aiosqlite",
         "black",
+        "httpx",
         "isort",
         "pytest-asyncio",
         "pytest-factoryboy",
