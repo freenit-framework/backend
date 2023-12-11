@@ -155,7 +155,7 @@ EOF
 
 frontend_common() {
   echo "# ${NAME}" >README.md
-  yarn add --dev chota
+  npm install --save-dev chota
 
   mkdir bin
   cd bin
@@ -172,7 +172,7 @@ setup() {
   cd \${PROJECT_ROOT}
   update=\${1}
   if [ "\${OFFLINE}" != "yes" -a "\${update}" != "no" ]; then
-    yarn install
+    npm install
   fi
 }
 EOF
@@ -197,7 +197,7 @@ BIN_DIR=\`dirname \$0\`
 . "\${BIN_DIR}/common.sh"
 setup
 
-env CI=true yarn run test
+env CI=true npm run test
 EOF
   chmod +x test.sh
 
@@ -214,7 +214,7 @@ echo "Frontend"
 echo "========"
 cd "\${PROJECT_ROOT}"
 rm -rf build
-yarn run build
+npm run build
 touch build/.keep
 EOF
   chmod +x collect.sh
@@ -287,9 +287,9 @@ EOF
 }
 
 react() {
-  yarn init vite@latest "${NAME}" -- --template react-ts
+  npm init vite@latest "${NAME}" -- --template react-ts
   cd "${NAME}"
-  yarn install @freenit-framework/axios react-router-dom @mdi/js
+  npm install @freenit-framework/axios react-router-dom @mdi/js
   frontend_common
 
   rm src/App.* src/index.css src/logo.svg
@@ -388,18 +388,18 @@ setup
 
 echo "Frontend"
 echo "========"
-env BACKEND_URL=\${BACKEND_URL} yarn run dev --host 0.0.0.0
+env BACKEND_URL=\${BACKEND_URL} npm run dev -- --host 0.0.0.0
 EOF
   chmod +x devel.sh
   cd ..
 }
 
 svelte() {
-  yarn create svelte "${NAME}"
+  npm create svelte@latest "${NAME}"
   cd "${NAME}"
-  yarn install
+  npm install
   frontend_common
-  yarn add --dev @zerodevx/svelte-toast @freenit-framework/svelte-base
+  npm install --save-dev @zerodevx/svelte-toast @freenit-framework/svelte-base
   cat >.prettierrc<<EOF
 {
   "useTabs": false,
@@ -535,7 +535,7 @@ EOF
 </script>
 EOF
 
-  yarn run format
+  npm run format
   cd bin
   cat >devel.sh<<EOF
 #!/bin/sh
@@ -547,7 +547,7 @@ setup
 
 echo "Frontend"
 echo "========"
-env BACKEND_URL=\${BACKEND_URL} yarn run dev --host 0.0.0.0
+env BACKEND_URL=\${BACKEND_URL} npm run dev -- --host 0.0.0.0
 EOF
   chmod +x devel.sh
   cd ../..
