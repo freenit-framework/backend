@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 import freenit.config
@@ -5,19 +6,16 @@ import freenit.config
 from .api import api
 
 config = freenit.config.getConfig()
-app = FastAPI()
 
 
-@app.on_event("startup")
-async def startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if config.database.is_connected:
+        await config.database.disconnect()
+    yield
     if not config.database.is_connected:
         await config.database.connect()
 
 
-@app.on_event("shutdown")
-async def shutdown() -> None:
-    if config.database.is_connected:
-        await config.database.disconnect()
-
-
+app = FastAPI(lifespan=lifespan)
 app.mount(config.api_root, api)
