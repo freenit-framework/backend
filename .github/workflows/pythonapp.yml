@@ -20,3 +20,6 @@ jobs:
     - name: Test and lint
       run: |
         bin/test.sh
+    - name: Security
+      run: |
+        bin/security.sh

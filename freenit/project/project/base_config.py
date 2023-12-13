@@ -20,4 +20,4 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-    secret = "MORESECURESECRET"
+    secret = "MORESECURESECRET" #nosec

@@ -31,6 +31,7 @@ extras_require = {
     ],
     "test": [
         "aiosqlite",
+        "bandit",
         "black",
         "httpx",
         "isort",

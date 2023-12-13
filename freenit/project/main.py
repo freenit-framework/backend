@@ -10,7 +10,7 @@ print()
 if __name__ == "__main__":
     uvicorn.run(
         "NAME.app:app",
-        host="0.0.0.0",
+        host="0.0.0.0", #nosec
         port=config.port,
         log_level="info",
         reload=True,

@@ -32,7 +32,7 @@ class Mail:
         self,
         server="mail.example.com",
         user="user@example.com",
-        password="Secrit",
+        password="Secrit", #nosec
         port=587,
         tls=True,
         from_addr="no-reply@mail.com",
@@ -69,7 +69,7 @@ class BaseConfig:
     dburl = "sqlite:///db.sqlite"
     database = None
     engine = None
-    secret = "SECRET"
+    secret = "SECRET" #nosec
     user = "freenit.models.ormar.user"
     role = "freenit.models.ormar.role"
     theme = "freenit.models.ormar.theme"
@@ -121,4 +121,4 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-    secret = "MORESECURESECRET"
+    secret = "MORESECURESECRET" #nosec
