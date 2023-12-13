@@ -12,4 +12,4 @@ class TestUser:
         await admin.save()
         client.login(user=admin)
         response = client.get(f"/users")
-        assert response.status_code == 200
+        assert response.status_code == 200 #nosec
