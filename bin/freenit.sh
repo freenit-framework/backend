@@ -397,25 +397,18 @@ EOF
 svelte() {
   npm create svelte@latest "${NAME}"
   cd "${NAME}"
-  npm install
-  frontend_common
-  npm install --save-dev @zerodevx/svelte-toast @freenit-framework/svelte-base
-  cat >.prettierrc<<EOF
-{
-  "useTabs": false,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 80,
-  "semi": false,
-}
-EOF
-
   case `uname` in
     *BSD)
-      ${SED_CMD} '' -e "s/export default defineConfig/const config = defineConfig/g" vite.config.ts
+      ${SED_CMD} '' -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
+      ${SED_CMD} '' -e "s/^}//" package.json
+      ${SED_CMD} '' -e 's/"type": "module"/"type": "module",/' package.json
+      ${SED_CMD} '' -e "s/adapter-auto/adapter-node/" svelte.config.js
       ;;
     *)
-      ${SED_CMD} -e "s/export default defineConfig/const config = defineConfig/g" vite.config.ts
+      ${SED_CMD} -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
+      ${SED_CMD} -e "s/^}//" package.json
+      ${SED_CMD} -e 's/"type": "module"/"type": "module",/' package.json
+      ${SED_CMD} -e "s/adapter-auto/adapter-node/" svelte.config.js
       ;;
   esac
   cat >>vite.config.ts<<EOF
@@ -432,6 +425,25 @@ if (process.env.BACKEND_URL) {
 
 export default config
 EOF
+
+  cat >>package.json<<EOF
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node"
+  }
+}
+EOF
+  cat >.prettierrc<<EOF
+{
+  "useTabs": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80,
+  "semi": false,
+}
+EOF
+  npm install
+  frontend_common
+  npm install --save-dev @zerodevx/svelte-toast @freenit-framework/svelte-base @sveltejs/adapter-node @mdi/js
 
   rm -rf src/lib
   rm -rf src/routes/about src/routes/sverdle src/routes/*.svelte

@@ -1,15 +1,10 @@
-from freenit.config import getConfig
-
 from ..metaclass import AllOptional
-from .base import OrmarBaseModel, OrmarRoleMixin
-
-config = getConfig()
+from .base import OrmarBaseModel, OrmarRoleMixin, ormar_config
 
 
 class Role(OrmarBaseModel, OrmarRoleMixin):
-    class Meta(config.meta):
-        pass
+    ormar_config = ormar_config.copy()
 
 
 class RoleOptional(Role, metaclass=AllOptional):
-    pass
+    ormar_config = ormar_config.copy()

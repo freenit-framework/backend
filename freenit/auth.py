@@ -15,7 +15,7 @@ async def decode(token):
     pk = data.get("pk", None)
     if pk is None:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    if User.Meta.type == "ormar":
+    if User.dbtype() == "ormar":
         import ormar
         import ormar.exceptions
 
@@ -24,7 +24,7 @@ async def decode(token):
             return user
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=403, detail="Unauthorized")
-    elif User.Meta.type == "bonsai":
+    elif User.dbtype() == "bonsai":
         import bonsai
 
         client = bonsai.LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
@@ -49,10 +49,10 @@ async def decode(token):
 def encode(user):
     config = getConfig()
     payload = {}
-    if user.Meta.type == "ormar":
-        payload = {"pk": user.pk, "type": user.Meta.type}
-    elif user.Meta.type == "bonsai":
-        payload = {"pk": user.dn, "type": user.Meta.type}
+    if user.dbtype() == "ormar":
+        payload = {"pk": user.pk, "type": "ormar"}
+    elif user.dbtype() == "bonsai":
+        payload = {"pk": user.dn, "type": "bonsai"}
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 
@@ -61,7 +61,7 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = await decode(token)
-    if user.Meta.type == "ormar":
+    if user.dbtype() == "ormar":
         await user.load_all()
         if not user.active:
             raise HTTPException(status_code=403, detail="Permission denied")
@@ -84,8 +84,8 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
                     if role.name not in allof:
                         raise HTTPException(status_code=403, detail="Permission denied")
         return user
-    # elif user.Meta.type == "bonsai":
-    #     pass
+    elif user.dbtype() == "bonsai":
+        pass
     return user
 
 

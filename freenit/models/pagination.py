@@ -2,12 +2,12 @@ from math import ceil
 from typing import Generic, List, TypeVar
 
 from fastapi import HTTPException
-from pydantic import Field, generics
+from pydantic import Field, BaseModel
 
 T = TypeVar("T")
 
 
-class Page(generics.GenericModel, Generic[T]):
+class Page(BaseModel, Generic[T]):
     total: int = Field(0, description=("Total number of items in DB"))
     page: int = Field(0, description=("Current page"))
     pages: int = Field(0, description=("Total number of pages"))

@@ -83,12 +83,6 @@ class BaseConfig:
         self.database = databases.Database(self.dburl)
         self.engine = sqlalchemy.create_engine(self.dburl)
 
-        class Meta:
-            database = self.database
-            metadata = self.metadata
-
-        self.meta = Meta
-
     def __repr__(self):
         return (
             f"<{self.envname()} config: {self.name}({self.version}) on {self.hostname}>"
