@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "freenit"
+dynamic = ["version"]
+description = "REST API framework based on FastAPI"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = [
+  "fastapi",
+  "passlib",
+  "pydantic[email]",
+  "pyjwt",
+]
+authors = [
+  {name = "Goran Mekić", email = "meka@tilda.center"},
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Internet :: WWW/HTTP",
+  "Environment :: Web Environment",
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+  beanie = ["beanie"]
+  dev = [
+    "aiosqlite",
+    "black",
+    "isort",
+    "uvicorn",
+  ]
+  ldap = ["bonsai"]
+  ormar = [
+    "alembic",
+    "ormar",
+  ]
+  test = [
+    "aiosqlite",
+    "bandit",
+    "black",
+    "httpx",
+    "isort",
+    "pytest-asyncio",
+    "pytest-factoryboy",
+    "requests",
+  ]
+
+[project.urls]
+Homepage = "https://freenit.org" 
+Repository = "https://github.com/freenit-framework/backend"
+
+[project.scripts]
+freenit = "freenit.cli:main"
+
+[tool.hatch.version]
+path = "freenit/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["freenit", "bin"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+"bin" = "freenit/bin"

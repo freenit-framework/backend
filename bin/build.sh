@@ -11,4 +11,4 @@ setup
 
 rm -rf *.egg-info build dist
 find . -name '*.pyc' -exec rm -rf {} \;
-python setup.py sdist bdist_wheel
+hatchling build

@@ -4,7 +4,7 @@ import pathlib
 
 from setuptools import find_packages, setup
 
-from freenit.version import version
+from freenit import __version__
 
 PROJECT_ROOT = pathlib.Path(__file__).parent
 README = (PROJECT_ROOT / "README.md").read_text()
@@ -47,7 +47,7 @@ extras_require["all"] = (
 
 setup(
     name="freenit",
-    version=version,
+    version=__version__,
     description="REST API framework based on FastAPI",
     long_description=README,
     long_description_content_type="text/markdown",
