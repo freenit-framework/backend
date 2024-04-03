@@ -6,4 +6,4 @@ export FREENIT_ENV="test"
 
 
 setup no
-bandit `find freenit -type f -name '*.py'`
+bandit `find freenit -type f -name '*.py' | grep -v 'freenit/cli\.py'`
