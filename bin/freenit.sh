@@ -5,7 +5,7 @@ set -e
 
 help() {
   echo "Usage: $0 <type> <name>"
-  echo "  type: project, backend, react, svelte"
+  echo "  type: project, backend, frontend"
   echo "  name: name used everywhere in the project"
 
 }
@@ -24,7 +24,7 @@ if [ -z "${TYPE}" ]; then
 fi
 
 case "${TYPE}" in
-  project|backend|react|svelte)
+  project|backend|frontend)
     ;;
   *)
     help >&2
@@ -52,10 +52,12 @@ backend() {
     *BSD)
       ${SED_CMD} '' -e "s/NAME/${NAME}/g" setup.py
       ${SED_CMD} '' -e "s/NAME/${NAME}/g" main.py
+      ${SED_CMD} '' -e "s/PROJECT/${NAME}/g" pyproject.toml
       ;;
     *)
       ${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
       ${SED_CMD} -e "s/NAME/${NAME}/g" main.py
+      ${SED_CMD} -e "s/PROJECT/${NAME}/g" pyproject.toml
       ;;
   esac
   mv project ${NAME}
@@ -286,115 +288,7 @@ vars.mk
 EOF
 }
 
-react() {
-  npm init vite@latest "${NAME}" -- --template react-ts
-  cd "${NAME}"
-  npm install @freenit-framework/axios react-router-dom @mdi/js
-  frontend_common
-
-  rm src/App.* src/index.css src/logo.svg
-  mkdir src/routes
-  cat >src/routing.tsx<<EOF
-import React, { Fragment } from 'react'
-import { Route, Routes } from 'react-router-dom'
-
-const PRESERVED = import.meta.globEager('/src/routes/(_app|404).tsx')
-const ROUTES = import.meta.globEager('/src/routes/**/[a-z[]*.tsx')
-
-const preserved: { [key: string]: any } = Object.keys(PRESERVED).reduce((preserved, file) => {
-  const key = file.replace(/\/src\/routes\/|\.tsx$/g, '')
-  return { ...preserved, [key]: PRESERVED[file].default }
-}, {})
-
-const routes = Object.keys(ROUTES).map((route) => {
-  const path = route
-    .replace(/\/src\/routes|index|\.tsx$/g, '')
-    .replace(/\[\.{3}.+\]/, '*')
-    .replace(/\[(.+)\]/, ':')
-
-  return { path, component: ROUTES[route].default }
-})
-
-export const Routing = () => {
-  const NotFound = preserved?.['404'] || Fragment
-
-  return (
-    <Routes>
-      {routes.map(({ path, component: Component = Fragment }) => (
-        <Route key={path} path={path} element={<Component />} />
-      ))}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  )
-}
-EOF
-
-  cat >src/main.tsx<<EOF
-import React, { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import 'chota'
-import { Routing } from './routing'
-
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routing />
-    </BrowserRouter>
-  </StrictMode>
-);
-EOF
-
-  cat >src/routes/index.tsx<<EOF
-export default function Landing() {
-  return (
-    <div>Hello World!</div>
-  )
-}
-EOF
-
-  case `uname` in
-    *BSD)
-      ${SED_CMD} '' -e "s/})//g" vite.config.ts
-      ${SED_CMD} '' -e "s/plugins: \(.*\)/plugins: \1,/g" vite.config.ts
-      ;;
-    *)
-      ${SED_CMD} -e "s/})//g" vite.config.ts
-      ${SED_CMD} -e "s/plugins: \(.*\)/plugins: \1,/g" vite.config.ts
-      ;;
-  esac
-  cat >>vite.config.ts<<EOF
-  server: {
-    proxy: {
-      '/api': {
-        target: process.env.BACKEND_URL,
-        changeOrigin: true
-      }
-    }
-  }
-})
-EOF
-
-  cd bin
-  cat >devel.sh<<EOF
-#!/bin/sh
-
-
-BIN_DIR=\`dirname \$0\`
-. "\${BIN_DIR}/common.sh"
-setup
-
-echo "Frontend"
-echo "========"
-env BACKEND_URL=\${BACKEND_URL} npm run dev -- --host 0.0.0.0
-EOF
-  chmod +x devel.sh
-  cd ..
-}
-
-svelte() {
+frontend() {
   npm create svelte@latest "${NAME}"
   cd "${NAME}"
   case `uname` in
@@ -698,15 +592,7 @@ EOF
   mv "${NAME}" backend
 
   echo "Creating frontend"
-  FRONTEND_TYPE=${FRONTEND_TYPE:=svelte}
-  if [ "${FRONTEND_TYPE}" = "svelte" ]; then
-    svelte
-  elif [ "${FRONTEND_TYPE}" = "react" ]; then
-    react
-  else
-    help >&2
-    exit 1
-  fi
+  frontend
   mv "${NAME}" frontend
   cd ..
 }
