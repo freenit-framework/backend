@@ -39,3 +39,13 @@ ormar_config = ormar.OrmarConfig(
     metadata=config.metadata,
     engine=config.engine,
 )
+
+
+def generate_optional(Model):
+    class OptionalModel(Model):
+        pass
+
+    for field_name in OptionalModel.model_fields:
+        OptionalModel.model_fields[field_name].default = None
+
+    return OptionalModel

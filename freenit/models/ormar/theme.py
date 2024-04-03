@@ -1,6 +1,6 @@
 import ormar
 
-from .base import OrmarBaseModel, ormar_config
+from .base import OrmarBaseModel, ormar_config, generate_optional
 
 
 class Theme(OrmarBaseModel):
@@ -24,8 +24,4 @@ class Theme(OrmarBaseModel):
     font_family_mono: str = ormar.Text()
 
 
-class ThemeOptional(Theme):
-    pass
-
-for field_name in ThemeOptional.model_fields:
-    ThemeOptional.model_fields[field_name].default = None
+ThemeOptional = generate_optional(Theme)

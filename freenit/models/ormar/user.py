@@ -1,12 +1,16 @@
 from __future__ import annotations
-from copy import deepcopy
 
 import ormar
 import ormar.exceptions
 from fastapi import HTTPException
 
 from freenit.auth import verify
-from freenit.models.ormar.base import OrmarBaseModel, OrmarUserMixin, ormar_config
+from freenit.models.ormar.base import (
+    OrmarBaseModel,
+    OrmarUserMixin,
+    generate_optional,
+    ormar_config,
+)
 from freenit.models.role import Role
 
 
@@ -31,11 +35,5 @@ class User(BaseUser, OrmarUserMixin):
     roles = ormar.ManyToMany(Role, unique=True)
 
 
-class UserOptional(User):
-    pass
-
-for field_name in UserOptional.model_fields:
-    UserOptional.model_fields[field_name].default = None
-
-
-UserOptionalPydantic = UserOptional.get_pydantic(exclude={"admin", "active"})
+UserOptional = generate_optional(User)
+UserOptionalPydantic = User.get_pydantic(exclude={"admin", "active"})
