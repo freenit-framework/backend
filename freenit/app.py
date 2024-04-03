@@ -9,12 +9,12 @@ config = freenit.config.getConfig()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    if config.database.is_connected:
-        await config.database.disconnect()
-    yield
+async def lifespan(_: FastAPI):
     if not config.database.is_connected:
         await config.database.connect()
+    yield
+    if config.database.is_connected:
+        await config.database.disconnect()
 
 
 app = FastAPI(lifespan=lifespan)

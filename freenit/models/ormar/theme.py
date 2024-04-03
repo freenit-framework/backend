@@ -1,16 +1,11 @@
 import ormar
 
-from freenit.config import getConfig
-
 from ..metaclass import AllOptional
-from .base import OrmarBaseModel
-
-config = getConfig()
+from .base import OrmarBaseModel, ormar_config
 
 
 class Theme(OrmarBaseModel):
-    class Meta(config.meta):
-        pass
+    ormar_config = ormar_config.copy()
 
     id: int = ormar.Integer(primary_key=True)
     name: str = ormar.Text(unique=True)

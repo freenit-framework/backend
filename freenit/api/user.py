@@ -25,9 +25,9 @@ class UserListAPI:
         perpage: int = Header(default=10),
         _: User = Depends(user_perms),
     ) -> Page[UserSafe]:
-        if User.Meta.type == "ormar":
+        if User.dbtype() == "ormar":
             return await paginate(User.objects, page, perpage)
-        elif User.Meta.type == "bonsai":
+        elif User.dbtype() == "bonsai":
             import bonsai
 
             client = bonsai.LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)

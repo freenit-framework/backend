@@ -5,12 +5,9 @@ import ormar.exceptions
 from fastapi import HTTPException
 
 from freenit.auth import verify
-from freenit.config import getConfig
 from freenit.models.metaclass import AllOptional
-from freenit.models.ormar.base import OrmarBaseModel, OrmarUserMixin
+from freenit.models.ormar.base import OrmarBaseModel, OrmarUserMixin, ormar_config
 from freenit.models.role import Role
-
-config = getConfig()
 
 
 class BaseUser(OrmarBaseModel, OrmarUserMixin):
@@ -29,9 +26,7 @@ class BaseUser(OrmarBaseModel, OrmarUserMixin):
 
 
 class User(BaseUser, OrmarUserMixin):
-    class Meta(config.meta):
-        type = "ormar"
-        tablename = "users"
+    ormar_config = ormar_config.copy()
 
     roles = ormar.ManyToMany(Role, unique=True)
 

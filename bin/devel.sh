@@ -1,12 +1,14 @@
 #!/bin/sh
 
 BIN_DIR=`dirname $0`
-export FREENIT_ENV="dev,all"
+export FREENIT_ENV="all"
 export OFFLINE=${OFFLINE:="no"}
 
 
 . ${BIN_DIR}/common.sh
 setup
+
+export FREENIT_ENV="dev"
 
 if [ ! -e "alembic/versions" ]; then
   mkdir -p alembic/versions

@@ -1,8 +1,17 @@
 import ormar
 import pydantic
 
+from freenit.config import getConfig
+
+
+config = getConfig()
+
 
 class OrmarBaseModel(ormar.Model):
+    @classmethod
+    def dbtype(cls):
+        return 'ormar'
+
     async def patch(self, fields):
         result = {}
         data = fields.dict()
@@ -23,3 +32,10 @@ class OrmarUserMixin:
 class OrmarRoleMixin:
     id: int = ormar.Integer(primary_key=True)
     name: str = ormar.Text(unique=True)
+
+
+ormar_config = ormar.OrmarConfig(
+    database=config.database,
+    metadata=config.metadata,
+    engine=config.engine,
+)
