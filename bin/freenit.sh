@@ -12,7 +12,7 @@ help() {
 
 
 if [ "${1}" = "--version" ]; then
-  python${PY_VERSION} -c 'from freenit.version import version; print(version)'
+  python${PY_VERSION} -c 'from freenit import __version__; print(__version__)'
   exit 0
 fi
 
