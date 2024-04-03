@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "NAME"
+dynamic = ["version"]
+description = "REST API framework based on FastAPI"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = [
+  "freenit[ormar]",
+]
+authors = [
+  {name = "John Doe", email = "john@doe.com"},
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Internet :: WWW/HTTP",
+  "Environment :: Web Environment",
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+  beanie = ["freenit[beanie]"]
+  dev = ["freenit[dev]"]
+  ldap = ["freenit[ldap]"]
+  ormar = ["freenit[ormar]"]
+  test = ["freenit[test]"]
+
+[project.urls]
+Homepage = "https://freenit.org" 
+Repository = "https://github.com/freenit-framework/backend"
+
+[tool.hatch.version]
+path = "PROJECT/__init__.py"
