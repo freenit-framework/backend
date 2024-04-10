@@ -58,10 +58,8 @@ async def login(credentials: LoginInput, response: Response):
     }
 
 
-@api.post("/auth/register", tags=["auth"])
-async def register(credentials: LoginInput, host=Header(default="")):
+async def register_ormar(credentials: LoginInput) -> User:
     import ormar.exceptions
-
     try:
         user = await User.objects.get(email=credentials.email)
         raise HTTPException(status_code=409, detail="User already registered")
@@ -73,6 +71,21 @@ async def register(credentials: LoginInput, host=Header(default="")):
         active=False,
     )
     await user.save()
+    return user
+
+
+async def register_bonsai(credentials: LoginInput) -> User:
+    user = await User.register(credentials)
+    await user.save()
+    return user
+
+
+@api.post("/auth/register", tags=["auth"])
+async def register(credentials: LoginInput, host=Header(default="")):
+    if User.dbtype() == "ormar":
+        user = await register_ormar(credentials)
+    else:
+        user = await register_bonsai(credentials)
     token = encode(user)
     print(token)
     mail = config.mail

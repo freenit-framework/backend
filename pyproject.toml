@@ -49,6 +49,24 @@ classifiers = [
     "pytest-factoryboy",
     "requests",
   ]
+  all = [
+    "beanie",
+    "aiosqlite",
+    "black",
+    "isort",
+    "uvicorn",
+    "bonsai",
+    "alembic",
+    "ormar",
+    "aiosqlite",
+    "bandit",
+    "black",
+    "httpx",
+    "isort",
+    "pytest-asyncio",
+    "pytest-factoryboy",
+    "requests",
+  ]
 
 [project.urls]
 Homepage = "https://freenit.org" 

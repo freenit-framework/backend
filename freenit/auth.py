@@ -25,23 +25,7 @@ async def decode(token):
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=403, detail="Unauthorized")
     elif User.dbtype() == "bonsai":
-        import bonsai
-
-        client = bonsai.LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
-        async with client.connect(is_async=True) as conn:
-            res = await conn.search(
-                pk,
-                bonsai.LDAPSearchScope.BASE,
-                "objectClass=person",
-            )
-        data = res[0]
-        user = User(
-            email=data["mail"][0],
-            sn=data["sn"][0],
-            cn=data["cn"][0],
-            dn=str(data["dn"]),
-            uid=data["uid"][0],
-        )
+        user = User.get(pk)
         return user
     raise HTTPException(status_code=409, detail="Unknown user type")
 

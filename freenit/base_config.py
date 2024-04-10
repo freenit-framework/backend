@@ -32,7 +32,7 @@ class Mail:
         self,
         server="mail.example.com",
         user="user@example.com",
-        password="Secrit", #nosec
+        password="Sekrit",  # nosec
         port=587,
         tls=True,
         from_addr="no-reply@mail.com",
@@ -51,11 +51,22 @@ class Mail:
 
 class LDAP:
     def __init__(
-        self, host="ldap.example.com", tls=True, base="uid={},ou={},dc=account,dc=ldap"
+        self,
+        host="ldap.example.com",
+        tls=True,
+        base="uid={},ou={},dc=account,dc=ldap",
+        service_dn="cn=freenit,dc=service,dc=ldap",
+        service_pw="",
+        userClasses=["pilotPerson", "posixAccount"],
+        groupClasses=["groupOfUniqueNames"],
     ):
         self.host = host
         self.tls = tls
         self.base = base
+        self.service_dn = service_dn
+        self.service_pw = service_pw
+        self.userClasses = userClasses
+        self.groupClasses = groupClasses
 
 
 class BaseConfig:
@@ -69,7 +80,7 @@ class BaseConfig:
     dburl = "sqlite:///db.sqlite"
     database = None
     engine = None
-    secret = "SECRET" #nosec
+    secret = "SECRET"  # nosec
     user = "freenit.models.ormar.user"
     role = "freenit.models.ormar.role"
     theme = "freenit.models.ormar.theme"
@@ -115,4 +126,4 @@ class TestConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-    secret = "MORESECURESECRET" #nosec
+    secret = "MORESECURESECRET"  # nosec
