@@ -37,7 +37,7 @@ async def save_data(data):
 class LDAPBaseModel(BaseModel, Generic[T]):
     @classmethod
     def dbtype(cls):
-        return "bonsai"
+        return "ldap"
 
     dn: str = Field("", description=("Distinguished name"))
 

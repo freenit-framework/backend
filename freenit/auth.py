@@ -15,7 +15,7 @@ async def decode(token):
     pk = data.get("pk", None)
     if pk is None:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    if User.dbtype() == "ormar":
+    if User.dbtype() == "sql":
         import ormar
         import ormar.exceptions
 
@@ -24,7 +24,7 @@ async def decode(token):
             return user
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=403, detail="Unauthorized")
-    elif User.dbtype() == "bonsai":
+    elif User.dbtype() == "ldap":
         user = await User.get(pk)
         return user
     raise HTTPException(status_code=409, detail="Unknown user type")
@@ -33,9 +33,9 @@ async def decode(token):
 def encode(user):
     config = getConfig()
     payload = {}
-    if user.dbtype() == "ormar":
+    if user.dbtype() == "sql":
         payload = {"pk": user.pk, "type": "ormar"}
-    elif user.dbtype() == "bonsai":
+    elif user.dbtype() == "ldap":
         payload = {"pk": user.dn, "type": "bonsai"}
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
@@ -45,7 +45,7 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = await decode(token)
-    if user.dbtype() == "ormar":
+    if user.dbtype() == "sql":
         await user.load_all()
         if not user.active:
             raise HTTPException(status_code=403, detail="Permission denied")
@@ -68,7 +68,7 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
                     if role.name not in allof:
                         raise HTTPException(status_code=403, detail="Permission denied")
         return user
-    elif user.dbtype() == "bonsai":
+    elif user.dbtype() == "ldap":
         pass
     return user
 

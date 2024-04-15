@@ -106,11 +106,7 @@ class User(UserSafe):
                 dn=str(udata["dn"]),
                 uid=udata["uid"][0],
                 userClass=udata["userClass"][0],
-<<<<<<< HEAD
-                roles=data["memberOf"],
-=======
                 roles=udata.get("memberOf", []),
->>>>>>> 1243228 (Make front/back integration better)
             )
             data.append(user)
         return data

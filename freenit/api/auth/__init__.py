@@ -58,7 +58,7 @@ async def login(credentials: LoginInput, response: Response):
     }
 
 
-async def register_ormar(credentials: LoginInput) -> User:
+async def register_sql(credentials: LoginInput) -> User:
     import ormar.exceptions
     try:
         user = await User.objects.get(email=credentials.email)
@@ -74,7 +74,7 @@ async def register_ormar(credentials: LoginInput) -> User:
     return user
 
 
-async def register_bonsai(credentials: LoginInput) -> User:
+async def register_ldap(credentials: LoginInput) -> User:
     user = await User.register(credentials)
     await user.save()
     return user
@@ -82,10 +82,10 @@ async def register_bonsai(credentials: LoginInput) -> User:
 
 @api.post("/auth/register", tags=["auth"])
 async def register(credentials: LoginInput, host=Header(default="")):
-    if User.dbtype() == "ormar":
-        user = await register_ormar(credentials)
+    if User.dbtype() == "sql":
+        user = await register_sql(credentials)
     else:
-        user = await register_bonsai(credentials)
+        user = await register_ldap(credentials)
     token = encode(user)
     print(token)
     mail = config.mail

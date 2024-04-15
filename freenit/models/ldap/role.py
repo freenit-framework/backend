@@ -10,7 +10,7 @@ config = getConfig()
 
 class Role(LDAPBaseModel):
     cn: str = Field("", description=("Common name"))
-    uniqueMembers: list = Field([], description=("Role members"))
+    users: list = Field([], description=("Role members"))
 
     @classmethod
     async def get(cls, dn):
@@ -32,9 +32,31 @@ class Role(LDAPBaseModel):
         role = cls(
             cn=data["cn"][0],
             dn=str(data["dn"]),
-            uniqueMembers=data["uniqueMember"],
+            users=data["uniqueMember"],
         )
         return role
+
+    @classmethod
+    async def get_all(cls):
+        client = get_client()
+        try:
+            async with client.connect(is_async=True) as conn:
+                res = await conn.search(
+                    f"dc=group,dc=ldap",
+                    LDAPSearchScope.SUB,
+                    "objectClass=groupOfUniqueNames",
+                )
+                data = []
+                for gdata in res:
+                    role = Role(
+                        cn=gdata["cn"][0],
+                        dn=str(gdata["dn"]),
+                        users=gdata["uniqueMember"],
+                    )
+                    data.append(role)
+        except errors.AuthenticationError:
+            raise HTTPException(status_code=403, detail="Failed to login")
+        return data
 
 
     async def create(self, user):
@@ -43,7 +65,7 @@ class Role(LDAPBaseModel):
         data["cn"] = self.cn
         data["uniqueMember"] = user.dn
         await save_data(data)
-        self.uniqueMembers = data["uniqueMember"]
+        self.users = data["uniqueMember"]
 
     async def add(self, user):
         client = get_client()
@@ -64,7 +86,7 @@ class Role(LDAPBaseModel):
                 await data.modify()
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
-        self.uniqueMembers.append(user)
+        self.users.append(user)
 
     async def remove(self, user):
         client = get_client()
@@ -85,7 +107,7 @@ class Role(LDAPBaseModel):
                 await data.modify()
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
-        self.uniqueMembers.append(user)
+        self.users.remove(user)
 
 
 RoleOptional = Role
