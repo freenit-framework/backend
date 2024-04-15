@@ -28,37 +28,9 @@ class UserListAPI:
         if User.dbtype() == "ormar":
             return await paginate(User.objects, page, perpage)
         elif User.dbtype() == "bonsai":
-            import bonsai
-
-            from freenit.models.ldap.base import get_client
-
-            client = get_client()
-            try:
-                async with client.connect(is_async=True) as conn:
-                    res = await conn.search(
-                        f"dc=account,dc=ldap",
-                        bonsai.LDAPSearchScope.SUB,
-                        "objectClass=person",
-                    )
-            except bonsai.errors.AuthenticationError:
-                raise HTTPException(status_code=403, detail="Failed to login")
-
-            data = []
-            for udata in res:
-                email = udata.get("mail", None)
-                if email is None:
-                    continue
-                user = User(
-                    email=email[0],
-                    sn=udata["sn"][0],
-                    cn=udata["cn"][0],
-                    dn=str(udata["dn"]),
-                    uid=udata["uid"][0],
-                )
-                data.append(user)
-
-            total = len(res)
-            page = Page(total=total, page=1, pages=1, perpage=total, data=data)
+            users = await User.get_all()
+            total = len(users)
+            page = Page(total=total, page=1, pages=1, perpage=total, data=users)
             return page
         raise HTTPException(status_code=409, detail="Unknown user type")
 

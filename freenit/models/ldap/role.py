@@ -10,7 +10,7 @@ config = getConfig()
 
 class Role(LDAPBaseModel):
     cn: str = Field("", description=("Common name"))
-    uniqueMembers: list = Field([], description=("Group members"))
+    uniqueMembers: list = Field([], description=("Role members"))
 
     @classmethod
     async def get(cls, dn):
