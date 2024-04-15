@@ -1,46 +1,77 @@
 from __future__ import annotations
 
-from bonsai import LDAPClient, LDAPSearchScope, errors
-from fastapi import HTTPException
-from pydantic import Field
+from bonsai import LDAPEntry, LDAPModOp, LDAPSearchScope, errors
+from pydantic import EmailStr, Field
 
 from freenit.config import getConfig
-from freenit.models.ldap.base import LDAPBaseModel, LDAPUserMixin
+from freenit.models.ldap.base import LDAPBaseModel, LDAPUserMixin, get_client, save_data
 
 config = getConfig()
 
 
 class UserSafe(LDAPBaseModel, LDAPUserMixin):
+    uid: str = Field("", description=("User ID"))
+    email: EmailStr = Field("", description=("Email"))
+    cn: str = Field("", description=("Common name"))
+    sn: str = Field("", description=("Surname"))
+    userClass: str = Field("", description=("User class"))
+
+
+class User(UserSafe):
+    password: str = Field("", description=("Password"))
+
     @classmethod
-    async def _login(cls, credentials) -> dict:
-        username, domain = credentials.email.split("@")
-        client = LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
-        dn = config.ldap.base.format(username, domain)
-        client.set_credentials("SIMPLE", user=dn, password=credentials.password)
+    async def get(cls, dn):
+        client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
                 res = await conn.search(dn, LDAPSearchScope.BASE, "objectClass=person")
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
-
+        if len(res) < 1:
+            raise HTTPException(status_code=404, detail="No such user")
+        if len(res) > 1:
+            raise HTTPException(status_code=409, detail="Multiple users found")
         data = res[0]
-        return data
-
-    @classmethod
-    async def login(cls, credentials) -> UserSafe:
-        data = await cls._login(credentials)
         user = cls(
-            dn=str(data["dn"]),
-            email=credentials.email,
+            email=data["mail"][0],
             sn=data["sn"][0],
             cn=data["cn"][0],
+            dn=str(data["dn"]),
             uid=data["uid"][0],
+            userClass=data["userClass"][0],
         )
         return user
 
+    async def save(self):
+        _, domain = self.email.split("@")
+        data = LDAPEntry(self.dn)
+        data["objectClass"] = config.ldap.userClasses
+        data["uid"] = self.uid
+        data["cn"] = self.uid
+        data["sn"] = self.uid
+        data["uidNumber"] = 65535
+        data["gidNumber"] = 65535
+        data["homeDirectory"] = f"/var/mail/domains/{domain}/{self.uid}"
+        data.change_attribute("userPassword", LDAPModOp.REPLACE, self.password)
+        data["mail"] = self.email
+        await save_data(data)
 
-class User(UserSafe):
-    password: str = Field("", description=("Password"))
+    async def update(self, active=False, **kwargs):
+        client = get_client()
+        userclass = "disabled"
+        if active:
+            userclass = "enabled"
+        async with client.connect(is_async=True) as conn:
+            res = await conn.search(self.dn, LDAPSearchScope.BASE)
+            data = res[0]
+            data["userClass"] = userclass
+            self.userClass = userclass
+            for field in kwargs:
+                data[field] = kwargs[field]
+            await data.modify()
+            for field in kwargs:
+                setattr(self, field, kwargs[field])
 
 
 class UserOptional(User):

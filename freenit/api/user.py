@@ -30,7 +30,9 @@ class UserListAPI:
         elif User.dbtype() == "bonsai":
             import bonsai
 
-            client = bonsai.LDAPClient(f"ldap://{config.ldap.host}", config.ldap.tls)
+            from freenit.models.ldap.base import get_client
+
+            client = get_client()
             try:
                 async with client.connect(is_async=True) as conn:
                     res = await conn.search(
@@ -64,35 +66,79 @@ class UserListAPI:
 @route("/users/{id}", tags=tags)
 class UserDetailAPI:
     @staticmethod
-    async def get(id: int, _: User = Depends(user_perms)) -> UserSafe:
-        try:
-            user = await User.objects.get(pk=id)
-        except ormar.exceptions.NoMatch:
-            raise HTTPException(status_code=404, detail="No such user")
-        await user.load_all(follow=True)
-        return user
+    async def get(id, _: User = Depends(user_perms)) -> UserSafe:
+        if User.dbtype() == "ormar":
+            try:
+                user = await User.objects.get(pk=id)
+            except ormar.exceptions.NoMatch:
+                raise HTTPException(status_code=404, detail="No such user")
+            await user.load_all(follow=True)
+            return user
+        elif User.dbtype() == "bonsai":
+            user = await User.get(id)
+            return user
+        raise HTTPException(status_code=409, detail="Unknown user type")
 
     @staticmethod
     async def patch(
-        id: int, data: UserOptional, _: User = Depends(user_perms)
+        id, data: UserOptional, _: User = Depends(user_perms)
     ) -> UserSafe:
-        if data.password:
-            data.password = encrypt(data.password)
-        try:
-            user = await User.objects.get(pk=id)
-        except ormar.exceptions.NoMatch:
-            raise HTTPException(status_code=404, detail="No such user")
-        await user.patch(data)
-        return user
+        if User.dbtype() == "ormar":
+            if data.password:
+                data.password = encrypt(data.password)
+            try:
+                user = await User.objects.get(pk=id)
+            except ormar.exceptions.NoMatch:
+                raise HTTPException(status_code=404, detail="No such user")
+            await user.patch(data)
+            return user
+        elif User.dbtype() == "bonsai":
+            user = await User.get(id)
+            update = {
+                field: getattr(data, field) for field in data.__fields__ if getattr(data, field) != ''
+            }
+            await user.update(active=user.userClass, **update)
+            return user
+        raise HTTPException(status_code=409, detail="Unknown user type")
 
     @staticmethod
-    async def delete(id: int, _: User = Depends(user_perms)) -> UserSafe:
-        try:
-            user = await User.objects.get(pk=id)
-        except ormar.exceptions.NoMatch:
-            raise HTTPException(status_code=404, detail="No such user")
-        await user.delete()
-        return user
+    async def delete(id, _: User = Depends(user_perms)) -> UserSafe:
+        if User.dbtype() == "ormar":
+            try:
+                user = await User.objects.get(pk=id)
+            except ormar.exceptions.NoMatch:
+                raise HTTPException(status_code=404, detail="No such user")
+            await user.delete()
+            return user
+        elif User.dbtype() == "bonsai":
+            import bonsai
+
+            from freenit.models.ldap.base import get_client
+
+            client = get_client()
+            try:
+                async with client.connect(is_async=True) as conn:
+                    res = await conn.search(
+                        id, bonsai.LDAPSearchScope.SUB, "objectClass=person"
+                    )
+                    if len(res) < 1:
+                        raise HTTPException(status_code=404, detail="No such user")
+                    if len(res) > 1:
+                        raise HTTPException(status_code=409, detail="Multiple users found")
+                    existing = res[0]
+                    user = User(
+                        email=existing["mail"][0],
+                        sn=existing["sn"][0],
+                        cn=existing["cn"][0],
+                        dn=str(existing["dn"]),
+                        uid=existing["uid"][0],
+                        userClass=existing["userClass"][0],
+                    )
+                    await existing.delete()
+                    return user
+            except bonsai.errors.AuthenticationError:
+                raise HTTPException(status_code=403, detail="Failed to login")
+        raise HTTPException(status_code=409, detail="Unknown user type")
 
 
 @route("/profile", tags=["profile"])
