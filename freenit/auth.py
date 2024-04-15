@@ -25,7 +25,7 @@ async def decode(token):
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=403, detail="Unauthorized")
     elif User.dbtype() == "bonsai":
-        user = User.get(pk)
+        user = await User.get(pk)
         return user
     raise HTTPException(status_code=409, detail="Unknown user type")
 

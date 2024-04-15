@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from bonsai import LDAPEntry, LDAPModOp, LDAPSearchScope, errors
+from fastapi import HTTPException
 from pydantic import EmailStr, Field
 
 from freenit.config import getConfig
@@ -15,6 +16,7 @@ class UserSafe(LDAPBaseModel, LDAPUserMixin):
     cn: str = Field("", description=("Common name"))
     sn: str = Field("", description=("Surname"))
     userClass: str = Field("", description=("User class"))
+    roles: list = Field([], description=("Roles the user is a member of"))
 
 
 class User(UserSafe):
@@ -25,13 +27,18 @@ class User(UserSafe):
         client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
-                res = await conn.search(dn, LDAPSearchScope.BASE, "objectClass=person")
+                res = await conn.search(
+                    dn, LDAPSearchScope.BASE,
+                    "objectClass=person",
+                    ["*", "memberOf"],
+                )
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
         if len(res) < 1:
             raise HTTPException(status_code=404, detail="No such user")
         if len(res) > 1:
             raise HTTPException(status_code=409, detail="Multiple users found")
+        print(res)
         data = res[0]
         user = cls(
             email=data["mail"][0],
@@ -40,6 +47,7 @@ class User(UserSafe):
             dn=str(data["dn"]),
             uid=data["uid"][0],
             userClass=data["userClass"][0],
+            roles=data["memberOf"],
         )
         return user
 
@@ -72,6 +80,37 @@ class User(UserSafe):
             await data.modify()
             for field in kwargs:
                 setattr(self, field, kwargs[field])
+
+    @classmethod
+    async def get_all(cls):
+        client = get_client()
+        try:
+            async with client.connect(is_async=True) as conn:
+                res = await conn.search(
+                    f"dc=account,dc=ldap",
+                    LDAPSearchScope.SUB,
+                    "objectClass=person",
+                    ["*", "memberOf"],
+                )
+        except errors.AuthenticationError:
+            raise HTTPException(status_code=403, detail="Failed to login")
+
+        data = []
+        for udata in res:
+            email = udata.get("mail", None)
+            if email is None:
+                continue
+            user = cls(
+                email=email[0],
+                sn=udata["sn"][0],
+                cn=udata["cn"][0],
+                dn=str(udata["dn"]),
+                uid=udata["uid"][0],
+                userClass=udata["userClass"][0],
+                roles=data["memberOf"],
+            )
+            data.append(user)
+        return data
 
 
 class UserOptional(User):
