@@ -38,7 +38,6 @@ class User(UserSafe):
             raise HTTPException(status_code=404, detail="No such user")
         if len(res) > 1:
             raise HTTPException(status_code=409, detail="Multiple users found")
-        print(res)
         data = res[0]
         user = cls(
             email=data["mail"][0],
@@ -47,7 +46,7 @@ class User(UserSafe):
             dn=str(data["dn"]),
             uid=data["uid"][0],
             userClass=data["userClass"][0],
-            roles=data["memberOf"],
+            roles=data.get("memberOf", []),
         )
         return user
 
@@ -107,7 +106,11 @@ class User(UserSafe):
                 dn=str(udata["dn"]),
                 uid=udata["uid"][0],
                 userClass=udata["userClass"][0],
+<<<<<<< HEAD
                 roles=data["memberOf"],
+=======
+                roles=udata.get("memberOf", []),
+>>>>>>> 1243228 (Make front/back integration better)
             )
             data.append(user)
         return data
