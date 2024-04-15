@@ -77,7 +77,7 @@ class RoleDetailAPI:
             await role.load_all(follow=True)
             return role
         elif Role.dbtype() == "bonsai":
-            role = Role.get(id)
+            role = await Role.get(id)
             return role
         raise HTTPException(status_code=409, detail="Unknown role type")
 

@@ -118,7 +118,8 @@ class ProfileDetailAPI:
     @staticmethod
     @description("Get my profile")
     async def get(user: User = Depends(profile_perms)) -> UserSafe:
-        await user.load_all()
+        if User.dbtype() == "ormar":
+            await user.load_all()
         return user
 
     @staticmethod
@@ -126,8 +127,16 @@ class ProfileDetailAPI:
     async def patch(
         data: UserOptional, user: User = Depends(profile_perms)
     ) -> UserSafe:
-        if data.password:
-            data.password = encrypt(data.password)
-        await user.patch(data)
-        await user.load_all()
-        return user
+        if User.dbtype() == "ormar":
+            if data.password:
+                data.password = encrypt(data.password)
+            await user.patch(data)
+            await user.load_all()
+            return user
+        elif User.dbtype() == "bonsai":
+            update = {
+                field: getattr(data, field) for field in data.__fields__ if getattr(data, field) != ''
+            }
+            await user.update(active=user.userClass, **update)
+            return user
+        raise HTTPException(status_code=409, detail="Unknown user type")
