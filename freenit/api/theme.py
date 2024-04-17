@@ -1,5 +1,3 @@
-from typing import List
-
 import ormar
 import ormar.exceptions
 from fastapi import Depends, Header, HTTPException

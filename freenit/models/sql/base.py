@@ -3,14 +3,13 @@ import pydantic
 
 from freenit.config import getConfig
 
-
 config = getConfig()
 
 
 class OrmarBaseModel(ormar.Model):
     @classmethod
     def dbtype(cls):
-        return 'ormar'
+        return "sql"
 
     async def patch(self, fields):
         result = {}

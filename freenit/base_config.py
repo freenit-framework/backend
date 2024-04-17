@@ -81,9 +81,9 @@ class BaseConfig:
     database = None
     engine = None
     secret = "SECRET"  # nosec
-    user = "freenit.models.ormar.user"
-    role = "freenit.models.ormar.role"
-    theme = "freenit.models.ormar.theme"
+    user = "freenit.models.sql.user"
+    role = "freenit.models.sql.role"
+    theme = "freenit.models.sql.theme"
     theme_name = "Freenit"
     meta = None
     auth = Auth()
