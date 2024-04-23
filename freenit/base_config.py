@@ -38,6 +38,8 @@ class Mail:
         from_addr="no-reply@mail.com",
         register_subject="[Freenit] User Registration",
         register_message=register_message,
+        master_user="dovecot@example.com",
+        master_pw="Sekrit",
     ) -> None:
         self.server = server
         self.user = user
@@ -47,6 +49,8 @@ class Mail:
         self.from_addr = from_addr
         self.register_subject = register_subject
         self.register_message = register_message
+        self.master_user = master_user
+        self.master_pw = master_pw
 
 
 class LDAP:
