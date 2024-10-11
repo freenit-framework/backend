@@ -246,6 +246,7 @@ EOF
   cat >requirements.yml<<EOF
 - onelove-roles.freebsd-common
 - onelove-roles.freebsd_node
+- onelove-roles.freebsd_pm2
 EOF
 
   cat >templates/site.yml.tpl<<EOF
@@ -258,21 +259,34 @@ EOF
   roles:
     - onelove-roles.freebsd-common
     - onelove-roles.freebsd_node
+    - onelove-roles.freebsd_pm2
 EOF
 
   cat >.gitignore<<EOF
-.DS_Store
 node_modules
-build
-.svelte-kit
-package
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+/dist
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
 .env
 .env.*
-.vercel
-.output
-dist
-stats.html
+!.env.example
+!.env.test
 
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Reggae
 .provisioned
 ansible/group_vars/all
 ansible/inventory/inventory
@@ -289,7 +303,7 @@ EOF
 }
 
 frontend() {
-  npm create svelte@latest "${NAME}"
+  npm create svelte "${NAME}"
   cd "${NAME}"
   case `uname` in
     *BSD)
