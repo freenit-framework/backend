@@ -50,14 +50,12 @@ backend() {
   cp -r ${PROJECT_ROOT}/project/* .
   case `uname` in
     *BSD)
-      ${SED_CMD} '' -e "s/NAME/${NAME}/g" setup.py
       ${SED_CMD} '' -e "s/NAME/${NAME}/g" main.py
-      ${SED_CMD} '' -e "s/PROJECT/${NAME}/g" pyproject.toml
+      ${SED_CMD} '' -e "s/NAME/${NAME}/g" pyproject.toml
       ;;
     *)
-      ${SED_CMD} -e "s/NAME/${NAME}/g" setup.py
       ${SED_CMD} -e "s/NAME/${NAME}/g" main.py
-      ${SED_CMD} -e "s/PROJECT/${NAME}/g" pyproject.toml
+      ${SED_CMD} -e "s/NAME/${NAME}/g" pyproject.toml
       ;;
   esac
   mv project ${NAME}
