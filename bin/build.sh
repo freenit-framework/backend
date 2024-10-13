@@ -7,6 +7,7 @@ export FREENIT_ENV="build"
 
 
 setup
+pip install hatchling
 
 
 rm -rf *.egg-info build dist
