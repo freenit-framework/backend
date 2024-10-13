@@ -12,5 +12,5 @@ def sendmail(to, message):
         server.ehlo()
         server.starttls()
         server.ehlo()
-    server.login(mail.username, mail.password)
+    server.login(mail.user, mail.password)
     server.sendmail(message["From"], to, message.as_string().encode("utf-8"))

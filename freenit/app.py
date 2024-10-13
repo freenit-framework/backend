@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-import freenit.config
+from .config import getConfig
 
 from .api import api
 
-config = freenit.config.getConfig()
+config = getConfig()
 
 
 @asynccontextmanager
