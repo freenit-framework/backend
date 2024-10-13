@@ -35,4 +35,4 @@ Homepage = "https://freenit.org"
 Repository = "https://github.com/freenit-framework/backend"
 
 [tool.hatch.version]
-path = "PROJECT/__init__.py"
+path = "NAME/__init__.py"

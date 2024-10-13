@@ -7,7 +7,7 @@ config = getConfig()
 
 def sendmail(to, message):
     mail = config.mail
-    server = SMTP(host=mail.host, port=mail.port)
+    server = SMTP(host=mail.server, port=mail.port)
     if mail.tls:
         server.ehlo()
         server.starttls()
