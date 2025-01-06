@@ -40,11 +40,6 @@ ormar_config = ormar.OrmarConfig(
 )
 
 
-def generate_optional(Model):
-    class OptionalModel(Model):
-        pass
-
+def make_optional(OptionalModel):
     for field_name in OptionalModel.model_fields:
         OptionalModel.model_fields[field_name].default = None
-
-    return OptionalModel
