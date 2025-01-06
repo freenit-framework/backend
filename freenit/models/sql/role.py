@@ -5,7 +5,7 @@ class Role(OrmarBaseModel, OrmarRoleMixin):
     ormar_config = ormar_config.copy()
 
 
-class RoleOptional:
+class RoleOptional(Role):
     pass
 
 
