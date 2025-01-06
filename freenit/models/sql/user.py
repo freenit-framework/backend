@@ -8,7 +8,7 @@ from freenit.auth import verify
 from freenit.models.sql.base import (
     OrmarBaseModel,
     OrmarUserMixin,
-    generate_optional,
+    make_optional,
     ormar_config,
 )
 from freenit.models.role import Role
@@ -35,5 +35,9 @@ class User(BaseUser, OrmarUserMixin):
     roles = ormar.ManyToMany(Role, unique=True)
 
 
-UserOptional = generate_optional(User)
+class UserOptional:
+    pass
+
+
+make_optional(UserOptional)
 UserOptionalPydantic = User.get_pydantic(exclude={"admin", "active"})
