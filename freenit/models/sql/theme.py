@@ -24,7 +24,7 @@ class Theme(OrmarBaseModel):
     font_family_mono: str = ormar.Text()
 
 
-class ThemeOptional:
+class ThemeOptional(Theme):
     pass
 
 

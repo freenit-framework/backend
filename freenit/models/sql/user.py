@@ -35,7 +35,7 @@ class User(BaseUser, OrmarUserMixin):
     roles = ormar.ManyToMany(Role, unique=True)
 
 
-class UserOptional:
+class UserOptional(User):
     pass
 
 
