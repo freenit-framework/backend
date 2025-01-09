@@ -35,6 +35,7 @@ classifiers = [
     "isort",
     "uvicorn",
   ]
+  build = ["twine"]
   ldap = ["bonsai"]
   ormar = [
     "alembic",
@@ -67,6 +68,7 @@ classifiers = [
     "pytest-asyncio",
     "pytest-factoryboy",
     "requests",
+    "twine",
   ]
 
 [project.urls]
