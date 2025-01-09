@@ -13,7 +13,7 @@ class OrmarBaseModel(ormar.Model):
 
     async def patch(self, fields):
         result = {}
-        data = fields.dict()
+        data = fields.model_dump()
         for k in data:
             if data[k] is not None:
                 result[k] = data[k]
