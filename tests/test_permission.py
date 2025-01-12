@@ -1,9 +1,6 @@
 import pytest
 from fastapi import HTTPException, Request
-
 from freenit.auth import decode, encode, permissions
-from freenit.models.role import Role
-from freenit.models.user import User
 
 from . import factories
 
@@ -18,17 +15,17 @@ def prepareRequest(user):
 @pytest.mark.asyncio
 class TestPermission:
     async def test_encode_decode(self, client):
-        user: User = factories.User()
+        user = factories.User()
         await user.save()
         client.login(user=user)
-        role: Role = factories.Role()
+        role = factories.Role()
         await role.save()
         token = encode(user)
         token_user = await decode(token)
         assert token_user == user
 
     async def test_permissions(self, client):
-        user: User = factories.User()
+        user = factories.User()
         await user.save()
         client.login(user=user)
         perms = permissions()
@@ -37,9 +34,9 @@ class TestPermission:
         assert user == token_user
 
     async def test_role_permissions(self, client):
-        user: User = factories.User()
+        user = factories.User()
         await user.save()
-        role: Role = factories.Role()
+        role = factories.Role()
         await role.save()
         await user.roles.add(role)
         client.login(user=user)
@@ -49,9 +46,9 @@ class TestPermission:
         assert user == api_user
 
     async def test_role_fail_permissions(self, client):
-        user: User = factories.User()
+        user = factories.User()
         await user.save()
-        role: Role = factories.Role()
+        role = factories.Role()
         await role.save()
         client.login(user=user)
         perms = permissions(roles=[role.name])
