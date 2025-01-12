@@ -58,6 +58,13 @@ async def login(credentials: LoginInput, response: Response):
     }
 
 
+@api.post("/auth/logout", tags=["auth"])
+async def logout(response: Response):
+    response.delete_cookie("access")
+    response.delete_cookie("refresh")
+    return { "ok": True }
+
+
 async def register_sql(credentials: LoginInput) -> User:
     import ormar.exceptions
     try:
