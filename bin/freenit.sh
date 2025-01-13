@@ -153,7 +153,54 @@ EOF
 }
 
 
-frontend_common() {
+frontend() {
+  npx sv create "${NAME}"
+  cd "${NAME}"
+  case `uname` in
+    *BSD)
+      ${SED_CMD} '' -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
+      ${SED_CMD} '' -e "s/^}//" package.json
+      ${SED_CMD} '' -e 's/"type": "module"/"type": "module",/' package.json
+      ;;
+    *)
+      ${SED_CMD} -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
+      ${SED_CMD} -e "s/^}//" package.json
+      ${SED_CMD} -e 's/"type": "module"/"type": "module",/' package.json
+      ;;
+  esac
+  cat >>vite.config.ts<<EOF
+if (process.env.BACKEND_URL) {
+  config.server = {
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND_URL,
+        changeOrigin: true,
+      }
+    }
+  }
+}
+
+export default config
+EOF
+
+  cat >>package.json<<EOF
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node"
+  }
+}
+EOF
+
+  cat >.prettierrc<<EOF
+{
+  "useTabs": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "semi": false,
+}
+EOF
+
+  npm install
   echo "# ${NAME}" >README.md
   npm install --save-dev chota
 
@@ -201,7 +248,7 @@ env CI=true npm run test
 EOF
   chmod +x test.sh
 
-  cat >collect.sh<<EOF
+  cat >build.sh<<EOF
 #!/bin/sh
 
 
@@ -217,7 +264,7 @@ rm -rf build
 npm run build
 touch build/.keep
 EOF
-  chmod +x collect.sh
+  chmod +x build.sh
 
   cd ..
 
@@ -266,6 +313,8 @@ node_modules
 # Output
 .output
 .vercel
+.netlify
+.wrangler
 /.svelte-kit
 /build
 /dist
@@ -298,58 +347,8 @@ site.retry
 project.mk
 vars.mk
 EOF
-}
 
-frontend() {
-  npm create svelte "${NAME}"
-  cd "${NAME}"
-  case `uname` in
-    *BSD)
-      ${SED_CMD} '' -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
-      ${SED_CMD} '' -e "s/^}//" package.json
-      ${SED_CMD} '' -e 's/"type": "module"/"type": "module",/' package.json
-      ${SED_CMD} '' -e "s/adapter-auto/adapter-node/" svelte.config.js
-      ;;
-    *)
-      ${SED_CMD} -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
-      ${SED_CMD} -e "s/^}//" package.json
-      ${SED_CMD} -e 's/"type": "module"/"type": "module",/' package.json
-      ${SED_CMD} -e "s/adapter-auto/adapter-node/" svelte.config.js
-      ;;
-  esac
-  cat >>vite.config.ts<<EOF
-if (process.env.BACKEND_URL) {
-  config.server = {
-    proxy: {
-      '/api': {
-        target: process.env.BACKEND_URL,
-        changeOrigin: true,
-      }
-    }
-  }
-}
-
-export default config
-EOF
-
-  cat >>package.json<<EOF
-  "overrides": {
-    "rollup": "npm:@rollup/wasm-node"
-  }
-}
-EOF
-  cat >.prettierrc<<EOF
-{
-  "useTabs": false,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 80,
-  "semi": false,
-}
-EOF
-  npm install
-  frontend_common
-  npm install --save-dev @zerodevx/svelte-toast @freenit-framework/svelte-base @sveltejs/adapter-node @mdi/js
+  npm install --save-dev @zerodevx/svelte-toast @freenit-framework/core @sveltejs/adapter-node @mdi/js
 
   rm -rf src/lib
   rm -rf src/routes/about src/routes/sverdle src/routes/*.svelte
@@ -388,14 +387,14 @@ EOF
 <script>
   import './styles.css'
   import 'chota'
-  import { store } from '@freenit-framework/svelte-base'
+  import { create_store } from '@freenit-framework/core'
   import { SvelteToast } from '@zerodevx/svelte-toast'
 
   const options = {}
 
   // First invocation of this function creates store, next invocations return
   // existing one, so only first invocation takes "prefix" argument into account
-  store('/api/v1')
+  create_store('/api/v1')
 </script>
 
 <svelte:head>
@@ -421,7 +420,7 @@ EOF
   mkdir src/routes/login
   cat >src/routes/login/+page.svelte <<EOF
 <script lang="ts">
-  import { Login } from '@freenit-framework/svelte-base'
+  import { Login } from '@freenit-framework/core'
 </script>
 
 <Login />
@@ -430,7 +429,7 @@ EOF
   mkdir src/routes/register
   cat >src/routes/register/+page.svelte <<EOF
 <script lang="ts">
-  import { Register } from '@freenit-framework/svelte-base'
+  import { Register } from '@freenit-framework/core'
 </script>
 
 <Register />
@@ -442,10 +441,10 @@ EOF
   import { onMount } from 'svelte'
   import { page } from '\$app/stores'
   import { goto } from '\$app/navigation'
-  import { store } from '@freenit-framework/svelte-base'
+  import { store } from '@freenit-framework/core'
 
   onMount(async () => {
-    const response = await store().auth.verify(\$page.params.token)
+    const response = await store.auth.verify(\$page.params.token)
     if (response.ok) {
       goto('/login')
     }
@@ -486,6 +485,7 @@ EOF
   chmod +x devel.sh
   cd ../..
 }
+
 
 project() {
   echo "Creating project"
