@@ -159,13 +159,13 @@ frontend() {
   case `uname` in
     *BSD)
       ${SED_CMD} '' -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
+      ${SED_CMD} '' -e 's/^\t}$/\t},/' package.json
       ${SED_CMD} '' -e "s/^}//" package.json
-      ${SED_CMD} '' -e 's/"type": "module"/"type": "module",/' package.json
       ;;
     *)
       ${SED_CMD} -e "s/export default defineConfig/const config = defineConfig/" vite.config.ts
+      ${SED_CMD} -e 's/^\t}$/\t},/' package.json
       ${SED_CMD} -e "s/^}//" package.json
-      ${SED_CMD} -e 's/"type": "module"/"type": "module",/' package.json
       ;;
   esac
   cat >>vite.config.ts<<EOF
