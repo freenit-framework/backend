@@ -1,5 +1,4 @@
-from freenit.base_config import Auth
-from freenit.base_config import BaseConfig as FreenitBaseConfig
+from freenit.base_config import Auth, Mail, BaseConfig as FreenitBaseConfig
 
 
 class BaseConfig(FreenitBaseConfig):
@@ -21,3 +20,4 @@ class TestConfig(BaseConfig):
 
 class ProdConfig(BaseConfig):
     secret = "MORESECURESECRET" #nosec
+    mail = Mail()

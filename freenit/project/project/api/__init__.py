@@ -1,2 +1,4 @@
-from .router import api
-import freenit.api.user
+__all__ = ["api", "user", "role"]
+
+from freenit.api import role, user
+from freenit.api.router import api
