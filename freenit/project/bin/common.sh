@@ -7,12 +7,12 @@ export PROJECT_ROOT="${BIN_DIR}/.."
 export VIRTUALENV=${VIRTUALENV:="${app_name}"}
 export FREENIT_ENV=${FREENIT_ENV:="prod"}
 export SYSPKG=${SYSPKG:="no"}
+export OFFLINE=${OFFLINE:="no"}
 
 
 setup() {
   cd ${PROJECT_ROOT}
   if [ "${SYSPKG}" != "YES" ]; then
-    update=${1}
     if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
         python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"
     fi
@@ -22,7 +22,7 @@ setup() {
     if [ "${FREENIT_ENV}" = "prod" ]; then
       INSTALL_TARGET="."
     fi
-    if [ "${update}" != "no" ]; then
+    if [ "${OFFLINE}" = "no" ]; then
       pip install -U pip
       pip install -U wheel
       pip install -U --upgrade-strategy eager -e "${INSTALL_TARGET}"

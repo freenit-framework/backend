@@ -91,8 +91,8 @@ class BaseConfig:
     theme_name = "Freenit"
     meta = None
     auth = Auth()
-    mail = Mail()
-    ldap = LDAP()
+    mail = None
+    ldap = None
 
     def __init__(self):
         self.database = databases.Database(self.dburl)
@@ -119,15 +119,14 @@ class DevConfig(BaseConfig):
     debug = True
     dburl = "sqlite:///db.sqlite"
     auth = Auth(secure=False)
-    mail = None
 
 
 class TestConfig(BaseConfig):
     debug = True
     dburl = "sqlite:///test.sqlite"
     auth = Auth(secure=False)
-    mail = None
 
 
 class ProdConfig(BaseConfig):
     secret = "MORESECURESECRET"  # nosec
+    mail = Mail()

@@ -31,8 +31,7 @@ classifiers = [
   beanie = ["beanie"]
   dev = [
     "aiosqlite",
-    "black",
-    "isort",
+    "ruff",
     "uvicorn",
   ]
   build = ["twine"]
@@ -44,31 +43,26 @@ classifiers = [
   test = [
     "aiosqlite",
     "bandit",
-    "black",
     "httpx",
-    "isort",
     "pytest-asyncio",
     "pytest-factoryboy",
     "requests",
+    "ruff",
   ]
   all = [
-    "beanie",
     "aiosqlite",
-    "black",
-    "isort",
-    "uvicorn",
-    "bonsai",
     "alembic",
-    "ormar",
-    "aiosqlite",
     "bandit",
-    "black",
+    "beanie",
+    "bonsai",
     "httpx",
-    "isort",
+    "ormar",
     "pytest-asyncio",
     "pytest-factoryboy",
     "requests",
+    "ruff",
     "twine",
+    "uvicorn",
   ]
 
 [project.urls]

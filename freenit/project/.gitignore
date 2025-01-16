@@ -11,6 +11,7 @@ site.retry
 project.mk
 vars.mk
 
+.ruff_cache
 __pycache__
 *.sqlite
 *.egg-info
