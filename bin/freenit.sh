@@ -132,7 +132,6 @@ ansible/site.yml
 !ansible/roles/.keep
 !ansible/roles/devel
 
-alembic/versions/*
 build
 cbsd.conf
 coverage.xml
@@ -148,7 +147,6 @@ dist/
 *.sqlite
 EOF
 
-  echo "Success! Please edit setup.py!"
   cd ..
 }
 
