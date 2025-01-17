@@ -1,4 +1,3 @@
-import json
 import socket
 
 from fastapi.testclient import TestClient
@@ -10,7 +9,7 @@ class Client(TestClient):
 
     def get(self, endpoint):
         url = self.url_for(endpoint)
-        return super().get(url, cookies=self.cookies)
+        return super().get(url)
 
     def post(self, endpoint, data=None):
         url = self.url_for(endpoint)
@@ -18,24 +17,23 @@ class Client(TestClient):
             url,
             json=data,
             headers=self.headers,
-            cookies=self.cookies,
         )
 
         return response
 
     def put(self, endpoint, data=None):
         url = self.url_for(endpoint)
-        response = super().put(url, json=data, cookies=self.cookies)
+        response = super().put(url, json=data)
         return response
 
     def patch(self, endpoint, data=None):
         url = self.url_for(endpoint)
-        response = super().patch(url, json=data, cookies=self.cookies)
+        response = super().patch(url, json=data)
         return response
 
     def delete(self, endpoint):
         url = self.url_for(endpoint)
-        return super().delete(url, cookies=self.cookies)
+        return super().delete(url)
 
     def login(self, user, endpoint="/auth/login"):
         data = {
@@ -43,5 +41,5 @@ class Client(TestClient):
             "password": "Sekrit",
         }
         response = self.post(endpoint, data)
-        setattr(self, "cookies", response.cookies)
+        self.cookies = response.cookies
         return response

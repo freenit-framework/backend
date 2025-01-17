@@ -1,4 +1,3 @@
-import json
 import socket
 
 from fastapi.testclient import TestClient
