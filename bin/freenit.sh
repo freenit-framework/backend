@@ -458,7 +458,7 @@ EOF
   import { goto } from '\$app/navigation'
   import store from '\$lib/store'
 
-  const { data: props } = $props()
+  const { data: props } = \$props()
 
   onMount(async () => {
     const response = await store.auth.verify(props.token)
@@ -483,6 +483,19 @@ EOF
     height: 100%;
   }
 </style>
+EOF
+  mkdir -p src/lib/store
+  cat >'src/lib/store/index.ts' <<EOF
+import { BaseStore } from '@freenit-framework/core'
+
+class Store extends BaseStore {
+  constructor(prefix='/api/v1') {
+    super(prefix)
+  }
+}
+
+const store = new Store()
+export default store
 EOF
 
   npm run format
