@@ -387,14 +387,21 @@ EOF
 <script>
   import './styles.css'
   import 'chota'
-  import { create_store } from '@freenit-framework/core'
   import { SvelteToast } from '@zerodevx/svelte-toast'
+  import { onMount } from 'svelte'
+  import store from '\$lib/store'
 
   const options = {}
+  let { children } = \$props()
 
-  // First invocation of this function creates store, next invocations return
-  // existing one, so only first invocation takes "prefix" argument into account
-  create_store('/api/v1')
+  onMount(async () => {
+    const data = await store.auth.refresh_token()
+    if (data && data.ok) {
+      loggedin = Boolean(store.user.profile.id)
+    } else {
+      loggedin = false
+    }
+  })
 </script>
 
 <svelte:head>
@@ -404,7 +411,7 @@ EOF
 
 <SvelteToast {options} />
 <div class="main">
-  <slot />
+  {@render children?.()}
 </div>
 
 <style>
@@ -421,30 +428,40 @@ EOF
   cat >src/routes/login/+page.svelte <<EOF
 <script lang="ts">
   import { Login } from '@freenit-framework/core'
+  import store from '\$lib/store'
 </script>
 
-<Login />
+<Login store={store} />
 EOF
 
   mkdir src/routes/register
   cat >src/routes/register/+page.svelte <<EOF
 <script lang="ts">
   import { Register } from '@freenit-framework/core'
+  import store from '\$lib/store'
 </script>
 
-<Register />
+<Register store={store} />
 EOF
 
   mkdir -p 'src/routes/verify/[token]'
+  cat >'src/routes/verify/[token]/+page.js' <<EOF
+export const load = ({ params }) => {
+  return {
+    token: params.token
+  }
+}
+EOF
   cat >'src/routes/verify/[token]/+page.svelte' <<EOF
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { page } from '\$app/stores'
   import { goto } from '\$app/navigation'
-  import { store } from '@freenit-framework/core'
+  import store from '\$lib/store'
+
+  const { data: props } = $props()
 
   onMount(async () => {
-    const response = await store.auth.verify(\$page.params.token)
+    const response = await store.auth.verify(props.token)
     if (response.ok) {
       goto('/login')
     }
