@@ -394,14 +394,7 @@ EOF
   const options = {}
   let { children } = \$props()
 
-  onMount(async () => {
-    const data = await store.auth.refresh_token()
-    if (data && data.ok) {
-      loggedin = Boolean(store.user.profile.id)
-    } else {
-      loggedin = false
-    }
-  })
+  onMount(async () => { const data = await store.auth.refresh_token() })
 </script>
 
 <svelte:head>
