@@ -148,7 +148,7 @@ dist/
 *.sqlite
 EOF
 
-  echo "Success! Please edit setup.py!"
+  echo "Success!"
   cd ..
 }
 
