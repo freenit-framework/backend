@@ -390,27 +390,41 @@ EOF
   import { SvelteToast } from '@zerodevx/svelte-toast'
   import { onMount } from 'svelte'
   import store from '\$lib/store'
+  import { LeftPane, MenuBar } from '@freenit-framework/core'
 
   const options = {}
+  let open = \$state(false)
   let { children } = \$props()
 
-  onMount(async () => { const data = await store.auth.refresh_token() })
+  const toggle = () => {
+    open = !open
+  }
+
+  onMount(async () => { await store.auth.refresh_token() })
 </script>
 
 <svelte:head>
-  <title>Freenit App</title>
-  <meta name="Freenit" content="Freenit for Svelte" />
+  <title>${NAME}</title>
+  <meta name="${NAME}" content="${NAME}" />
 </svelte:head>
 
 <SvelteToast {options} />
-<div class="main">
-  {@render children?.()}
-</div>
+<MenuBar {toggle} title="${NAME}" />
+<LeftPane {open} {toggle} />
+<section class="root">
+  <div class="main">
+    {@render children?.()}
+  </div>
+</section>
 
 <style>
-  .main {
+  .root {
     height: 100vh;
-    width: 100vw;
+  }
+
+  .main {
+    height: 100%;
+    width: 100%;
   }
 </style>
 EOF
