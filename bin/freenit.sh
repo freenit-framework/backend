@@ -351,7 +351,7 @@ EOF
   npm install --save-dev @zerodevx/svelte-toast @freenit-framework/core @sveltejs/adapter-node @mdi/js
 
   rm -rf src/lib
-  rm -rf src/routes/about src/routes/sverdle src/routes/*.svelte
+  rm -rf src/routes/about src/routes/sverdle src/routes/*.svelte src/app.css
 
   cat >src/routes/styles.css<<EOF
 :root {
@@ -384,20 +384,25 @@ body {
 EOF
 
   cat >src/routes/+layout.svelte<<EOF
-<script>
+<script lang="ts">
   import './styles.css'
   import 'chota'
-  import { SvelteToast } from '@zerodevx/svelte-toast'
   import { onMount } from 'svelte'
+  import { SvelteToast } from '@zerodevx/svelte-toast'
+  import { LeftPane, MenuItems, MenuBar } from '@freenit-framework/core'
   import store from '\$lib/store'
-  import { LeftPane, MenuBar } from '@freenit-framework/core'
 
   const options = {}
-  let open = \$state(false)
   let { children } = \$props()
+  let open = \$state(false)
 
   const toggle = () => {
     open = !open
+  }
+
+  const logout = async () => {
+    open = !open
+    await store.auth.logout()
   }
 
   onMount(async () => { await store.auth.refresh_token() })
@@ -409,8 +414,11 @@ EOF
 </svelte:head>
 
 <SvelteToast {options} />
+<LeftPane {open} {toggle}>
+  <MenuItems {toggle} {logout} {store} />
+</LeftPane>
+
 <MenuBar {toggle} title="${NAME}" />
-<LeftPane {open} {toggle} />
 <section class="root">
   <div class="main">
     {@render children?.()}
@@ -429,7 +437,12 @@ EOF
 </style>
 EOF
 
-  echo '<div class="root">Landing Page in src/routes/+page.svelte</div>' >src/routes/+page.svelte
+  cat >src/routes/+page.svelte <<EOF
+<div class="root">
+  <div>Landing page is in src/routes/+page.svelte</div>
+  <div>Menu and layout are in src/routes/+layout.svelte</div>
+</div>
+EOF
 
   mkdir src/routes/login
   cat >src/routes/login/+page.svelte <<EOF
@@ -452,7 +465,7 @@ EOF
 EOF
 
   mkdir -p 'src/routes/verify/[token]'
-  cat >'src/routes/verify/[token]/+page.js' <<EOF
+  cat >'src/routes/verify/[token]/+page.ts' <<EOF
 export const load = ({ params }) => {
   return {
     token: params.token
@@ -491,6 +504,71 @@ EOF
   }
 </style>
 EOF
+
+  mkdir -p 'src/routes/users/[pk]'
+  cat >'src/routes/users/[pk]/+page.ts' <<EOF
+export const load = ({ params }) => {
+  return {
+    pk: params.pk
+  }
+}
+EOF
+  cat >'src/routes/users/[pk]/+page.svelte' <<EOF
+<script lang="ts">
+  import { User } from '@freenit-framework/core'
+  import store from '\$lib/store'
+
+  const { data: props } = \$props()
+</script>
+
+<User pk={props.pk} store={store} />
+EOF
+  cat >'src/routes/users/+page.svelte' <<EOF
+<script lang="ts">
+  import { Users } from '@freenit-framework/core'
+  import store from '\$lib/store'
+</script>
+
+<Users store={store} />
+EOF
+
+  mkdir -p 'src/routes/roles/[pk]'
+  cat >'src/routes/roles/[pk]/+page.ts' <<EOF
+export const load = ({ params }) => {
+  return {
+    pk: params.pk
+  }
+}
+EOF
+  cat >'src/routes/roles/[pk]/+page.svelte' <<EOF
+<script lang="ts">
+  import { Role } from '@freenit-framework/core'
+  import store from '\$lib/store'
+
+  const { data: props } = \$props()
+</script>
+
+<Role pk={props.pk} store={store} />
+EOF
+  cat >'src/routes/roles/+page.svelte' <<EOF
+<script lang="ts">
+  import { Roles } from '@freenit-framework/core'
+  import store from '\$lib/store'
+</script>
+
+<Roles store={store} />
+EOF
+
+  mkdir -p 'src/routes/profile'
+  cat >'src/routes/profile/+page.svelte' <<EOF
+<script lang="ts">
+  import { Profile } from '@freenit-framework/core'
+  import store from '\$lib/store'
+</script>
+
+<Profile store={store} />
+EOF
+
   mkdir -p src/lib/store
   cat >'src/lib/store/index.ts' <<EOF
 import { BaseStore } from '@freenit-framework/core'
