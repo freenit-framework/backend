@@ -20,7 +20,7 @@ async def decode(token):
         import ormar.exceptions
 
         try:
-            user = await User.objects.get(pk=pk)
+            user = await User.objects.select_related("roles").get(pk=pk)
             return user
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=403, detail="Unauthorized")
@@ -46,7 +46,6 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
         raise HTTPException(status_code=403, detail="Unauthorized")
     user = await decode(token)
     if user.dbtype() == "sql":
-        await user.load_all()
         if not user.active:
             raise HTTPException(status_code=403, detail="Permission denied")
         if user.admin:

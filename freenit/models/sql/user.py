@@ -16,12 +16,16 @@ from freenit.models.role import Role
 
 class BaseUser(OrmarBaseModel, OrmarUserMixin):
     def check(self, password: str) -> bool:
+        if self.password is None:
+            return False
         return verify(password, self.password)
 
     @classmethod
     async def login(cls, credentials) -> BaseUser:
         try:
-            user = await cls.objects.get(email=credentials.email, active=True)
+            user = await cls.objects.select_related("roles").get(
+                email=credentials.email, active=True
+            )
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=403, detail="Failed to login")
         if user.check(credentials.password):
