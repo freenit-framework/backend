@@ -7,7 +7,6 @@ from freenit.auth import encrypt
 from freenit.config import getConfig
 from freenit.decorators import description
 from freenit.models.pagination import Page, paginate
-from freenit.models.safe import UserSafe
 from freenit.models.user import User, UserOptional
 from freenit.permissions import profile_perms, user_perms
 
@@ -24,23 +23,30 @@ class UserListAPI:
         page: int = Header(default=1),
         perpage: int = Header(default=10),
         _: User = Depends(user_perms),
-    ) -> Page[UserSafe]:
-        return await paginate(User.objects, page, perpage)
+    ) -> Page[User]:
+        return await paginate(
+            User.objects.select_related("roles").exclude_fields("password"),
+            page,
+            perpage,
+        )
 
 
 @route("/users/{id}", tags=tags)
 class UserDetailAPI:
     @staticmethod
-    async def get(id, _: User = Depends(user_perms)) -> UserSafe:
+    async def get(id, _: User = Depends(user_perms)) -> User:
         try:
-            user = await User.objects.get(pk=id)
+            user = (
+                await User.objects.select_related("roles")
+                .exclude_fields("password")
+                .get(pk=id)
+            )
         except ormar.exceptions.NoMatch:
             raise HTTPException(status_code=404, detail="No such user")
-        await user.load_all(follow=True)
         return user
 
     @staticmethod
-    async def patch(id, data: UserOptional, _: User = Depends(user_perms)) -> UserSafe:
+    async def patch(id, data: UserOptional, _: User = Depends(user_perms)) -> User:
         if data.password:
             data.password = encrypt(data.password)
         try:
@@ -51,7 +57,7 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def delete(id, _: User = Depends(user_perms)) -> UserSafe:
+    async def delete(id, _: User = Depends(user_perms)) -> User:
         try:
             user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -64,7 +70,7 @@ class UserDetailAPI:
 class ProfileDetailAPI:
     @staticmethod
     @description("Get my profile")
-    async def get(user: User = Depends(profile_perms)) -> UserSafe:
+    async def get(user: User = Depends(profile_perms)) -> User:
         await user.load_all()
         return user
 
@@ -72,7 +78,7 @@ class ProfileDetailAPI:
     @description("Edit my profile")
     async def patch(
         data: UserOptional, user: User = Depends(profile_perms)
-    ) -> UserSafe:
+    ) -> User:
         if data.password:
             data.password = encrypt(data.password)
         await user.patch(data)

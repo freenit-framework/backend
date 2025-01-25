@@ -7,7 +7,6 @@ from freenit.api.router import api
 from freenit.auth import authorize, decode, encode, encrypt
 from freenit.config import getConfig
 from freenit.mail import sendmail
-from freenit.models.safe import UserSafe
 from freenit.models.user import User
 
 config = getConfig()
@@ -24,7 +23,7 @@ class TokenExpire(pydantic.BaseModel):
 
 
 class LoginResponse(pydantic.BaseModel):
-    user: UserSafe
+    user: User
     expire: TokenExpire
 
 
@@ -49,6 +48,7 @@ async def login(credentials: LoginInput, response: Response):
         httponly=True,
         secure=config.auth.secure,
     )
+    user.password = None
     return {
         "user": user,
         "expire": {
@@ -78,6 +78,7 @@ async def register_sql(credentials: LoginInput) -> User:
         active=False,
     )
     await user.save()
+    user.password = None
     return user
 
 
@@ -105,7 +106,7 @@ async def register(credentials: LoginInput, host=Header(default="")):
     return {"status": True}
 
 
-@api.post("/auth/verify", response_model=UserSafe, tags=["auth"])
+@api.post("/auth/verify", response_model=User, tags=["auth"])
 async def verify(verification: Verification):
     user = await decode(verification.verification)
     await user.update(active=True)
@@ -117,6 +118,7 @@ async def refresh(request: Request, response: Response):
     user = await authorize(request, cookie="refresh")
     access = encode(user)
     response.set_cookie("access", access, httponly=True, secure=config.auth.secure)
+    user.password = None
     return {
         "user": user,
         "expire": {
