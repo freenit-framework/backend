@@ -33,5 +33,5 @@ setup() {
     mkdir alembic/versions
     alembic revision --autogenerate -m initial
   fi
-  alembic upgrade head
+  python migrate.py
 }
