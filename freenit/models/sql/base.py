@@ -47,4 +47,4 @@ def make_optional(OptionalModel):
 
 
 class BaseRole(OrmarBaseModel, OrmarRoleMixin):
-    ormar_config = ormar_config.copy()
+    ormar_config = ormar_config.copy(abstract=True)
