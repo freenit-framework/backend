@@ -5,7 +5,7 @@ import ormar.exceptions
 from fastapi import HTTPException
 
 from freenit.auth import verify
-from freenit.models.sql.base import (
+from .base import (
     OrmarBaseModel,
     OrmarUserMixin,
     make_optional,
