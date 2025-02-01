@@ -4,7 +4,7 @@ class Role(BaseRole):
     ormar_config = ormar_config.copy()
 
 
-class RoleOptional(BaseRole):
+class RoleOptional(BaseRole.get_pydantic()):
     pass
 
 
