@@ -23,7 +23,7 @@ class OrmarBaseModel(ormar.Model):
 class OrmarUserMixin:
     id: int = ormar.Integer(primary_key=True)
     email: pydantic.EmailStr = ormar.Text(unique=True)
-    password: str = ormar.Text(nullable=True)
+    password: str = ormar.Text()
     fullname: str = ormar.Text(nullable=True)
     active: bool = ormar.Boolean(default=False)
     admin: bool = ormar.Boolean(default=False)
@@ -31,7 +31,7 @@ class OrmarUserMixin:
 
 class OrmarRoleMixin:
     id: int = ormar.Integer(primary_key=True)
-    name: str = ormar.Text(unique=True)
+    name: str = ormar.Text(unique=True, index=True)
 
 
 ormar_config = ormar.OrmarConfig(
@@ -44,3 +44,7 @@ ormar_config = ormar.OrmarConfig(
 def make_optional(OptionalModel):
     for field_name in OptionalModel.model_fields:
         OptionalModel.model_fields[field_name].default = None
+
+
+class BaseRole(OrmarBaseModel, OrmarRoleMixin):
+    ormar_config = ormar_config.copy()

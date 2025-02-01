@@ -1,11 +1,10 @@
-from .base import OrmarBaseModel, OrmarRoleMixin, make_optional, ormar_config
+from .base import BaseRole, ormar_config, make_optional
 
-
-class Role(OrmarBaseModel, OrmarRoleMixin):
+class Role(BaseRole):
     ormar_config = ormar_config.copy()
 
 
-class RoleOptional(Role):
+class RoleOptional(BaseRole):
     pass
 
 
