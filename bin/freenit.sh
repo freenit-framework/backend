@@ -418,8 +418,8 @@ EOF
   <MenuItems {toggle} {logout} {store} />
 </LeftPane>
 
-<MenuBar {toggle} title="${NAME}" />
 <section class="root">
+  <MenuBar {toggle} title="${NAME}" />
   <div class="main">
     {@render children?.()}
   </div>
@@ -427,7 +427,9 @@ EOF
 
 <style>
   .root {
-    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
   }
 
   .main {
