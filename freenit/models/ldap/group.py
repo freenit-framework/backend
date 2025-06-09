@@ -8,113 +8,115 @@ from freenit.models.ldap.base import LDAPBaseModel, get_client, save_data, class
 config = getConfig()
 
 
-class Role(LDAPBaseModel):
+class Group(LDAPBaseModel):
     cn: str = Field("", description=("Common name"))
-    users: list = Field([], description=("Role members"))
+    users: list = Field([], description=("Group members"))
 
     @classmethod
     def from_entry(cls, entry):
-        return cls(
+        group = cls(
             cn=entry["cn"][0],
             dn=str(entry["dn"]),
-            users=entry[config.ldap.roleMemberAttr],
+            users=entry["memberUid"],
         )
-
-
-    @classmethod
-    def create(cls, name):
-        dn=config.ldap.roleDN.format(name)
-        return Role(dn=dn, cn=name, users=[])
+        return group
 
     @classmethod
-    async def get(cls, name):
-        classes = class2filter(config.ldap.roleClasses)
+    def create(cls, name, domain):
+        group = Group(dn=config.ldap.groupDn.format(name, domain), cn=name, users=[])
+        return group
+
+    @classmethod
+    async def get(cls, name, domain):
+        classes = class2filter(config.ldap.groupClasses)
         client = get_client()
-        dn=config.ldap.roleDN.format(name)
         try:
             async with client.connect(is_async=True) as conn:
+                dn = config.ldap.groupDN.format(name, domain)
                 res = await conn.search(dn, LDAPSearchScope.SUB, f"(|{classes})")
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
         if len(res) < 1:
-            raise HTTPException(status_code=404, detail="No such role")
+            raise HTTPException(status_code=404, detail="No such group")
         if len(res) > 1:
-            raise HTTPException(status_code=409, detail="Multiple roles found")
-        return cls.from_entry(res[0])
+            raise HTTPException(status_code=409, detail="Multiple groups found")
+        data = res[0]
+        group = cls.from_entry(data)
+        return group
 
     @classmethod
-    async def get_all(cls):
-        classes = class2filter(config.ldap.roleClasses)
+    async def get_all(cls, domain):
+        classes = class2filter(config.ldap.groupClasses)
         client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
-                res = await conn.search(
-                    config.ldap.roleBase,
-                    LDAPSearchScope.SUB,
-                    f"(|{classes})",
-                )
+                dn = config.ldap.groupBase.format(domain)
+                res = await conn.search(dn, LDAPSearchScope.SUB, f"(|{classes})")
                 data = []
                 for gdata in res:
-                    role = cls.from_entry(gdata)
-                    data.append(role)
+                    data.append(cls.from_entry(gdata))
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
         return data
 
-    async def save(self, user):
+    async def save(self):
         data = LDAPEntry(self.dn)
-        data["objectClass"] = config.ldap.roleClasses
-        data[config.ldap.roleMemberAttr] = user.dn
+        data["objectClass"] = config.ldap.groupClasses
+        data["gidNumber"] = 0
         await save_data(data)
-        self.users = [user.dn]
+
+    async def destroy(self):
+        client = get_client()
+        try:
+            async with client.connect(is_async=True) as conn:
+                await conn.delete(self.dn)
+        except errors.AuthenticationError:
+            raise HTTPException(status_code=403, detail="Failed to login")
 
     async def add(self, user):
-        classes = class2filter(config.ldap.roleClasses)
+        classes = class2filter(config.ldap.groupClasses)
         client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
                 res = await conn.search(self.dn, LDAPSearchScope.BASE, f"(|{classes})")
                 if len(res) < 1:
-                    raise HTTPException(status_code=404, detail="No such role")
+                    raise HTTPException(status_code=404, detail="No such group")
                 if len(res) > 1:
-                    raise HTTPException(status_code=409, detail="Multiple roles found")
+                    raise HTTPException(status_code=409, detail="Multiple groups found")
                 data = res[0]
                 try:
-                    data[config.ldap.roleMemberAttr].append(user.dn)
+                    data["memberUid"].append(user.uidNumber)
                 except ValueError:
                     raise HTTPException(
-                        status_code=409, detail="User is already member of the role"
+                        status_code=409, detail="User is already member of the group"
                     )
                 await data.modify()
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
-        self.users.append(user.dn)
+        self.users.append(user.uidNumber)
 
     async def remove(self, user):
-        classes = class2filter(config.ldap.roleClasses)
+        classes = class2filter(config.ldap.groupClasses)
         client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
                 res = await conn.search(self.dn, LDAPSearchScope.BASE, f"(|{classes})")
                 if len(res) < 1:
-                    raise HTTPException(status_code=404, detail="No such role")
+                    raise HTTPException(status_code=404, detail="No such group")
                 if len(res) > 1:
-                    raise HTTPException(status_code=409, detail="Multiple roles found")
+                    raise HTTPException(status_code=409, detail="Multiple groups found")
                 data = res[0]
                 try:
-                    data[config.ldap.roleMemberAttr].remove(user.dn)
+                    data["memberUid"].remove(user.uidNumber)
                 except ValueError:
                     raise HTTPException(
-                        status_code=409, detail="User is not member of the role"
+                        status_code=409, detail="User is not member of the group"
                     )
                 await data.modify()
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
-        self.users.remove(user.dn)
+        self.users.remove(user.uidNumber)
 
 
-class RoleCreate(BaseModel):
+class GroupCreate(BaseModel):
     name: str = Field(description=("Common name"))
-
-
-RoleOptional = Role

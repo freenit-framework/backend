@@ -102,7 +102,7 @@ async def register(credentials: LoginInput, host=Header(default="")):
         msg["From"] = mail.from_addr
         msg["Subject"] = mail.register_subject
         sendmail(user.email, msg)
-    return {"status": True}
+    return user
 
 
 @api.post("/auth/verify", response_model=UserSafe, tags=["auth"])

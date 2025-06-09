@@ -58,19 +58,46 @@ class LDAP:
         self,
         host="ldap.example.com",
         tls=True,
-        base="uid={},ou={},dc=account,dc=ldap",
         service_dn="cn=freenit,dc=service,dc=ldap",
         service_pw="",
+        roleDN="cn={}",
+        roleBase="dc=group,dc=ldap",
+        roleClasses=["groupOfUniqueNames"],
+        roleMemberAttr="uniqueMember",
+        groupBase="ou={},dc=group,dc=ldap",
+        groupDN="cn={}",
+        groupClasses=["posixGroup"],
+        userBase="dc=account,dc=ldap",
+        userDN="uid={},ou={}",
         userClasses=["pilotPerson", "posixAccount"],
-        groupClasses=["groupOfUniqueNames"],
+        userMemberAttr="memberOf",
+        uidNextClass="uidNext",
+        uidNextDN="cn=uidnext,dc=ldap",
+        uidNextField="uidNumber",
+        gidNextClass="gidNext",
+        gidNextDN="cn=gidnext,dc=ldap",
+        gidNextField="gidNumber",
     ):
         self.host = host
         self.tls = tls
-        self.base = base
         self.service_dn = service_dn
         self.service_pw = service_pw
-        self.userClasses = userClasses
+        self.roleBase = roleBase
+        self.roleClasses = roleClasses
+        self.roleDN = f"{roleDN},{roleBase}"
+        self.roleMemberAttr = roleMemberAttr
         self.groupClasses = groupClasses
+        self.groupDN = f"{groupDN},{groupBase}"
+        self.userBase = userBase
+        self.userDN = f"{userDN},{userBase}"
+        self.userClasses = userClasses
+        self.userMemberAttr = userMemberAttr
+        self.uidNextClass = uidNextClass
+        self.uidNextDN = uidNextDN
+        self.uidNextField = uidNextField
+        self.gidNextClass = gidNextClass
+        self.gidNextDN = gidNextDN
+        self.gidNextField = gidNextField
 
 
 class BaseConfig:

@@ -1,13 +1,20 @@
 from typing import List
-
 from freenit.config import getConfig
 
 config = getConfig()
+auth = config.get_model("user")
 
 
-class UserSafe(config.get_model("user").User.get_pydantic(exclude={"password"})):
+if auth.User.dbtype() == 'sql':
+    UserBase = auth.User.get_pydantic(exclude={"password"})
+    RoleBase = config.get_model("role").BaseRole
+elif auth.User.dbtype() == 'ldap':
+    UserBase = auth.UserSafe
+    RoleBase = config.get_model("role").Role
+
+
+class UserSafe(UserBase):
     pass
 
-
-class RoleSafe(config.get_model("role").BaseRole):
-    users: List[UserSafe]
+class RoleSafe(RoleBase):
+    users: List[str]
