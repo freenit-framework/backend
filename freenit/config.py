@@ -2,16 +2,22 @@ import os
 
 try:
     from .local_config import DevConfig
+except ModuleNotFoundError:
+    from .base_config import DevConfig
 except ImportError:
     from .base_config import DevConfig
 
 try:
     from .local_config import TestConfig
+except ModuleNotFoundError:
+    from .base_config import TestConfig
 except ImportError:
     from .base_config import TestConfig
 
 try:
     from .local_config import ProdConfig
+except ModuleNotFoundError:
+    from .base_config import ProdConfig
 except ImportError:
     from .base_config import ProdConfig
 
