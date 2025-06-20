@@ -43,7 +43,7 @@ classifiers = [
   ldap = ["bonsai"]
   sql = [
     "alembic",
-    "sql",
+    "ormar",
   ]
   test = [
     "aiosqlite",
