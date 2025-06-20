@@ -11,7 +11,7 @@ license = {file = "LICENSE"}
 requires-python = ">=3.8"
 dependencies = [
   "aiosqlite",
-  "freenit[ormar]",
+  "freenit[sql]",
 ]
 authors = [
   {name = "John Doe", email = "john@doe.com"},
@@ -25,10 +25,10 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-  beanie = ["freenit[beanie]"]
+  mongo = ["freenit[mongo]"]
   dev = ["freenit[dev]"]
   ldap = ["freenit[ldap]"]
-  ormar = ["freenit[ormar]"]
+  sql = ["freenit[sql]"]
   test = ["freenit[test]"]
 
 [project.urls]

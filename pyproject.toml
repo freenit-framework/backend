@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-  beanie = ["beanie"]
+  mongo = ["beanie"]
   dev = [
     "aiosqlite",
     "ruff",
@@ -41,9 +41,9 @@ classifiers = [
   ]
   build = ["twine"]
   ldap = ["bonsai"]
-  ormar = [
+  sql = [
     "alembic",
-    "ormar",
+    "sql",
   ]
   test = [
     "aiosqlite",

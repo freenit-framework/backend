@@ -8,7 +8,7 @@ export VIRTUALENV=${VIRTUALENV:="${app_name}"}
 export FREENIT_ENV=${FREENIT_ENV:="prod"}
 export SYSPKG=${SYSPKG:="no"}
 export SYSPKG=`echo ${SYSPKG} | tr '[:lower:]' '[:upper:]'`
-export DB_TYPE=${DB_TYPE:="ormar"}
+export DB_TYPE=${DB_TYPE:="sql"}
 export PIP_INSTALL="pip install -U --upgrade-strategy eager"
 export OFFLINE=${OFFLINE:="no"}
 
@@ -27,7 +27,7 @@ setup() {
     fi
   fi
 
-  if [ "${DB_TYPE}" = "ormar" ]; then
+  if [ "${DB_TYPE}" = "sql" ]; then
     if [ ! -e "alembic/versions" ]; then
       mkdir alembic/versions
       alembic revision --autogenerate -m initial
