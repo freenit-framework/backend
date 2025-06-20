@@ -34,9 +34,9 @@ def encode(user):
     config = getConfig()
     payload = {}
     if user.dbtype() == "sql":
-        payload = {"pk": user.pk, "type": "ormar"}
+        payload = {"pk": user.pk, "type": "sql"}
     elif user.dbtype() == "ldap":
-        payload = {"pk": user.dn, "type": "bonsai"}
+        payload = {"pk": user.dn, "type": "ldap"}
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 

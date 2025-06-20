@@ -1,10 +1,9 @@
-import bonsai
+from bonsai import errors
 from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
 from freenit.config import getConfig
 from freenit.decorators import description
-from freenit.models.ldap.base import get_client
 from freenit.models.pagination import Page
 from freenit.models.safe import UserSafe
 from freenit.models.user import User, UserOptional
@@ -26,15 +25,15 @@ class UserListAPI:
     ) -> Page[UserSafe]:
         users = await User.get_all()
         total = len(users)
-        page = Page(total=total, page=1, pages=1, perpage=total, data=users)
-        return page
+        data = Page(total=total, page=1, pages=1, perpage=total, data=users)
+        return data
 
 
 @route("/users/{id}", tags=tags)
 class UserDetailAPI:
     @staticmethod
     async def get(id, _: User = Depends(user_perms)) -> UserSafe:
-        user = await User.get(id)
+        user = await User.get_by_uid(id)
         return user
 
     @staticmethod
@@ -50,29 +49,12 @@ class UserDetailAPI:
 
     @staticmethod
     async def delete(id, _: User = Depends(user_perms)) -> UserSafe:
-        client = get_client()
         try:
-            async with client.connect(is_async=True) as conn:
-                res = await conn.search(
-                    id, bonsai.LDAPSearchScope.SUB, "objectClass=person"
-                )
-                if len(res) < 1:
-                    raise HTTPException(status_code=404, detail="No such user")
-                if len(res) > 1:
-                    raise HTTPException(status_code=409, detail="Multiple users found")
-                existing = res[0]
-                user = User(
-                    email=existing["mail"][0],
-                    sn=existing["sn"][0],
-                    cn=existing["cn"][0],
-                    dn=str(existing["dn"]),
-                    uid=existing["uid"][0],
-                    userClass=existing["userClass"][0],
-                )
-                await existing.delete()
-                return user
-        except bonsai.errors.AuthenticationError:
+            user = await User.get_by_uid(id)
+            await user.destroy()
+        except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
+        return user
 
 
 @route("/profile", tags=["profile"])

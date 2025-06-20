@@ -2,15 +2,17 @@ import bonsai
 from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
+from freenit.config import getConfig
 from freenit.decorators import description
-from freenit.models.ldap.base import get_client
+from freenit.models.ldap.role import RoleCreate
 from freenit.models.pagination import Page
 from freenit.models.role import Role
-from freenit.models.safe import RoleSafe, UserSafe
+from freenit.models.safe import RoleSafe
 from freenit.models.user import User
 from freenit.permissions import role_perms
 
 tags = ["role"]
+config = getConfig()
 
 
 @route("/roles", tags=tags)
@@ -19,68 +21,60 @@ class RoleListAPI:
     @description("Get roles")
     async def get(
         page: int = Header(default=1),
-        _: int = Header(default=10),
-        user: User = Depends(role_perms),
+        perpage: int = Header(default=10),
+        _: User = Depends(role_perms),
     ) -> Page[RoleSafe]:
         data = await Role.get_all()
-        total = len(data)
-        page = Page(total=total, page=1, pages=1, perpage=total, data=data)
-        return page
+        perpage = len(data)
+        data = Page(total=perpage, page=page, pages=1, perpage=perpage, data=data)
+        return data
 
     @staticmethod
-    async def post(role: Role, user: User = Depends(role_perms)) -> RoleSafe:
+    async def post(data: RoleCreate, user: User = Depends(role_perms)) -> RoleSafe:
+        if data.name == "":
+            raise HTTPException(status_code=409, detail="Name is mandatory")
+        role = Role.create(data.name)
         try:
-            await role.create(user)
+            await role.save(user)
         except bonsai.errors.AlreadyExists:
             raise HTTPException(status_code=409, detail="Role already exists")
         return role
 
 
-@route("/roles/{id}", tags=tags)
+@route("/roles/{name}", tags=tags)
 class RoleDetailAPI:
     @staticmethod
-    async def get(id, _: User = Depends(role_perms)) -> RoleSafe:
-        role = await Role.get(id)
+    async def get(name, _: User = Depends(role_perms)) -> RoleSafe:
+        role = await Role.get(name)
         return role
 
     @staticmethod
-    async def delete(id, _: User = Depends(role_perms)) -> RoleSafe:
-        client = get_client()
+    async def delete(name, _: User = Depends(role_perms)) -> RoleSafe:
         try:
-            async with client.connect(is_async=True) as conn:
-                res = await conn.search(
-                    id, bonsai.LDAPSearchScope.SUB, "objectClass=groupOfUniqueNames"
-                )
-                if len(res) < 1:
-                    raise HTTPException(status_code=404, detail="No such role")
-                if len(res) > 1:
-                    raise HTTPException(status_code=409, detail="Multiple role found")
-                existing = res[0]
-                role = Role(
-                    cn=existing["cn"][0],
-                    dn=str(existing["dn"]),
-                    users=existing["uniqueMember"],
-                )
-                await existing.delete()
-                return role
+            role = await Role.get(name)
+            await role.destroy()
+            return role
         except bonsai.errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
 
 
-@route("/roles/{role_id}/{user_id}", tags=tags)
+@route("/roles/{role_name}/{id}", tags=tags)
 class RoleUserAPI:
     @staticmethod
     @description("Assign user to role")
-    async def post(role_id, user_id, _: User = Depends(role_perms)) -> UserSafe:
-        user = await User.get(user_id)
-        role = await Role.get(role_id)
+    async def post(role_name, id, _: User = Depends(role_perms)) -> RoleSafe:
+        user = await User.get_by_uid(id)
+        role = await Role.get(role_name)
         await role.add(user)
-        return user
+        return role
 
     @staticmethod
-    @description("Deassign user to role")
-    async def delete(role_id, user_id, _: User = Depends(role_perms)) -> UserSafe:
-        user = await User.get(user_id)
-        role = await Role.get(role_id)
+    @description("Remove user from role")
+    async def delete(role_name, id, _: User = Depends(role_perms)) -> RoleSafe:
+        user = await User.get_by_uid(id)
+        role = await Role.get(role_name)
+        if len(role.users) == 1:
+            if role.users[0] == user.dn:
+                raise HTTPException(status_code=409, detail="Can not remove last member")
         await role.remove(user)
-        return user
+        return role
