@@ -8,8 +8,9 @@ alembic_cfg = Config("alembic.ini")
 
 
 def db_setup():
-    importlib.import_module(f"{app_name}.app")
+    app = importlib.import_module(f"{app_name}.app")
     command.upgrade(alembic_cfg, "head")
+    return app
 
 
 if __name__ == "__main__":
