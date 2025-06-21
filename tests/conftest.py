@@ -1,11 +1,9 @@
-import importlib
 import os
 
 import pytest
 
-from alembic import command
 from alembic.config import Config
-from name import app_name
+from migrate import db_setup as dbs
 
 from .client import Client
 
@@ -16,8 +14,7 @@ os.environ["FREENIT_ENV"] = "test"
 
 @pytest.fixture
 def db_setup():
-    app = importlib.import_module(f"{app_name}.app")
-    command.upgrade(alembic_cfg, "head")
+    app = dbs()
 
     yield app.app
 

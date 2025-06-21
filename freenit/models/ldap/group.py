@@ -50,7 +50,7 @@ class Group(LDAPBaseModel):
         client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
-                dn = config.ldap.groupBase.format(domain)
+                dn = config.ldap.roleBase.format(domain)
                 res = await conn.search(dn, LDAPSearchScope.SUB, f"(|{classes})")
                 data = []
                 for gdata in res:

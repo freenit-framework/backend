@@ -1,13 +1,14 @@
 import os
 import pathlib
 import subprocess
-
-from prompt_toolkit import prompt
+import sys
 
 
 def main():
+    if len(sys.argv) != 2:
+        raise ValueError(f"Usage: {sys.argv[0]}: <project name>")
+    project_name = sys.argv[1]
     path = pathlib.Path(__file__).parent.resolve()
-    project_name = prompt("Name of the project: ")
     executable = f"{path}/../bin/freenit.sh"
     if not os.path.exists(executable):
         executable = f"{path}/bin/freenit.sh"
