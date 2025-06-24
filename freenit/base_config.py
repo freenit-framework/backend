@@ -64,11 +64,10 @@ class LDAP:
         roleBase="dc=group,dc=ldap",
         roleClasses=["groupOfUniqueNames"],
         roleMemberAttr="uniqueMember",
-        groupBase="ou={},dc=group,dc=ldap",
         groupDN="cn={}",
         groupClasses=["posixGroup"],
         userBase="dc=account,dc=ldap",
-        userDN="uid={},ou={}",
+        userDN="uid={}",
         userClasses=["pilotPerson", "posixAccount"],
         userMemberAttr="memberOf",
         uidNextClass="uidNext",
@@ -77,6 +76,8 @@ class LDAP:
         gidNextClass="gidNext",
         gidNextDN="cn=gidnext,dc=ldap",
         gidNextField="gidNumber",
+        domainDN="ou={}",
+        domainClasses=["organizationalUnit", "pmiDelegationPath"],
     ):
         self.host = host
         self.tls = tls
@@ -87,9 +88,9 @@ class LDAP:
         self.roleDN = f"{roleDN},{roleBase}"
         self.roleMemberAttr = roleMemberAttr
         self.groupClasses = groupClasses
-        self.groupDN = f"{groupDN},{groupBase}"
+        self.groupDN = f"{groupDN},{domainDN},{roleBase}"
         self.userBase = userBase
-        self.userDN = f"{userDN},{userBase}"
+        self.userDN = f"{userDN},{domainDN},{userBase}"
         self.userClasses = userClasses
         self.userMemberAttr = userMemberAttr
         self.uidNextClass = uidNextClass
@@ -98,6 +99,8 @@ class LDAP:
         self.gidNextClass = gidNextClass
         self.gidNextDN = gidNextDN
         self.gidNextField = gidNextField
+        self.domainDN = domainDN
+        self.domainClasses = domainClasses
 
 
 class BaseConfig:
