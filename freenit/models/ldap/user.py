@@ -22,10 +22,13 @@ class UserSafe(LDAPBaseModel):
     email: EmailStr = Field("", description=("Email"))
     cn: str = Field("", description=("Common name"))
     sn: str = Field("", description=("Surname"))
-    userClass: str = Field("", description=("User class"))
+    userClass: list[str] = Field([], description=("User class"))
     roles: list = Field([], description=("Roles the user is a member of"))
-    uidNumber: int = Field(0, description=("UID"))
-    gidNumber: int = Field(0, description=("GID"))
+    groups: list = Field([], description=("Groups the user is a member of"))
+    uidNumber: int = Field(0, description=("User ID number"))
+    gidNumber: int = Field(0, description=("Group ID number"))
+    active: bool = Field(False, description=("Active user"))
+    admin: bool = Field(False, description=("Admin user"))
 
     @classmethod
     async def _login(cls, credentials) -> dict:
@@ -36,17 +39,37 @@ class UserSafe(LDAPBaseModel):
                 dn = config.ldap.userDN.format(username, domain)
                 res = await conn.search(dn, LDAPSearchScope.BASE, "objectClass=person")
         except errors.ConnectionError:
-            raise HTTPException(status_code=409, detail="Can not connect to LDAP server")
+            raise HTTPException(
+                status_code=409, detail="Can not connect to LDAP server"
+            )
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
         data = res[0]
         return data
 
+    async def _fill_groups(self):
+        _, domain = self.email.split('@')
+        classes = class2filter(config.ldap.groupClasses)
+        dn = f"{config.ldap.domainDN.format(domain)},{config.ldap.roleBase}"
+        client = get_client()
+        async with client.connect(is_async=True) as conn:
+            try:
+                res = await conn.search(
+                    dn,
+                    LDAPSearchScope.SUB,
+                    f"(&{classes}(memberUid={self.uidNumber}))",
+                )
+            except errors.AuthenticationError:
+                raise HTTPException(status_code=403, detail="Failed to login")
+        self.groups = [g["gidNumber"][0] for g in res]
+
     @classmethod
     async def login(cls, credentials):
         data = await cls._login(credentials)
         user = cls.from_entry(data)
-        return user
+        if user.active:
+            return user
+        raise HTTPException(status_code=403, detail="Failed to login")
 
     @classmethod
     async def register(cls, credentials):
@@ -61,32 +84,49 @@ class UserSafe(LDAPBaseModel):
         except errors.UnwillingToPerform:
             raise HTTPException(status_code=409, detail="Can not bind to LDAP")
         except errors.AuthenticationError:
-            raise HTTPException(status_code=409, detail="Can not bind to LDAP")
+            raise HTTPException(
+                status_code=409, detail="Can not login as service to LDAP"
+            )
         user = cls(
             dn=dn,
             cn="Common Name",
             sn="Surname",
             uid=username,
             email=credentials.email,
-            userClass="disabled",
+            userClass=[],
             uidNumber=65535,
             gidNumber=65535,
             roles=[],
+            groups=[],
+            active=False,
+            admin=False,
         )
         return user
 
     @classmethod
-    def from_entry(cls, entry) -> UserSafe:
+    def from_entry(cls, entry, groups=[]) -> UserSafe:
+        active = False
+        admin = False
+        userClass = entry.get("userClass", [])
+        if "active" in userClass:
+            userClass.remove("active")
+            active = True
+        if "admin" in userClass:
+            userClass.remove("admin")
+            admin = True
         user = cls(
             email=entry["mail"][0],
             sn=entry["sn"][0],
             cn=entry["cn"][0],
             dn=str(entry["dn"]),
             uid=entry["uid"][0],
-            userClass=entry["userClass"][0],
+            userClass=userClass,
             roles=entry.get("memberOf", []),
+            groups=groups,
             uidNumber=entry["uidNumber"][0],
             gidNumber=entry["gidNumber"][0],
+            active=active,
+            admin=admin,
         )
         return user
 
@@ -107,6 +147,7 @@ class UserSafe(LDAPBaseModel):
         data = []
         for udata in res:
             user = cls.from_entry(udata)
+            await user._fill_groups()
             data.append(user)
         return data
 
@@ -131,26 +172,28 @@ class UserSafe(LDAPBaseModel):
             raise HTTPException(status_code=409, detail="Multiple users found")
         data = res[0]
         user = cls.from_entry(data)
+        await user._fill_groups()
         return user
 
     @classmethod
     async def get_by_uid(cls, uid: int):
         client = get_client()
-        try:
-            async with client.connect(is_async=True) as conn:
+        async with client.connect(is_async=True) as conn:
+            try:
                 res = await conn.search(
                     config.ldap.userBase,
                     LDAPSearchScope.SUB,
                     f"(&(objectClass=person)(uidNumber={uid}))",
                     ["*", config.ldap.userMemberAttr],
                 )
-        except errors.AuthenticationError:
-            raise HTTPException(status_code=403, detail="Failed to login")
-        if len(res) < 1:
-            raise HTTPException(status_code=404, detail="No such user")
-        if len(res) > 1:
-            raise HTTPException(status_code=409, detail="Multiple users found")
+            except errors.AuthenticationError:
+                raise HTTPException(status_code=403, detail="Failed to login")
+            if len(res) < 1:
+                raise HTTPException(status_code=404, detail="No such user")
+            if len(res) > 1:
+                raise HTTPException(status_code=409, detail="Multiple users found")
         user = cls.from_entry(res[0])
+        await user._fill_groups()
         return user
 
     @classmethod
@@ -173,6 +216,7 @@ class UserSafe(LDAPBaseModel):
         if len(res) > 1:
             raise HTTPException(status_code=409, detail="Multiple users found")
         user = cls.from_entry(res[0])
+        await user._fill_groups()
         return user
 
 
@@ -191,6 +235,11 @@ class User(UserSafe):
             data["memberUid"] = uidNext
             await save_data(data)
 
+            userClass = self.userClass.copy()
+            if self.active:
+                userClass.append("active")
+            if self.admin:
+                userClass.append("admin")
             data = LDAPEntry(self.dn)
             data["objectClass"] = config.ldap.userClasses
             data["uid"] = self.uid
@@ -212,44 +261,78 @@ class User(UserSafe):
         async with client.connect(is_async=True) as conn:
             await conn.modify_password(self.dn, self.password)
 
-    async def update(self, active=False, **kwargs):
+    async def update(
+        self,
+        active=None,
+        admin=None,
+        password=None,
+        roles=None,
+        userClass=None,
+        **kwargs,
+    ):
         client = get_client()
-        userClass = "disabled"
-        if active:
-            userClass = "enabled"
-        special = {"password", "roles"}
-        filtered = {x: kwargs[x] for x in kwargs if x not in special}
         async with client.connect(is_async=True) as conn:
             res = await conn.search(self.dn, LDAPSearchScope.BASE)
             data = res[0]
-            if len(filtered.keys()) > 0:
-                for field in filtered:
-                    data[field] = filtered[field]
-            password = kwargs.get("password", None)
+            for field in kwargs:
+                if field == 'uidNumber' or field == 'gidNumber':
+                    if kwargs[field] == 0:
+                        continue
+                data[field] = kwargs[field]
+            uclass = self.userClass.copy()
+            if self.active:
+                uclass.append('active')
+            if self.admin:
+                uclass.append('admin')
+            if active is not None:
+                if active:
+                    if 'active' not in uclass:
+                        uclass.append('active')
+                        self.active = True
+                else:
+                    if 'active' in uclass:
+                        uclass.remove('active')
+                        self.active = False
+            if admin is not None:
+                if admin:
+                    if 'admin' not in uclass:
+                        uclass.append('admin')
+                        self.admin = True
+                else:
+                    if 'admin' in uclass:
+                        uclass.remove('admin')
+                        self.admin = False
+            data["userClass"] = uclass
+            await data.modify()
             if password is not None:
                 await conn.modify_password(self.dn, password)
-            data["userClass"] = userClass
-            data.change_attribute("userClass", LDAPModOp.REPLACE, userClass)
-            self.userClass = userClass
-            await data.modify()
-        for field in filtered:
-            setattr(self, field, filtered[field])
+        for field in kwargs:
+            if field == 'uidNumber' or field == 'gidNumber':
+                if kwargs[field] == 0:
+                    continue
+            setattr(self, field, kwargs[field])
 
     async def destroy(self):
         client = get_client()
         async with client.connect(is_async=True) as conn:
-            classes = class2filter(config.ldap.groupClasses)
-            filter_exp=f"(&(memberUid={self.uidNumber}){classes})"
-            res = await conn.search(config.ldap.roleBase, LDAPSearchScope.SUB, filter_exp)
-            for group in res:
-                if len(group['memberUid']):
-                    await group.delete()
             classes = class2filter(config.ldap.roleClasses)
-            filter_exp=f"(&(uniqueMember={self.dn}){classes})"
-            res = await conn.search(config.ldap.roleBase, LDAPSearchScope.SUB, filter_exp)
+            filter_exp = f"(&(uniqueMember={self.dn}){classes})"
+            res = await conn.search(
+                config.ldap.roleBase, LDAPSearchScope.SUB, filter_exp
+            )
             for role in res:
-                if len(role['uniqueMember']):
-                    raise ValueError(f"Can not destroy user as it is only member of role {role.cn}!")
+                if len(role["uniqueMember"]) == 1:
+                    raise ValueError(
+                        f"Can not destroy user as it is only member of role {role.cn}!"
+                    )
+            classes = class2filter(config.ldap.groupClasses)
+            filter_exp = f"(&(memberUid={self.uidNumber}){classes})"
+            res = await conn.search(
+                config.ldap.roleBase, LDAPSearchScope.SUB, filter_exp
+            )
+            for group in res:
+                if len(group["memberUid"]) == 1:
+                    await group.delete()
             res = await conn.search(self.dn, LDAPSearchScope.BASE)
             data = res[0]
             await data.delete()

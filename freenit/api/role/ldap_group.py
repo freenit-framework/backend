@@ -62,16 +62,16 @@ class GroupDetailAPI:
 class GroupUserAPI:
     @staticmethod
     @description("Assign user to group")
-    async def post(domain, name, id, _: User = Depends(group_perms)) -> Group:
-        user = await User.get_by_uid(id)
+    async def post(domain, name, uid, _: User = Depends(group_perms)) -> Group:
+        user = await User.get_by_uid(uid)
         group = await Group.get(name, domain)
         await group.add(user)
         return group
 
     @staticmethod
     @description("Remove user from group")
-    async def delete(domain, name, id, _: User = Depends(group_perms)) -> Group:
-        user = await User.get_by_uid(id)
+    async def delete(domain, name, uid, _: User = Depends(group_perms)) -> Group:
+        user = await User.get_by_uid(uid)
         group = await Group.get(name, domain)
         await group.remove(user)
         return group

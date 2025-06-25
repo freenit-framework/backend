@@ -68,7 +68,24 @@ async def authorize(request: Request, roles=[], allof=[], cookie="access"):
                         raise HTTPException(status_code=403, detail="Permission denied")
         return user
     elif user.dbtype() == "ldap":
-        pass
+        from freenit.models.ldap.base import get_client, class2filter
+        from bonsai import LDAPSearchScope, errors
+
+        config = getConfig()
+        _, domain = user.email.split("@")
+        classes = class2filter(config.ldap.groupClasses)
+        dn = f"{config.ldap.domainDN.format(domain)},{config.ldap.roleBase}"
+        client = get_client()
+        async with client.connect(is_async=True) as conn:
+            try:
+                res = await conn.search(
+                    dn,
+                    LDAPSearchScope.SUB,
+                    f"(&{classes}(memberUid={user.uidNumber}))",
+                )
+            except errors.AuthenticationError:
+                raise HTTPException(status_code=403, detail="Failed to login")
+        user.groups = [g["gidNumber"][0] for g in res]
     return user
 
 

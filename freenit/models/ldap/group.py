@@ -17,7 +17,7 @@ class Group(LDAPBaseModel):
         group = cls(
             cn=entry["cn"][0],
             dn=str(entry["dn"]),
-            users=entry["memberUid"],
+            users=entry.get("memberUid", []),
         )
         return group
 
@@ -85,6 +85,8 @@ class Group(LDAPBaseModel):
                     raise HTTPException(status_code=409, detail="Multiple groups found")
                 data = res[0]
                 try:
+                    if "memberUid" not in data:
+                        data["memberUid"] = []
                     data["memberUid"].append(user.uidNumber)
                 except ValueError:
                     raise HTTPException(
