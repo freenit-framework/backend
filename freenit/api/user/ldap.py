@@ -38,13 +38,13 @@ class UserDetailAPI:
 
     @staticmethod
     async def patch(id, data: UserOptional, _: User = Depends(user_perms)) -> UserSafe:
-        user = await User.get(id)
+        user = await User.get_by_uid(id)
         update = {
             field: getattr(data, field)
             for field in data.__fields__
             if getattr(data, field) != ""
         }
-        await user.update(active=user.userClass, **update)
+        await user.update(**update)
         return user
 
     @staticmethod
@@ -74,5 +74,5 @@ class ProfileDetailAPI:
             for field in data.__fields__
             if getattr(data, field) != ""
         }
-        await user.update(active=user.userClass, **update)
+        await user.update(**update)
         return user
