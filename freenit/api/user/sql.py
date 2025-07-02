@@ -43,7 +43,13 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def patch(id, data: UserOptional, _: User = Depends(user_perms)) -> UserSafe:
+    async def patch(
+        id, data: UserOptional, cur_user: User = Depends(user_perms)
+    ) -> UserSafe:
+        if not cur_user.admin:
+            raise HTTPException(
+                status_code=403, detail="Only admin users can edit other user's details"
+            )
         if data.password:
             data.password = encrypt(data.password)
         try:
@@ -54,7 +60,11 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def delete(id, _: User = Depends(user_perms)) -> UserSafe:
+    async def delete(id, cur_user: User = Depends(user_perms)) -> UserSafe:
+        if not cur_user.admin:
+            raise HTTPException(
+                status_code=403, detail="Only admin users can delete other users"
+            )
         try:
             user = await User.objects.get(pk=id)
         except ormar.exceptions.NoMatch:
@@ -73,7 +83,9 @@ class ProfileDetailAPI:
 
     @staticmethod
     @description("Edit my profile")
-    async def patch(data: UserOptional, user: User = Depends(profile_perms)) -> UserSafe:
+    async def patch(
+        data: UserOptional, user: User = Depends(profile_perms)
+    ) -> UserSafe:
         if data.password:
             data.password = encrypt(data.password)
         await user.patch(data)

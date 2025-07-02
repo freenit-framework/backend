@@ -39,7 +39,7 @@ class TestUser:
         assert response.status_code == 200
 
     async def test_delete_user(self, client):
-        admin = factories.User()
+        admin = factories.User(admin=True)
         await admin.save()
         client.login(user=admin)
         user = factories.User()
@@ -48,7 +48,7 @@ class TestUser:
         assert response.status_code == 200
 
     async def test_edit_user(self, client):
-        admin = factories.User()
+        admin = factories.User(admin=True)
         await admin.save()
         client.login(user=admin)
         data = {
