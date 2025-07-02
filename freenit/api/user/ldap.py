@@ -37,7 +37,13 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def patch(id, data: UserOptional, _: User = Depends(user_perms)) -> UserSafe:
+    async def patch(
+        id, data: UserOptional, cur_user: User = Depends(user_perms)
+    ) -> UserSafe:
+        if not cur_user.admin:
+            raise HTTPException(
+                status_code=403, detail="Only admin users can edit other user's details"
+            )
         user = await User.get_by_uid(id)
         update = {
             field: getattr(data, field)
@@ -48,7 +54,11 @@ class UserDetailAPI:
         return user
 
     @staticmethod
-    async def delete(id, _: User = Depends(user_perms)) -> UserSafe:
+    async def delete(id, cur_user: User = Depends(user_perms)) -> UserSafe:
+        if not cur_user.admin:
+            raise HTTPException(
+                status_code=403, detail="Only admin users can delete other users"
+            )
         try:
             user = await User.get_by_uid(id)
             await user.destroy()
