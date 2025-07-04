@@ -83,7 +83,7 @@ async def register_sql(credentials: LoginInput) -> User:
 
 async def register_ldap(credentials: LoginInput) -> User:
     user = await User.register(credentials)
-    await user.save()
+    await user.save(credentials.password)
     return user
 
 

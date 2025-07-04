@@ -48,7 +48,7 @@ class UserSafe(LDAPBaseModel):
         return data
 
     async def _fill_groups(self):
-        _, domain = self.email.split('@')
+        _, domain = self.email.split("@")
         classes = class2filter(config.ldap.groupClasses)
         dn = f"{config.ldap.domainDN.format(domain)},{config.ldap.roleBase}"
         client = get_client()
@@ -223,12 +223,12 @@ class UserSafe(LDAPBaseModel):
 class User(UserSafe):
     password: str = Field("", description=("Password"))
 
-    async def save(self):
+    async def save(self, password):
         try:
             uidNext = await next_uid()
             gidNext = await next_gid()
             _, domain = self.email.split("@")
-            data = LDAPEntry(config.ldap.roleDN.format(self.uid, domain))
+            data = LDAPEntry(config.ldap.groupDN.format(self.uid, domain))
             data["objectClass"] = config.ldap.groupClasses
             data["cn"] = self.uid
             data["gidNumber"] = gidNext
@@ -247,9 +247,8 @@ class User(UserSafe):
             data["sn"] = self.uid
             data["uidNumber"] = uidNext
             data["gidNumber"] = gidNext
-            data["userClass"] = self.userClass
+            data["userClass"] = userClass
             data["homeDirectory"] = f"/var/mail/domains/{domain}/{self.uid}"
-            data.change_attribute("userPassword", LDAPModOp.REPLACE, (self.password,))
             data["mail"] = self.email
             await save_data(data)
 
@@ -259,7 +258,7 @@ class User(UserSafe):
             raise HTTPException(status_code=403, detail="Failed to login")
         client = get_client()
         async with client.connect(is_async=True) as conn:
-            await conn.modify_password(self.dn, self.password)
+            await conn.modify_password(self.dn, password)
 
     async def update(
         self,
@@ -275,39 +274,39 @@ class User(UserSafe):
             res = await conn.search(self.dn, LDAPSearchScope.BASE)
             data = res[0]
             for field in kwargs:
-                if field == 'uidNumber' or field == 'gidNumber':
+                if field == "uidNumber" or field == "gidNumber":
                     if kwargs[field] == 0:
                         continue
                 data[field] = kwargs[field]
             uclass = self.userClass.copy()
             if self.active:
-                uclass.append('active')
+                uclass.append("active")
             if self.admin:
-                uclass.append('admin')
+                uclass.append("admin")
             if active is not None:
                 if active:
-                    if 'active' not in uclass:
-                        uclass.append('active')
+                    if "active" not in uclass:
+                        uclass.append("active")
                         self.active = True
                 else:
-                    if 'active' in uclass:
-                        uclass.remove('active')
+                    if "active" in uclass:
+                        uclass.remove("active")
                         self.active = False
             if admin is not None:
                 if admin:
-                    if 'admin' not in uclass:
-                        uclass.append('admin')
+                    if "admin" not in uclass:
+                        uclass.append("admin")
                         self.admin = True
                 else:
-                    if 'admin' in uclass:
-                        uclass.remove('admin')
+                    if "admin" in uclass:
+                        uclass.remove("admin")
                         self.admin = False
             data["userClass"] = uclass
             await data.modify()
             if password is not None:
                 await conn.modify_password(self.dn, password)
         for field in kwargs:
-            if field == 'uidNumber' or field == 'gidNumber':
+            if field == "uidNumber" or field == "gidNumber":
                 if kwargs[field] == 0:
                     continue
             setattr(self, field, kwargs[field])
