@@ -200,7 +200,7 @@ EOF
 }
 EOF
 
-  npm install
+  npm update --save
   echo "# ${NAME}" >README.md
   npm install --save-dev chota
 
@@ -561,7 +561,7 @@ EOF
 <Roles store={store} />
 EOF
 
-  mkdir -p 'src/routes/profile'
+  mkdir -p 'src/routes/profile/password'
   cat >'src/routes/profile/+page.svelte' <<EOF
 <script lang="ts">
   import { Profile } from '@freenit-framework/core'
@@ -569,6 +569,15 @@ EOF
 </script>
 
 <Profile store={store} />
+
+EOF
+  cat >'src/routes/profile/password/+page.svelte' <<EOF
+<script lang="ts">
+  import { Password } from '@freenit-framework/core'
+  import store from '\$lib/store'
+</script>
+
+<Password store={store} />
 EOF
 
   mkdir -p src/lib/store
