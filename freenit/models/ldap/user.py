@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from bonsai import LDAPEntry, LDAPModOp, LDAPSearchScope, errors
+from bonsai import LDAPEntry, LDAPSearchScope, errors
 from fastapi import HTTPException
 from pydantic import EmailStr, Field
 
@@ -27,8 +27,8 @@ class UserSafe(LDAPBaseModel):
     groups: list = Field([], description=("Groups the user is a member of"))
     uidNumber: int = Field(0, description=("User ID number"))
     gidNumber: int = Field(0, description=("Group ID number"))
-    active: bool = Field(False, description=("Active user"))
-    admin: bool = Field(False, description=("Admin user"))
+    active: bool | None = Field(None, description=("Active user"))
+    admin: bool | None = Field(None, description=("Admin user"))
 
     @classmethod
     async def _login(cls, credentials) -> dict:
