@@ -1,5 +1,4 @@
 from freenit.config import getConfig
-import uvicorn
 
 config = getConfig()
 print()
@@ -8,6 +7,7 @@ print(f"    http://{config.hostname}:{config.port}/api/v1/redoc")
 print()
 
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(
         "NAME.app:app",
         host="0.0.0.0", #nosec
@@ -15,3 +15,5 @@ if __name__ == "__main__":
         log_level="info",
         reload=True,
     )
+else:
+    from NAME.app import app

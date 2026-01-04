@@ -248,7 +248,7 @@ class User(UserSafe):
             data["uidNumber"] = uidNext
             data["gidNumber"] = gidNext
             data["userClass"] = userClass
-            data["homeDirectory"] = f"/var/mail/domains/{domain}/{self.uid}"
+            data["homeDirectory"] = f"/home/{self.uid}"
             data["mail"] = self.email
             await save_data(data)
 
