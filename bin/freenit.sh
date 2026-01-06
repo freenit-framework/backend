@@ -507,6 +507,60 @@ EOF
 </style>
 EOF
 
+  mkdir -p 'src/routes/domains/[pk]'
+  cat >'src/routes/domains/[pk]/+page.ts' <<EOF
+export const load = ({ params }) => {
+  return {
+    fqdn: params.fqdn
+  }
+}
+EOF
+  cat >'src/routes/domains/[pk]/+page.svelte' <<EOF
+<script lang="ts">
+  import { Domain } from '@freenit-framework/core'
+  import store from '\$lib/store'
+
+  const { data: props } = \$props()
+</script>
+
+<Domain fqdn={props.fqdn} store={store} />
+EOF
+  cat >'src/routes/domains/+page.svelte' <<EOF
+<script lang="ts">
+  import { Domains } from '@freenit-framework/core'
+  import store from '\$lib/store'
+</script>
+
+<Domains store={store} />
+EOF
+
+  mkdir -p 'src/routes/themes/[pk]'
+  cat >'src/routes/themes/[pk]/+page.ts' <<EOF
+export const load = ({ params }) => {
+  return {
+    name: params.name
+  }
+}
+EOF
+  cat >'src/routes/themes/[pk]/+page.svelte' <<EOF
+<script lang="ts">
+  import { Theme } from '@freenit-framework/core'
+  import store from '\$lib/store'
+
+  const { data: props } = \$props()
+</script>
+
+<Theme name={props.name} store={store} />
+EOF
+  cat >'src/routes/themes/+page.svelte' <<EOF
+<script lang="ts">
+  import { Themes } from '@freenit-framework/core'
+  import store from '\$lib/store'
+</script>
+
+<Themes store={store} />
+EOF
+
   mkdir -p 'src/routes/users/[pk]'
   cat >'src/routes/users/[pk]/+page.ts' <<EOF
 export const load = ({ params }) => {
@@ -643,8 +697,8 @@ for service in \${SERVICES}; do
   if [ "backend" = "\${service}" ]; then
     firstone="no"
     if [ "\${REGGAE}" = "yes" ]; then
-      export backend_hostname=\$(sudo cbsd jexec user=devel "jname=\${backend_app_name}" hostname)
-      sudo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel offline=\${OFFLINE}"
+      export backend_hostname=\$(mdo cbsd jexec user=devel "jname=\${backend_app_name}" hostname)
+      mdo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel offline=\${OFFLINE}"
     else
       export backend_hostname="localhost"
       tmux new-session -s "\${backend_app_name}" -d "env OFFLINE=\${OFFLINE} SYSPKG=\${SYSPKG} \${PROJECT_ROOT}/services/\${service}/bin/devel.sh"
@@ -659,13 +713,13 @@ for service in \${SERVICES}; do
   if [ "\${firstone}" = "yes" ]; then
     firstone="no"
     if [ "\${REGGAE}" = "yes" ]; then
-      sudo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel offline=\${OFFLINE}"
+      mdo tmux new-session -s "\${backend_app_name}" -d "make -C services/\${service} devel offline=\${OFFLINE}"
     else
       tmux new-session -s "\${backend_app_name}" -d "env OFFLINE=\${OFFLINE} SYSPKG=\${SYSPKG} \${PROJECT_ROOT}/services/\${service}/bin/devel.sh"
     fi
   else
     if [ "\${REGGAE}" = "yes" ]; then
-      sudo tmux split-window -t 0 "make -C services/\${service} BACKEND_URL=http://\${backend_hostname}:5000 devel offline=\${OFFLINE}"
+      mdo tmux split-window -t 0 "make -C services/\${service} BACKEND_URL=http://\${backend_hostname}:5000 devel offline=\${OFFLINE}"
     else
       tmux split-window -t 0 "env OFFLINE=\${OFFLINE} BACKEND_URL=http://\${backend_hostname}:5000 \${PROJECT_ROOT}/services/\${service}/bin/devel.sh"
     fi
@@ -673,8 +727,8 @@ for service in \${SERVICES}; do
 done
 
 if [ "\${REGGAE}" = "yes" ]; then
-  sudo tmux select-layout tiled
-  sudo tmux a -t "\${backend_app_name}"
+  mdo tmux select-layout tiled
+  mdo tmux a -t "\${backend_app_name}"
 else
   tmux select-layout tiled
   tmux a -t "\${backend_app_name}"
