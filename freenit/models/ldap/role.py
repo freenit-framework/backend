@@ -20,17 +20,16 @@ class Role(LDAPBaseModel):
             users=entry[config.ldap.roleMemberAttr],
         )
 
-
     @classmethod
     def create(cls, name):
-        dn=config.ldap.roleDN.format(name)
+        dn = config.ldap.roleDN.format(name)
         return Role(dn=dn, cn=name, users=[])
 
     @classmethod
     async def get(cls, name):
         classes = class2filter(config.ldap.roleClasses)
         client = get_client()
-        dn=config.ldap.roleDN.format(name)
+        dn = config.ldap.roleDN.format(name)
         try:
             async with client.connect(is_async=True) as conn:
                 res = await conn.search(dn, LDAPSearchScope.SUB, f"(|{classes})")
