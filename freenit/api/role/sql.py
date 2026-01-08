@@ -48,7 +48,9 @@ class RoleDetailAPI:
         return role
 
     @staticmethod
-    async def patch(id, role_data: RoleOptional, _: User = Depends(role_perms)) -> RoleSafe:
+    async def patch(
+        id, role_data: RoleOptional, _: User = Depends(role_perms)
+    ) -> RoleSafe:
         if Role.dbtype() == "sql":
             try:
                 role = await Role.objects.get(pk=id)

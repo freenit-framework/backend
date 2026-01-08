@@ -23,7 +23,7 @@ class Group(LDAPBaseModel):
 
     @classmethod
     def create(cls, name, domain):
-        group = Group(dn=config.ldap.groupDn.format(name, domain), cn=name, users=[])
+        group = cls(dn=config.ldap.groupDn.format(name, domain), cn=name, users=[])
         return group
 
     @classmethod
@@ -50,7 +50,8 @@ class Group(LDAPBaseModel):
         client = get_client()
         try:
             async with client.connect(is_async=True) as conn:
-                dn = config.ldap.roleBase.format(domain)
+                dom = config.ldap.domainDN.format(domain)
+                dn = f"{dom},{config.ldap.roleBase}"
                 res = await conn.search(dn, LDAPSearchScope.SUB, f"(|{classes})")
                 data = []
                 for gdata in res:

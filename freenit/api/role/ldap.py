@@ -75,6 +75,8 @@ class RoleUserAPI:
         role = await Role.get(role_name)
         if len(role.users) == 1:
             if role.users[0] == user.dn:
-                raise HTTPException(status_code=409, detail="Can not remove last member")
+                raise HTTPException(
+                    status_code=409, detail="Can not remove last member"
+                )
         await role.remove(user)
         return role

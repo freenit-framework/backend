@@ -5,9 +5,10 @@ from freenit.api.router import route
 from freenit.config import getConfig
 from freenit.decorators import description
 from freenit.models.ldap.domain import Domain, DomainCreate
+from freenit.models.ldap.group import Group, GroupCreate
 from freenit.models.pagination import Page
 from freenit.models.user import User
-from freenit.permissions import domain_perms
+from freenit.permissions import domain_perms, group_perms
 
 tags = ["domain"]
 config = getConfig()
@@ -57,3 +58,65 @@ class DomainDetailAPI:
             return domain
         except bonsai.errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
+
+
+@route("/domains/{name}/groups", tags=tags)
+class DomainGroupListAPI:
+    @staticmethod
+    @description("Get domain groups")
+    async def get(
+        name,
+        page: int = Header(default=1),
+        perpage: int = Header(default=10),
+        _: User = Depends(group_perms),
+    ) -> Page[Group]:
+        domain = await Domain.get(name)
+        data = await Group.get_all(domain.ou)
+        total = len(data)
+        data = Page(total=total, page=1, pages=1, perpage=total, data=data)
+        return data
+
+    @staticmethod
+    async def post(name, data: GroupCreate, _: User = Depends(group_perms)) -> Group:
+        domain = await Domain.get(name)
+        if data.name == "":
+            raise HTTPException(status_code=409, detail="Name is mandatory")
+        group = Group.create(domain.ou, data.name)
+        try:
+            await group.save()
+        except bonsai.errors.AlreadyExists:
+            raise HTTPException(status_code=409, detail="Group already exists")
+        return group
+
+
+@route("/domains/{name}/groups/{group}", tags=tags)
+class DomainGroupDetailAPI:
+    @staticmethod
+    async def get(name, group, _: User = Depends(group_perms)) -> Group:
+        return await Group.get(group, name)
+
+    @staticmethod
+    async def delete(name, group, _: User = Depends(group_perms)) -> Group:
+        domain = await Domain.get(name)
+        gr = await Group.get(group, domain.ou)
+        gr.destroy()
+        return gr
+
+
+@route("/domains/{name}/groups/{group}/{uid}", tags=tags)
+class GroupUserAPI:
+    @staticmethod
+    @description("Assign user to group")
+    async def post(name, group, uid, _: User = Depends(group_perms)) -> Group:
+        user = await User.get_by_uid(uid)
+        gr = await Group.get(group, name)
+        await gr.add(user)
+        return gr
+
+    @staticmethod
+    @description("Remove user from group")
+    async def delete(name, group, uid, _: User = Depends(group_perms)) -> Group:
+        user = await User.get_by_uid(uid)
+        gr = await Group.get(group, name)
+        await gr.remove(user)
+        return gr

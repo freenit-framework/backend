@@ -31,7 +31,9 @@ class Domain(LDAPBaseModel):
         try:
             async with client.connect(is_async=True) as conn:
                 dn = f"{config.ldap.domainDN},{config.ldap.userBase}"
-                res = await conn.search(dn.format(fqdn), LDAPSearchScope.SUB, f"(|{classes})")
+                res = await conn.search(
+                    dn.format(fqdn), LDAPSearchScope.SUB, f"(|{classes})"
+                )
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
         if len(res) < 1:
@@ -49,7 +51,9 @@ class Domain(LDAPBaseModel):
         try:
             async with client.connect(is_async=True) as conn:
                 dn = f"{config.ldap.domainDN},{config.ldap.roleBase}"
-                res = await conn.search(dn.format(fqdn), LDAPSearchScope.SUB, f"(|{classes})")
+                res = await conn.search(
+                    dn.format(fqdn), LDAPSearchScope.SUB, f"(|{classes})"
+                )
         except errors.AuthenticationError:
             raise HTTPException(status_code=403, detail="Failed to login")
         if len(res) < 1:
