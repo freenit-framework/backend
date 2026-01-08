@@ -25,7 +25,7 @@ class Group(LDAPBaseModel):
 
     @classmethod
     def create(cls, name, domain):
-        group = cls(dn=config.ldap.groupDN.format(domain, name), cn=name, users=[])
+        group = cls(dn=config.ldap.groupDN.format(name, domain), cn=name, users=[])
         return group
 
     @classmethod
@@ -66,6 +66,7 @@ class Group(LDAPBaseModel):
         data = LDAPEntry(self.dn)
         data["objectClass"] = config.ldap.groupClasses
         data["gidNumber"] = 0
+        data["cn"] = self.cn
         await save_data(data)
 
     async def destroy(self):
