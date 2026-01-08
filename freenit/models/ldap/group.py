@@ -10,6 +10,7 @@ config = getConfig()
 
 class Group(LDAPBaseModel):
     cn: str = Field("", description=("Common name"))
+    gidNumber: int = Field(0, description=("Group ID number"))
     users: list = Field([], description=("Group members"))
 
     @classmethod
@@ -18,6 +19,7 @@ class Group(LDAPBaseModel):
             cn=entry["cn"][0],
             dn=str(entry["dn"]),
             users=entry.get("memberUid", []),
+            gidNumber=entry["gidNumber"][0],
         )
         return group
 
