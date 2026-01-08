@@ -219,6 +219,27 @@ class UserSafe(LDAPBaseModel):
         await user._fill_groups()
         return user
 
+    @classmethod
+    async def get_by_domain(cls, domain: str):
+        client = get_client()
+        try:
+            async with client.connect(is_async=True) as conn:
+                res = await conn.search(
+                    f"ou={domain},dc=account,dc=ldap",
+                    LDAPSearchScope.SUB,
+                    "objectClass=person",
+                    ["*", "memberOf"],
+                )
+        except errors.AuthenticationError:
+            raise HTTPException(status_code=403, detail="Failed to login")
+
+        data = []
+        for udata in res:
+            user = cls.from_entry(udata)
+            await user._fill_groups()
+            data.append(user)
+        return data
+
 
 class User(UserSafe):
     password: str = Field("", description=("Password"))
