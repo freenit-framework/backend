@@ -25,7 +25,7 @@ class Group(LDAPBaseModel):
 
     @classmethod
     def create(cls, name, domain):
-        group = cls(dn=config.ldap.groupDn.format(name, domain), cn=name, users=[])
+        group = cls(dn=config.ldap.groupDN.format(domain, name), cn=name, users=[])
         return group
 
     @classmethod
