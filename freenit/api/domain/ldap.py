@@ -81,7 +81,7 @@ class DomainGroupListAPI:
         domain = await Domain.get(name)
         if data.name == "":
             raise HTTPException(status_code=409, detail="Name is mandatory")
-        group = Group.create(domain.ou, data.name)
+        group = Group.create(data.name, domain.ou)
         try:
             await group.save()
         except bonsai.errors.AlreadyExists:
@@ -101,7 +101,7 @@ class DomainGroupDetailAPI:
     async def delete(name, group, _: User = Depends(group_perms)) -> Group:
         domain = await Domain.get(name)
         gr = await Group.get(group, domain.ou)
-        gr.destroy()
+        await gr.destroy()
         return gr
 
 
