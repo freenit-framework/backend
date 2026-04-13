@@ -1,7 +1,7 @@
 # Freenit Backend
 ![freenit badge](https://github.com/freenit-framework/backend/actions/workflows/pythonapp.yml/badge.svg)
 
-[Documentation](https://freenit.org/)
+[Documentation](https://freenit-framework.github.io/)
 
 [Source](https://github.com/freenit-framework/backend)
 
