@@ -98,27 +98,6 @@ EOF
     - onelove-roles.freebsd-common
     - onelove-roles.freebsd_freenit
 EOF
-
-  cat >alembic/env.py<<EOF
-import os
-import sys
-
-import ${NAME}.app
-from ${NAME}.config import getConfig
-from alembic import context
-from freenit.migration import run_migrations_offline, run_migrations_online
-
-
-sys.path.append(os.getcwd())
-config = getConfig()
-
-
-if context.is_offline_mode():
-    run_migrations_offline(config)
-else:
-    run_migrations_online(config)
-EOF
-
   cat >.gitignore<<EOF
 .coverage
 .pytest_cache
@@ -132,7 +111,6 @@ ansible/site.yml
 !ansible/roles/.keep
 !ansible/roles/devel
 
-alembic/versions/*
 build
 cbsd.conf
 coverage.xml
@@ -147,6 +125,10 @@ dist/
 *.egg-info/
 *.sqlite
 EOF
+
+  if [ "${DB_TYPE:=sql}" = "sql" ] && command -v oxyde >/dev/null 2>&1; then
+    FREENIT_ENV=dev oxyde makemigrations --name initial
+  fi
 
   echo "Success!"
   cd ..

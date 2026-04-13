@@ -20,5 +20,6 @@ async def paginate(query, page, perpage):
     pages = ceil(total / perpage)
     if total > 0 and page > pages:
         raise HTTPException(status_code=404, detail="No such page")
-    data = await query.paginate(page, perpage).all()
+    offset = max(page - 1, 0) * perpage
+    data = await query.offset(offset).limit(perpage).all()
     return Page(data=data, page=page, perpage=perpage, pages=pages, total=total)

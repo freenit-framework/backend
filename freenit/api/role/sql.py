@@ -1,5 +1,4 @@
-import ormar
-import ormar.exceptions
+import oxyde
 from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
@@ -23,7 +22,7 @@ class RoleListAPI:
         _: User = Depends(role_perms),
     ) -> Page[RoleSafe]:
         ret = await paginate(
-            Role.objects.select_related("users"),
+            Role.objects,
             page,
             perpage,
         )
@@ -41,8 +40,8 @@ class RoleDetailAPI:
     @staticmethod
     async def get(id, _: User = Depends(role_perms)) -> RoleSafe:
         try:
-            role = await Role.objects.select_related("users").get(pk=id)
-        except ormar.exceptions.NoMatch:
+            role = await Role.objects.filter(id=id).get()
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such role")
         await role.load_all()
         return role
@@ -53,8 +52,8 @@ class RoleDetailAPI:
     ) -> RoleSafe:
         if Role.dbtype() == "sql":
             try:
-                role = await Role.objects.get(pk=id)
-            except ormar.exceptions.NoMatch:
+                role = await Role.objects.get(id=id)
+            except oxyde.NotFoundError:
                 raise HTTPException(status_code=404, detail="No such role")
             await role.patch(role_data)
             await role.load_all()
@@ -67,8 +66,8 @@ class RoleDetailAPI:
     @staticmethod
     async def delete(id, _: User = Depends(role_perms)) -> RoleSafe:
         try:
-            role = await Role.objects.get(pk=id)
-        except ormar.exceptions.NoMatch:
+            role = await Role.objects.get(id=id)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such role")
         await role.delete()
         return role
@@ -80,15 +79,16 @@ class RoleUserAPI:
     @description("Assign user to role")
     async def post(role_id, user_id, _: User = Depends(role_perms)) -> UserSafe:
         try:
-            user = await User.objects.select_related("roles").get(pk=user_id)
-        except ormar.exceptions.NoMatch:
+            user = await User.objects.prefetch("roles").filter(id=user_id).get()
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such user")
+        await user.load_all()
         for role in user.roles:
             if role.id == role_id:
                 raise HTTPException(status_code=409, detail="User already assigned")
         try:
-            role = await Role.objects.get(pk=role_id)
-        except ormar.exceptions.NoMatch:
+            role = await Role.objects.get(id=role_id)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such role")
         await user.roles.add(role)
         return user
@@ -97,15 +97,16 @@ class RoleUserAPI:
     @description("Deassign user to role")
     async def delete(role_id, user_id, _: User = Depends(role_perms)) -> UserSafe:
         try:
-            user = await User.objects.select_related("roles").get(pk=user_id)
-        except ormar.exceptions.NoMatch:
+            user = await User.objects.prefetch("roles").filter(id=user_id).get()
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such user")
+        await user.load_all()
         try:
-            role = await Role.objects.get(pk=role_id)
-        except ormar.exceptions.NoMatch:
+            role = await Role.objects.get(id=role_id)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such role")
         try:
             await user.roles.remove(role)
-        except ormar.exceptions.NoMatch:
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="User is not part of role")
         return user

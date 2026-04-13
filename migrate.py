@@ -1,16 +1,13 @@
 import importlib
-
-from alembic import command
-from alembic.config import Config
-from name import app_name
-
-alembic_cfg = Config("alembic.ini")
+import os
+import subprocess
 
 
 def db_setup():
-    app = importlib.import_module(f"{app_name}.app")
-    command.upgrade(alembic_cfg, "head")
-    return app
+    env = os.environ.copy()
+    env.setdefault("FREENIT_ENV", "prod")
+    subprocess.run(["oxyde", "migrate"], check=True, env=env)
+    return importlib.import_module("freenit.app")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import jwt
+import oxyde
 from fastapi import HTTPException, Request
 from passlib.hash import pbkdf2_sha256
 
@@ -16,13 +17,10 @@ async def decode(token):
     if pk is None:
         raise HTTPException(status_code=403, detail="Unauthorized")
     if User.dbtype() == "sql":
-        import ormar
-        import ormar.exceptions
-
         try:
-            user = await User.objects.select_related("roles").get(pk=pk)
+            user = await User.objects.prefetch("roles").filter(id=pk).get()
             return user
-        except ormar.exceptions.NoMatch:
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=403, detail="Unauthorized")
     elif User.dbtype() == "ldap":
         user = await User.get(pk)

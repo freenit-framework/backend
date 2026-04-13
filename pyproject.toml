@@ -42,8 +42,7 @@ classifiers = [
   build = ["twine"]
   ldap = ["bonsai"]
   sql = [
-    "alembic",
-    "ormar",
+    "oxyde",
   ]
   test = [
     "aiosqlite",
@@ -56,7 +55,6 @@ classifiers = [
   ]
   all = [
     "aiosqlite",
-    "alembic",
     "bandit",
     "beanie",
     "bonsai",
@@ -64,7 +62,7 @@ classifiers = [
     "mkdocs",
     "mkdocs-material",
     "mkdocs-awesome-pages-plugin",
-    "ormar",
+    "oxyde",
     "pytest-asyncio",
     "pytest-factoryboy",
     "requests",

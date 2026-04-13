@@ -1,5 +1,4 @@
-import ormar
-import ormar.exceptions
+import oxyde
 from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
@@ -53,8 +52,8 @@ class ThemeDetailAPI:
     @staticmethod
     async def get(name: str) -> Theme:
         try:
-            theme = await Theme.objects.select_all().get(name=name)
-        except ormar.exceptions.NoMatch:
+            theme = await Theme.objects.get(name=name)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such theme")
         return theme
 
@@ -63,8 +62,8 @@ class ThemeDetailAPI:
         name: str, theme_data: ThemeOptional, _: User = Depends(theme_perms)
     ) -> Theme:
         try:
-            theme = await Theme.objects.select_all().get(name=name)
-        except ormar.exceptions.NoMatch:
+            theme = await Theme.objects.get(name=name)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such theme")
         await theme.patch(theme_data)
         return theme
@@ -72,8 +71,8 @@ class ThemeDetailAPI:
     @staticmethod
     async def delete(name: str, _: User = Depends(theme_perms)) -> Theme:
         try:
-            theme = await Theme.objects.select_all().get(name=name)
-        except ormar.exceptions.NoMatch:
+            theme = await Theme.objects.get(name=name)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such theme")
         await theme.delete()
         return theme

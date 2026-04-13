@@ -1,12 +1,12 @@
-from .base import BaseRole, ormar_config, make_optional
+from __future__ import annotations
+
+from pydantic import BaseModel, ConfigDict
+
+from .base import BaseRole as Role
 
 
-class Role(BaseRole):
-    ormar_config = ormar_config.copy()
+class RoleOptional(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
+    name: str | None = None
 
-class RoleOptional(BaseRole.get_pydantic()):
-    pass
-
-
-make_optional(RoleOptional)
