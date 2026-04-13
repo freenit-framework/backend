@@ -15,6 +15,7 @@ export OFFLINE=${OFFLINE:="no"}
 
 setup() {
   cd ${PROJECT_ROOT}
+  run_migrations="${2:-yes}"
   if [ "${SYSPKG}" != "YES" ]; then
     if [ ! -d ${HOME}/.virtualenvs/${VIRTUALENV} ]; then
         python${PY_VERSION} -m venv "${HOME}/.virtualenvs/${VIRTUALENV}"
@@ -27,11 +28,7 @@ setup() {
     fi
   fi
 
-  if [ "${DB_TYPE}" = "sql" ]; then
-    if [ ! -e "alembic/versions" ]; then
-      mkdir alembic/versions
-      alembic revision --autogenerate -m initial
-    fi
+  if [ "${DB_TYPE}" = "sql" -a "${run_migrations}" != "no" ]; then
     python migrate.py
   fi
 }

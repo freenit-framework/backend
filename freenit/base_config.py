@@ -1,8 +1,8 @@
 import socket
 from importlib import import_module
+from pathlib import Path
 
-import databases
-import sqlalchemy
+import oxyde
 
 second = 1
 minute = 60 * second
@@ -110,10 +110,8 @@ class BaseConfig:
     hostname = socket.gethostname()
     port = 5000
     debug = False
-    metadata = sqlalchemy.MetaData()
     dburl = "sqlite:///db.sqlite"
     database = None
-    engine = None
     secret = "SECRET"  # nosec
     user = "freenit.models.sql.user"
     role = "freenit.models.sql.role"
@@ -125,8 +123,12 @@ class BaseConfig:
     ldap = None
 
     def __init__(self):
-        self.database = databases.Database(self.dburl)
-        self.engine = sqlalchemy.create_engine(self.dburl)
+        dburl = self.dburl
+        if dburl.startswith("sqlite:///") and not dburl.startswith("sqlite:////"):
+            dbpath = Path(dburl.removeprefix("sqlite:///")).resolve()
+            dburl = f"sqlite:///{dbpath}"
+        self.dburl = dburl
+        self.database = oxyde.AsyncDatabase(self.dburl, overwrite=True)
 
     def __repr__(self):
         return (

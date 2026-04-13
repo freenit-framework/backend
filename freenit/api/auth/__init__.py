@@ -66,11 +66,14 @@ async def logout(response: Response):
 
 
 async def register_sql(credentials: LoginInput) -> User:
-    import ormar.exceptions
     try:
         user = await User.objects.get(email=credentials.email)
         raise HTTPException(status_code=409, detail="User already registered")
-    except ormar.exceptions.NoMatch:
+    except Exception as exc:
+        import oxyde
+
+        if not isinstance(exc, oxyde.NotFoundError):
+            raise
         pass
     user = User(
         email=credentials.email,
@@ -108,7 +111,8 @@ async def register(credentials: LoginInput, host=Header(default="")):
 @api.post("/auth/verify", response_model=UserSafe, tags=["auth"])
 async def verify(verification: Verification):
     user = await decode(verification.verification)
-    await user.update(active=True)
+    user.active = True
+    await user.save(update_fields={"active"})
     return user
 
 

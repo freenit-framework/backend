@@ -1,5 +1,4 @@
-import ormar
-import ormar.exceptions
+import oxyde
 from fastapi import Depends, Header, HTTPException
 
 from freenit.api.router import route
@@ -26,7 +25,7 @@ class UserListAPI:
         _: User = Depends(user_perms),
     ) -> Page[UserSafe]:
         return await paginate(
-            User.objects.select_related(["roles"]),
+            User.objects.prefetch("roles"),
             page,
             perpage,
         )
@@ -37,8 +36,8 @@ class UserDetailAPI:
     @staticmethod
     async def get(id, _: User = Depends(user_perms)) -> UserSafe:
         try:
-            user = await User.objects.select_related("roles").get(pk=id)
-        except ormar.exceptions.NoMatch:
+            user = await User.objects.prefetch("roles").filter(id=id).get()
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such user")
         return user
 
@@ -53,8 +52,8 @@ class UserDetailAPI:
         if data.password:
             data.password = encrypt(data.password)
         try:
-            user = await User.objects.get(pk=id)
-        except ormar.exceptions.NoMatch:
+            user = await User.objects.get(id=id)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such user")
         await user.patch(data)
         return user
@@ -66,8 +65,8 @@ class UserDetailAPI:
                 status_code=403, detail="Only admin users can delete other users"
             )
         try:
-            user = await User.objects.get(pk=id)
-        except ormar.exceptions.NoMatch:
+            user = await User.objects.get(id=id)
+        except oxyde.NotFoundError:
             raise HTTPException(status_code=404, detail="No such user")
         await user.delete()
         return user

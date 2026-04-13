@@ -10,10 +10,10 @@ config = getConfig()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    if not config.database.is_connected:
+    if not config.database.connected:
         await config.database.connect()
     yield
-    if config.database.is_connected:
+    if config.database.connected:
         await config.database.disconnect()
 
 

@@ -1,47 +1,16 @@
 from __future__ import annotations
 
-import ormar
-import ormar.exceptions
-from fastapi import HTTPException
+from pydantic import BaseModel, ConfigDict, EmailStr
 
-from freenit.auth import verify
-from .base import (
-    OrmarBaseModel,
-    OrmarUserMixin,
-    make_optional,
-    ormar_config,
-)
-from freenit.models.role import Role
+from .base import User
 
 
-class BaseUser(OrmarBaseModel, OrmarUserMixin):
-    def check(self, password: str) -> bool:
-        if self.password is None:
-            return False
-        return verify(password, self.password)
+class UserOptional(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
-    @classmethod
-    async def login(cls, credentials) -> BaseUser:
-        try:
-            user = await cls.objects.select_related("roles").get(
-                email=credentials.email, active=True
-            )
-        except ormar.exceptions.NoMatch:
-            raise HTTPException(status_code=403, detail="Failed to login")
-        if user.check(credentials.password):
-            return user
-        raise HTTPException(status_code=403, detail="Failed to login")
+    email: EmailStr | None = None
+    password: str | None = None
+    fullname: str | None = None
+    active: bool | None = None
+    admin: bool | None = None
 
-
-class User(BaseUser, OrmarUserMixin):
-    ormar_config = ormar_config.copy()
-
-    roles = ormar.ManyToMany(Role, unique=True)
-
-
-class UserOptional(User):
-    pass
-
-
-make_optional(UserOptional)
-UserOptionalPydantic = User.get_pydantic(exclude={"admin", "active"})

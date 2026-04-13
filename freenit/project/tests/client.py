@@ -2,6 +2,8 @@ import socket
 
 from fastapi.testclient import TestClient
 
+TEST_PASSWORD = "Sekrit"  # nosec B105
+
 
 class Client(TestClient):
     def url_for(self, name, host=socket.gethostname()):
@@ -38,7 +40,7 @@ class Client(TestClient):
     def login(self, user, endpoint="/auth/login"):
         data = {
             "email": user.email,
-            "password": "Sekrit",
+            "password": TEST_PASSWORD,
         }
         response = self.post(endpoint, data)
         self.cookies = response.cookies
