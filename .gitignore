@@ -22,4 +22,4 @@ vars.mk
 
 dist/
 *.egg-info/
-*.sqlite
+*.sqlite*
