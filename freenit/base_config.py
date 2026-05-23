@@ -121,6 +121,9 @@ class BaseConfig:
     auth = Auth()
     mail = None
     ldap = None
+    stalwart_url = "http://stalwart.example.com"
+    stalwart_admin = "%admin"
+    stalwart_admin_pass = ""
 
     def __init__(self):
         dburl = self.dburl

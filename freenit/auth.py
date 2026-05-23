@@ -1,7 +1,8 @@
 import jwt
 import oxyde
-from fastapi import HTTPException, Request
+from fastapi import HTTPException
 from passlib.hash import pbkdf2_sha256
+from starlette.requests import HTTPConnection
 
 from freenit.config import getConfig
 
@@ -38,7 +39,7 @@ def encode(user):
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 
-async def authorize(request: Request, roles=[], allof=[], cookie="access"):
+async def authorize(request: HTTPConnection, roles=[], allof=[], cookie="access"):
     token = request.cookies.get(cookie)
     if not token:
         raise HTTPException(status_code=403, detail="Unauthorized")
@@ -98,7 +99,7 @@ def encrypt(password):
 
 
 def permissions(roles=[], allof=[]):
-    async def handler(request: Request):
+    async def handler(request: HTTPConnection):
         user = await authorize(request, roles, allof)
         return user
 
