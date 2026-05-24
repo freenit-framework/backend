@@ -96,6 +96,7 @@ class User(OxydeBaseModel):
     fullname: str | None = oxyde.Field(default=None)
     active: bool = oxyde.Field(default=False)
     admin: bool = oxyde.Field(default=False)
+    omemo_bundle: str | None = oxyde.Field(default=None)
     roles: list[BaseRole] = oxyde.Field(default_factory=list, db_m2m=True, db_through="UserRole")
 
     class Meta:

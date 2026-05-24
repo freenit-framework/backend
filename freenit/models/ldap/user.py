@@ -29,6 +29,7 @@ class UserSafe(LDAPBaseModel):
     gidNumber: int = Field(0, description=("Group ID number"))
     active: bool | None = Field(None, description=("Active user"))
     admin: bool | None = Field(None, description=("Admin user"))
+    omemo_bundle: str = Field("", description=("Encrypted OMEMO bundle"))
 
     @classmethod
     async def _login(cls, credentials) -> dict:
@@ -114,6 +115,14 @@ class UserSafe(LDAPBaseModel):
         if "admin" in userClass:
             userClass.remove("admin")
             admin = True
+        omemo_bundle = ""
+        if config.ldap.userOmemoAttr == "description":
+            for desc in entry.get("description", []):
+                if desc.startswith("__OMEMO__:"):
+                    omemo_bundle = desc[len("__OMEMO__:"):]
+                    break
+        else:
+            omemo_bundle = entry.get(config.ldap.userOmemoAttr, [""])[0]
         user = cls(
             email=entry["mail"][0],
             sn=entry["sn"][0],
@@ -127,6 +136,7 @@ class UserSafe(LDAPBaseModel):
             gidNumber=entry["gidNumber"][0],
             active=active,
             admin=admin,
+            omemo_bundle=omemo_bundle,
         )
         return user
 
@@ -271,6 +281,11 @@ class User(UserSafe):
             data["userClass"] = userClass
             data["homeDirectory"] = f"/home/{self.uid}"
             data["mail"] = self.email
+            if self.omemo_bundle:
+                if config.ldap.userOmemoAttr == "description":
+                    data[config.ldap.userOmemoAttr] = f"__OMEMO__:{self.omemo_bundle}"
+                else:
+                    data[config.ldap.userOmemoAttr] = self.omemo_bundle
             await save_data(data)
 
             self.uidNumber = uidNext
@@ -294,11 +309,28 @@ class User(UserSafe):
         async with client.connect(is_async=True) as conn:
             res = await conn.search(self.dn, LDAPSearchScope.BASE)
             data = res[0]
+            omemo_bundle = kwargs.pop("omemo_bundle", None)
             for field in kwargs:
                 if field == "uidNumber" or field == "gidNumber":
                     if kwargs[field] == 0:
                         continue
                 data[field] = kwargs[field]
+            if omemo_bundle is not None:
+                attr = config.ldap.userOmemoAttr
+                if attr == "description":
+                    descriptions = list(data.get("description", []))
+                    descriptions = [d for d in descriptions if not d.startswith("__OMEMO__:")]
+                    if omemo_bundle:
+                        descriptions.append(f"__OMEMO__:{omemo_bundle}")
+                    if descriptions:
+                        data["description"] = descriptions
+                    elif "description" in data:
+                        del data["description"]
+                else:
+                    if omemo_bundle:
+                        data[attr] = omemo_bundle
+                    elif attr in data:
+                        del data[attr]
             uclass = self.userClass.copy()
             if self.active:
                 uclass.append("active")
@@ -331,6 +363,8 @@ class User(UserSafe):
                 if kwargs[field] == 0:
                     continue
             setattr(self, field, kwargs[field])
+        if omemo_bundle is not None:
+            self.omemo_bundle = omemo_bundle
 
     async def destroy(self):
         client = get_client()

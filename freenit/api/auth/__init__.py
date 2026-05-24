@@ -128,3 +128,9 @@ async def refresh(request: Request, response: Response):
             "refresh": config.auth.refresh_expire,
         },
     }
+
+
+@api.get("/auth/token", tags=["auth"])
+async def token(request: Request):
+    user = await authorize(request)
+    return {"token": encode(user)}

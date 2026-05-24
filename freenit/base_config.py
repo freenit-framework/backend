@@ -53,6 +53,11 @@ class Mail:
         self.master_pw = master_pw
 
 
+class XMPP:
+    def __init__(self, ws_url="") -> None:
+        self.ws_url = ws_url
+
+
 class LDAP:
     def __init__(
         self,
@@ -68,8 +73,9 @@ class LDAP:
         groupClasses=["posixGroup"],
         userBase="dc=account,dc=ldap",
         userDN="uid={}",
-        userClasses=["pilotPerson", "posixAccount"],
+        userClasses=["pilotPerson", "posixAccount", "omemoPerson"],
         userMemberAttr="memberOf",
+        userOmemoAttr="omemoBundle",
         uidNextClass="uidNext",
         uidNextDN="cn=uidnext,dc=ldap",
         uidNextField="uidNumber",
@@ -121,6 +127,7 @@ class BaseConfig:
     auth = Auth()
     mail = None
     ldap = None
+    xmpp = XMPP()
     stalwart_url = "http://stalwart.example.com"
     stalwart_admin = "%admin"
     stalwart_admin_pass = ""

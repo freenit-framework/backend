@@ -3,6 +3,7 @@ import oxyde
 from fastapi import HTTPException
 from passlib.hash import pbkdf2_sha256
 from starlette.requests import HTTPConnection
+from time import time
 
 from freenit.config import getConfig
 
@@ -33,9 +34,10 @@ def encode(user):
     config = getConfig()
     payload = {}
     if user.dbtype() == "sql":
-        payload = {"pk": user.pk, "type": "sql"}
+        payload = {"pk": user.pk, "type": "sql", "jid": user.email}
     elif user.dbtype() == "ldap":
-        payload = {"pk": user.dn, "type": "ldap"}
+        payload = {"pk": user.dn, "type": "ldap", "jid": user.email}
+    payload["exp"] = int(time()) + config.auth.expire
     return jwt.encode(payload, config.secret, algorithm="HS256")
 
 

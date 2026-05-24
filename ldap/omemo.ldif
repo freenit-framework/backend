@@ -1,0 +1,22 @@
+# OLC (Online Configuration) LDIF for OpenLDAP 2.3+
+# Load with: ldapadd -Y EXTERNAL -H ldapi:/// -f omemo.ldif
+#
+# After loading, add 'omemoPerson' to the objectClass of user entries
+# that need OMEMO support, or include it in freenit's userClasses.
+
+dn: cn=omemo,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: omemo
+olcAttributeTypes: ( 1.3.6.1.4.1.4203.666.1.1
+  NAME 'omemoBundle'
+  DESC 'Encrypted OMEMO device bundle'
+  EQUALITY caseExactMatch
+  SUBSTR caseExactSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{32768}
+  SINGLE-VALUE )
+olcObjectClasses: ( 1.3.6.1.4.1.4203.666.2.1
+  NAME 'omemoPerson'
+  DESC 'Person with OMEMO encryption support'
+  SUP top
+  AUXILIARY
+  MAY ( omemoBundle ) )
