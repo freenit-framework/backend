@@ -99,6 +99,7 @@ class LDAP:
         self.userDN = f"{userDN},{domainDN},{userBase}"
         self.userClasses = userClasses
         self.userMemberAttr = userMemberAttr
+        self.userOmemoAttr = userOmemoAttr
         self.uidNextClass = uidNextClass
         self.uidNextDN = uidNextDN
         self.uidNextField = uidNextField
