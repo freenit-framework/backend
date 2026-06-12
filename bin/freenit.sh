@@ -172,6 +172,18 @@ EOF
 }
 EOF
 
+  node -e '
+    const fs = require("fs")
+    const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"))
+    if (pkg.scripts?.check) {
+      pkg.scripts.check = "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --compiler-warnings \"a11y_autofocus:ignore\""
+    }
+    if (pkg.scripts?.["check:watch"]) {
+      pkg.scripts["check:watch"] = "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --compiler-warnings \"a11y_autofocus:ignore\" --watch"
+    }
+    fs.writeFileSync("package.json", JSON.stringify(pkg, null, "\t") + "\n")
+  '
+
   cat >.prettierrc<<EOF
 {
   "useTabs": false,
@@ -180,6 +192,30 @@ EOF
   "printWidth": 100,
   "semi": false,
 }
+EOF
+
+  cat >svelte.config.js<<EOF
+import adapter from '@sveltejs/adapter-static'
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+  preprocess: vitePreprocess(),
+  onwarn(warning, handler) {
+    if (warning.code === 'a11y_autofocus') return
+    handler(warning)
+  },
+  kit: {
+    adapter: adapter({
+      fallback: 'index.html',
+    }),
+    prerender: {
+      entries: [],
+    },
+  },
+}
+
+export default config
 EOF
 
   npm update --save
@@ -330,7 +366,7 @@ project.mk
 vars.mk
 EOF
 
-  npm install --save-dev @zerodevx/svelte-toast @freenit-framework/core @sveltejs/adapter-node @mdi/js
+  npm install --save-dev @zerodevx/svelte-toast freenit @sveltejs/adapter-static @mdi/js
 
   rm -rf src/lib
   rm -rf src/routes/about src/routes/sverdle src/routes/*.svelte src/app.css
@@ -363,6 +399,41 @@ body {
   --font-family-sans: sans-serif;
   --font-family-mono: monaco, "Consolas", "Lucida Console", monospace;
 }
+
+[data-theme='dark'] {
+  --bg-color: #1b2433;
+  --bg-secondary-color: #2a3546;
+  --color-primary: #5b8bf7;
+  --color-lightGrey: #3a4a5e;
+  --color-grey: #8a9ab0;
+  --color-darkGrey: #d9e0eb;
+  --color-error: #e85d5d;
+  --color-success: #4cd137;
+  --font-color: #e0e6ed;
+}
+
+[data-theme='dark']
+  input:not(
+    [type='checkbox'],
+    [type='radio'],
+    [type='submit'],
+    [type='color'],
+    [type='button'],
+    [type='reset']
+  ),
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+  background-color: var(--bg-color);
+  color: var(--font-color);
+}
+
+[data-theme='dark'] select {
+  background-color: var(--bg-color);
+}
+
+[data-theme='dark'] a {
+  color: #7aa2ff;
+}
 EOF
 
   cat >src/routes/+layout.svelte<<EOF
@@ -371,7 +442,7 @@ EOF
   import 'chota'
   import { onMount } from 'svelte'
   import { SvelteToast } from '@zerodevx/svelte-toast'
-  import { LeftPane, MenuItems, MenuBar } from '@freenit-framework/core'
+  import { LeftPane, MenuItems, MenuBar } from 'freenit'
   import store from '\$lib/store'
 
   const options = {}
@@ -431,7 +502,7 @@ EOF
   mkdir src/routes/login
   cat >src/routes/login/+page.svelte <<EOF
 <script lang="ts">
-  import { Login } from '@freenit-framework/core'
+  import { Login } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -441,7 +512,7 @@ EOF
   mkdir src/routes/register
   cat >src/routes/register/+page.svelte <<EOF
 <script lang="ts">
-  import { Register } from '@freenit-framework/core'
+  import { Register } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -499,7 +570,7 @@ export const load = ({ params }) => {
 EOF
   cat >'src/routes/domains/[pk]/+page.svelte' <<EOF
 <script lang="ts">
-  import { Domain } from '@freenit-framework/core'
+  import { Domain } from 'freenit'
   import store from '\$lib/store'
 
   const { data: props } = \$props()
@@ -509,7 +580,7 @@ EOF
 EOF
   cat >'src/routes/domains/+page.svelte' <<EOF
 <script lang="ts">
-  import { Domains } from '@freenit-framework/core'
+  import { Domains } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -526,7 +597,7 @@ export const load = ({ params }) => {
 EOF
   cat >'src/routes/themes/[pk]/+page.svelte' <<EOF
 <script lang="ts">
-  import { Theme } from '@freenit-framework/core'
+  import { Theme } from 'freenit'
   import store from '\$lib/store'
 
   const { data: props } = \$props()
@@ -536,7 +607,7 @@ EOF
 EOF
   cat >'src/routes/themes/+page.svelte' <<EOF
 <script lang="ts">
-  import { Themes } from '@freenit-framework/core'
+  import { Themes } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -553,7 +624,7 @@ export const load = ({ params }) => {
 EOF
   cat >'src/routes/users/[pk]/+page.svelte' <<EOF
 <script lang="ts">
-  import { User } from '@freenit-framework/core'
+  import { User } from 'freenit'
   import store from '\$lib/store'
 
   const { data: props } = \$props()
@@ -563,7 +634,7 @@ EOF
 EOF
   cat >'src/routes/users/+page.svelte' <<EOF
 <script lang="ts">
-  import { Users } from '@freenit-framework/core'
+  import { Users } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -580,7 +651,7 @@ export const load = ({ params }) => {
 EOF
   cat >'src/routes/roles/[pk]/+page.svelte' <<EOF
 <script lang="ts">
-  import { Role } from '@freenit-framework/core'
+  import { Role } from 'freenit'
   import store from '\$lib/store'
 
   const { data: props } = \$props()
@@ -590,7 +661,7 @@ EOF
 EOF
   cat >'src/routes/roles/+page.svelte' <<EOF
 <script lang="ts">
-  import { Roles } from '@freenit-framework/core'
+  import { Roles } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -600,7 +671,7 @@ EOF
   mkdir -p 'src/routes/profile/password'
   cat >'src/routes/profile/+page.svelte' <<EOF
 <script lang="ts">
-  import { Profile } from '@freenit-framework/core'
+  import { Profile } from 'freenit'
   import store from '\$lib/store'
 </script>
 
@@ -609,16 +680,81 @@ EOF
 EOF
   cat >'src/routes/profile/password/+page.svelte' <<EOF
 <script lang="ts">
-  import { Password } from '@freenit-framework/core'
+  import { Password } from 'freenit'
   import store from '\$lib/store'
 </script>
 
 <Password store={store} />
 EOF
 
+  mkdir -p src/routes/jabber
+  cat >src/routes/jabber/+page.svelte<<EOF
+<script lang="ts">
+  import { Jabber } from 'freenit'
+</script>
+
+<svelte:head>
+  <title>Jabber</title>
+</svelte:head>
+
+<Jabber />
+EOF
+
+  mkdir -p src/routes/calendar
+  cat >src/routes/calendar/+page.svelte<<EOF
+<script lang="ts">
+  import { Calendar } from 'freenit'
+</script>
+
+<svelte:head>
+  <title>Calendar</title>
+</svelte:head>
+
+<Calendar />
+EOF
+
+  mkdir -p src/routes/contacts
+  cat >src/routes/contacts/+page.svelte<<EOF
+<script lang="ts">
+  import { Contacts } from 'freenit'
+</script>
+
+<svelte:head>
+  <title>Contacts</title>
+</svelte:head>
+
+<Contacts />
+EOF
+
+  mkdir -p src/routes/files
+  cat >src/routes/files/+page.svelte<<EOF
+<script lang="ts">
+  import { Files } from 'freenit'
+</script>
+
+<svelte:head>
+  <title>Files</title>
+</svelte:head>
+
+<Files />
+EOF
+
+  mkdir -p src/routes/sieve
+  cat >src/routes/sieve/+page.svelte<<EOF
+<script lang="ts">
+  import { Sieve } from 'freenit'
+</script>
+
+<svelte:head>
+  <title>Filters</title>
+</svelte:head>
+
+<Sieve />
+EOF
+
   mkdir -p src/lib/store
   cat >'src/lib/store/index.ts' <<EOF
-import { BaseStore } from '@freenit-framework/core'
+import { BaseStore } from 'freenit'
 
 class Store extends BaseStore {
   constructor(prefix='/api/v1') {
