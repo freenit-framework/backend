@@ -54,10 +54,6 @@ def _dav_account(email: str) -> str:
     return urllib.parse.quote(email, safe="")
 
 
-def _dav_account(email: str) -> str:
-    return email.split("@")[0]
-
-
 def _check_ssrf(url: str) -> None:
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme not in ("http", "https"):
@@ -101,7 +97,7 @@ async def _dav_proxy(request: Request, user, upstream_url: str) -> Response:
             )
     else:
         has_body = request.method in {
-            "POST", "PROPFIND", "PROPPATCH", "REPORT", "MKCALENDAR",
+            "POST", "PROPFIND", "PROPPATCH", "REPORT", "MKCALENDAR", "MKCOL",
         }
         body = await request.body() if has_body else None
         async with httpx.AsyncClient() as client:
