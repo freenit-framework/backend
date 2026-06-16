@@ -1,3 +1,6 @@
+import asyncio
+import os
+import subprocess
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
@@ -8,8 +11,16 @@ from .api import api
 config = getConfig()
 
 
+def _run_migrations() -> None:
+    env = os.environ.copy()
+    env.setdefault("FREENIT_ENV", "prod")
+    subprocess.run(["oxyde", "migrate"], check=True, env=env)
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    if os.environ.get("FREENIT_ENV") != "test":
+        await asyncio.to_thread(_run_migrations)
     if not config.database.connected:
         await config.database.connect()
     yield
