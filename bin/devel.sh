@@ -6,10 +6,9 @@ export OFFLINE=${OFFLINE:="no"}
 
 
 . ${BIN_DIR}/common.sh
-setup
+setup yes no
 
 export FREENIT_ENV="dev"
-python migrate.py
 
 echo "Backend"
 echo "==============="
