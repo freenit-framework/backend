@@ -264,3 +264,9 @@ async def list_principals(types: str = "list", page: int = 1, limit: int = 100) 
         log.error("Failed to list principals: %s %s", resp.status_code, resp.text[:500])
         raise RuntimeError(f"Stalwart list principals failed: {resp.text}")
     return resp.json().get("data", {}).get("items", [])
+
+
+async def list_domains() -> list[str]:
+    items = await list_principals(types="domain", limit=1000)
+    domains = [item["name"] for item in items if item.get("name")]
+    return sorted(domains)

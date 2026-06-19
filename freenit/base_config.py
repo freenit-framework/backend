@@ -84,6 +84,14 @@ class LDAP:
         gidNextField="gidNumber",
         domainDN="ou={}",
         domainClasses=["organizationalUnit", "pmiDelegationPath"],
+        mailinglistBase="ou=mailinglists,dc=ldap",
+        mailinglistDN="cn={}",
+        mailinglistClasses=["freenitMailingList"],
+        pendingSubscriberClasses=["freenitPendingSubscriber"],
+        moderationMessageClasses=["freenitModerationMessage"],
+        mlidNextClass="freenitMailingListIdNext",
+        mlidNextDN="cn=mlidnext,dc=ldap",
+        mlidNextField="mlidNumber",
     ):
         self.host = host
         self.tls = tls
@@ -108,6 +116,14 @@ class LDAP:
         self.gidNextField = gidNextField
         self.domainDN = domainDN
         self.domainClasses = domainClasses
+        self.mailinglistBase = mailinglistBase
+        self.mailinglistDN = f"{mailinglistDN},{mailinglistBase}"
+        self.mailinglistClasses = mailinglistClasses
+        self.pendingSubscriberClasses = pendingSubscriberClasses
+        self.moderationMessageClasses = moderationMessageClasses
+        self.mlidNextClass = mlidNextClass
+        self.mlidNextDN = mlidNextDN
+        self.mlidNextField = mlidNextField
 
 
 class BaseConfig:
@@ -123,6 +139,7 @@ class BaseConfig:
     user = "freenit.models.sql.user"
     role = "freenit.models.sql.role"
     theme = "freenit.models.sql.theme"
+    mailinglist = "freenit.models.sql.mailinglist"
     theme_name = "Freenit"
     meta = None
     auth = Auth()

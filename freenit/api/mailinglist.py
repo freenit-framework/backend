@@ -3,13 +3,13 @@ from datetime import datetime
 from typing import Any, List
 from uuid import uuid4
 
-import oxyde
 import pydantic
 from fastapi import Depends, Header, HTTPException, Request
 
 from freenit.api.router import route
 from freenit.config import getConfig
 from freenit.decorators import description
+from freenit.mailinglist import store
 from freenit.mailinglist.mail import (
     subscribe_confirmation,
     unsubscribe_confirmation,
@@ -20,8 +20,8 @@ from freenit.mailinglist.worker import (
     reject_message,
 )
 from freenit.mail import sendmail
-from freenit.models.pagination import Page, paginate
-from freenit.models.sql.base import MailingList, ModerationMessage, PendingSubscriber
+from freenit.models.mailinglist import MailingList, ModerationMessage, PendingSubscriber
+from freenit.models.pagination import Page
 from freenit.models.user import User
 from freenit.permissions import mailinglist_perms
 from freenit.stalwart import (
@@ -34,6 +34,7 @@ from freenit.stalwart import (
     fetch_email_summaries,
     fetch_mailbox_messages,
     fetch_principal,
+    list_domains,
     remove_external_member,
 )
 
@@ -59,7 +60,7 @@ def _parse_address(address: pydantic.EmailStr) -> tuple[str, str]:
 
 class MailingListCreate(pydantic.BaseModel):
     name: str
-    address: pydantic.EmailStr
+    domain: str
     description: str | None = None
     public: bool = True
     archive_enabled: bool = True
@@ -132,28 +133,15 @@ class SubscriberResponse(pydantic.BaseModel):
 
 
 async def _get_list(id: int) -> MailingList:
-    try:
-        return await MailingList.objects.get(id=id)
-    except oxyde.NotFoundError:
-        raise HTTPException(status_code=404, detail="No such mailing list")
+    return await store.get_mailing_list(id)
 
 
 async def _get_pending(id: int, token: str, action: str) -> PendingSubscriber:
-    try:
-        return await PendingSubscriber.objects.filter(
-            mailing_list_id=id, token=token, action=action
-        ).get()
-    except oxyde.NotFoundError:
-        raise HTTPException(status_code=404, detail="Invalid or expired token")
+    return await store.get_pending_subscriber(id, token, action)
 
 
 async def _get_moderation(id: int, msg_id: int) -> ModerationMessage:
-    try:
-        return await ModerationMessage.objects.filter(
-            id=msg_id, mailing_list_id=id
-        ).get()
-    except oxyde.NotFoundError:
-        raise HTTPException(status_code=404, detail="No such moderation message")
+    return await store.get_moderation_message(id, msg_id)
 
 
 @route("/mailinglists", tags=tags)
@@ -166,7 +154,7 @@ class MailingListListAPI:
         cur_user: User = Depends(mailinglist_perms),
     ) -> Page[MailingListResponse]:
         _require_admin(cur_user)
-        return await paginate(MailingList.objects, page, perpage)
+        return await store.list_mailing_lists(page, perpage)
 
     @staticmethod
     @description("Create mailing list")
@@ -175,18 +163,21 @@ class MailingListListAPI:
         cur_user: User = Depends(mailinglist_perms),
     ) -> MailingListResponse:
         _require_admin(cur_user)
-        local, domain = _parse_address(data.address)
+        if "@" in data.name or "/" in data.name:
+            raise HTTPException(status_code=400, detail="Invalid mailing list name")
+        address = f"{data.name}@{data.domain}"
+        local, domain = _parse_address(address)
         distribution_address = f"{local}-members@{domain}"
         archive_address = f"{local}-archive@{domain}"
 
-        existing_count = await MailingList.objects.filter(
-            address__in=[data.address, distribution_address, archive_address]
-        ).count()
+        existing_count = await store.count_mailing_lists_by_addresses(
+            [address, distribution_address, archive_address]
+        )
         if existing_count > 0:
             raise HTTPException(status_code=409, detail="Mailing list address already in use")
 
         try:
-            inbox_id = await create_inbox_account(data.name, data.address)
+            inbox_id = await create_inbox_account(data.name, address)
             list_id = await create_list_principal(data.name, distribution_address)
             archive_id = await create_archive_account(data.name, archive_address)
             await add_external_member(list_id, archive_address)
@@ -194,25 +185,22 @@ class MailingListListAPI:
             log.error("Failed to create Stalwart principals: %s", e)
             raise HTTPException(status_code=502, detail=f"Stalwart error: {e}")
 
-        try:
-            now = datetime.utcnow()
-            mailing_list = await MailingList.objects.create(
-                name=data.name,
-                address=data.address,
-                distribution_address=distribution_address,
-                archive_address=archive_address,
-                description=data.description,
-                public=data.public,
-                archive_enabled=data.archive_enabled,
-                moderation_enabled=data.moderation_enabled,
-                principal_id=list_id,
-                inbox_principal_id=inbox_id,
-                archive_principal_id=archive_id,
-                created_at=now,
-                updated_at=now,
-            )
-        except oxyde.IntegrityError as e:
-            raise HTTPException(status_code=409, detail=f"Mailing list already exists: {e}")
+        now = datetime.utcnow()
+        mailing_list = await store.create_mailing_list(
+            name=data.name,
+            address=address,
+            distribution_address=distribution_address,
+            archive_address=archive_address,
+            description=data.description,
+            public=data.public,
+            archive_enabled=data.archive_enabled,
+            moderation_enabled=data.moderation_enabled,
+            principal_id=list_id,
+            inbox_principal_id=inbox_id,
+            archive_principal_id=archive_id,
+            created_at=now,
+            updated_at=now,
+        )
 
         return MailingListResponse.model_validate(mailing_list)
 
@@ -225,11 +213,22 @@ class MailingListPublicAPI:
         page: int = Header(default=1),
         perpage: int = Header(default=10),
     ) -> Page[PublicMailingListResponse]:
-        return await paginate(
-            MailingList.objects.filter(public=True),
-            page,
-            perpage,
-        )
+        return await store.list_mailing_lists(page, perpage, public=True)
+
+
+@route("/mailinglists/domains", tags=tags)
+class MailingListDomainsAPI:
+    @staticmethod
+    @description("Get available mail domains from Stalwart")
+    async def get(
+        cur_user: User = Depends(mailinglist_perms),
+    ) -> List[str]:
+        _require_admin(cur_user)
+        try:
+            return await list_domains()
+        except Exception as e:
+            log.error("Failed to list Stalwart domains: %s", e)
+            raise HTTPException(status_code=502, detail=f"Stalwart error: {e}")
 
 
 @route("/mailinglists/{id}", tags=tags)
@@ -248,7 +247,7 @@ class MailingListDetailAPI:
     ) -> MailingListResponse:
         _require_admin(cur_user)
         mailing_list = await _get_list(id)
-        await mailing_list.patch(data)
+        await store.update_mailing_list(mailing_list, data)
         return MailingListResponse.model_validate(mailing_list)
 
     @staticmethod
@@ -265,7 +264,7 @@ class MailingListDetailAPI:
                     await delete_principal(principal_id)
         except Exception as e:
             log.error("Failed to delete Stalwart principals for list %s: %s", id, e)
-        await mailing_list.delete()
+        await store.delete_mailing_list(mailing_list)
         return MailingListResponse.model_validate(mailing_list)
 
 
@@ -402,17 +401,17 @@ class MailingListSubscribeAPI:
             raise HTTPException(status_code=403, detail="Subscribing is not allowed")
 
         try:
-            pending = await PendingSubscriber.objects.filter(
-                mailing_list_id=id, email=data.email, action="subscribe"
-            ).get()
-        except oxyde.NotFoundError:
-            pending = await PendingSubscriber.objects.create(
+            pending = await store.get_pending_subscriber_by_email(
+                id, data.email, "subscribe"
+            )
+        except HTTPException as exc:
+            if exc.status_code != 404:
+                raise
+            pending = await store.create_pending_subscriber(
                 mailing_list=mailing_list,
-                mailing_list_id=mailing_list.id,
                 email=data.email,
                 action="subscribe",
                 token=str(uuid4()),
-                created_at=datetime.utcnow(),
             )
         confirm_url = f"{request.base_url}api/v1/mailinglists/{id}/confirm/{pending.token}"
         msg = subscribe_confirmation(mailing_list.name, mailing_list.address, confirm_url)
@@ -439,7 +438,7 @@ class MailingListConfirmAPI:
         except Exception as e:
             log.error("Failed to add member %s to list %s: %s", pending.email, id, e)
             raise HTTPException(status_code=502, detail=f"Stalwart error: {e}")
-        await pending.delete()
+        await store.delete_pending_subscriber(pending)
         return {"detail": "Subscription confirmed"}
 
 
@@ -457,17 +456,17 @@ class MailingListUnsubscribeAPI:
             raise HTTPException(status_code=403, detail="Unsubscribing is not allowed")
 
         try:
-            pending = await PendingSubscriber.objects.filter(
-                mailing_list_id=id, email=data.email, action="unsubscribe"
-            ).get()
-        except oxyde.NotFoundError:
-            pending = await PendingSubscriber.objects.create(
+            pending = await store.get_pending_subscriber_by_email(
+                id, data.email, "unsubscribe"
+            )
+        except HTTPException as exc:
+            if exc.status_code != 404:
+                raise
+            pending = await store.create_pending_subscriber(
                 mailing_list=mailing_list,
-                mailing_list_id=mailing_list.id,
                 email=data.email,
                 action="unsubscribe",
                 token=str(uuid4()),
-                created_at=datetime.utcnow(),
             )
         confirm_url = f"{request.base_url}api/v1/mailinglists/{id}/unsubscribe/{pending.token}"
         msg = unsubscribe_confirmation(mailing_list.name, mailing_list.address, confirm_url)
@@ -494,7 +493,7 @@ class MailingListUnsubscribeConfirmAPI:
         except Exception as e:
             log.error("Failed to remove member %s from list %s: %s", pending.email, id, e)
             raise HTTPException(status_code=502, detail=f"Stalwart error: {e}")
-        await pending.delete()
+        await store.delete_pending_subscriber(pending)
         return {"detail": "Unsubscription confirmed"}
 
 
@@ -510,12 +509,8 @@ class MailingListModerationAPI:
     ) -> Page[ModerationMessageResponse]:
         _require_admin(cur_user)
         mailing_list = await _get_list(id)
-        return await paginate(
-            ModerationMessage.objects.filter(
-                mailing_list_id=mailing_list.id, status="pending"
-            ).order_by("-created_at"),
-            page,
-            perpage,
+        return await store.list_moderation_messages(
+            mailing_list.id, "pending", page, perpage
         )
 
 

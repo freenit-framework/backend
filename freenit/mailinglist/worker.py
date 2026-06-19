@@ -5,7 +5,8 @@ from typing import Any
 
 from freenit.config import getConfig
 from freenit.mail import sendmail
-from freenit.models.sql.base import MailingList, ModerationMessage
+from freenit.mailinglist import store
+from freenit.models.mailinglist import MailingList, ModerationMessage
 from freenit.stalwart import (
     destroy_emails,
     fetch_email_bodies,
@@ -111,9 +112,8 @@ async def _store_moderation(mailing_list: MailingList, email_data: dict[str, Any
     message_id = message_ids[0] if isinstance(message_ids, list) and message_ids else None
     received_at = email_data.get("receivedAt")
     sent_at = datetime.fromisoformat(received_at.replace("Z", "+00:00")) if received_at else datetime.utcnow()
-    return await ModerationMessage.objects.create(
+    return await store.create_moderation_message(
         mailing_list=mailing_list,
-        mailing_list_id=mailing_list.id,
         message_id=message_id,
         subject=email_data.get("subject"),
         sender=_email_address(email_data.get("from")),
@@ -191,10 +191,14 @@ async def approve_message(mailing_list: MailingList, moderation_message: Moderat
     await _distribute(mailing_list, email_data, moderation_message.text_body, moderation_message.html_body)
     moderation_message.status = "approved"
     moderation_message.decided_at = datetime.utcnow()
-    await moderation_message.save(update_fields=["status", "decided_at"])
+    await store.save_moderation_message(
+        moderation_message, update_fields=["status", "decided_at"]
+    )
 
 
 async def reject_message(moderation_message: ModerationMessage) -> None:
     moderation_message.status = "rejected"
     moderation_message.decided_at = datetime.utcnow()
-    await moderation_message.save(update_fields=["status", "decided_at"])
+    await store.save_moderation_message(
+        moderation_message, update_fields=["status", "decided_at"]
+    )
