@@ -148,7 +148,7 @@ class BaseConfig:
     xmpp = XMPP()
     stalwart_url = "http://stalwart.example.com"
     stalwart_admin = "%admin"
-    stalwart_admin_pass = ""
+    stalwart_admin_pass = ""  # nosec: B105
 
     def __init__(self):
         dburl = self.dburl

@@ -6,7 +6,7 @@ class BaseConfig(FreenitBaseConfig):
     version = "0.0.1"
     stalwart_url = "http://stalwart.example.com"
     stalwart_admin = "%admin"
-    stalwart_admin_pass = ""
+    stalwart_admin_pass = ""  # nosec: B105
 
 
 class DevConfig(BaseConfig):

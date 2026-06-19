@@ -1,6 +1,6 @@
 import asyncio
 import os
-import subprocess
+import subprocess  # nosec: B404
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
@@ -14,7 +14,7 @@ config = getConfig()
 def _run_migrations() -> None:
     env = os.environ.copy()
     env.setdefault("FREENIT_ENV", "prod")
-    subprocess.run(["oxyde", "migrate"], check=True, env=env)
+    subprocess.run(["oxyde", "migrate"], check=True, env=env)  # nosec
 
 
 @asynccontextmanager

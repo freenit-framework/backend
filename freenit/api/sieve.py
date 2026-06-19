@@ -74,8 +74,8 @@ class ManageSieveClient:
                 self._writer.close()
                 try:
                     await self._writer.wait_closed()
-                except Exception:
-                    pass
+                except Exception as e:
+                    log.warning("ManageSieve wait_closed error: %s", e)
 
     async def _read_response(self) -> tuple[bool, list[str]]:
         """Read lines until a terminal line (OK / NO / BYE).
