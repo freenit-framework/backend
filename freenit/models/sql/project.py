@@ -110,7 +110,61 @@ class TaskOptional(pydantic.BaseModel):
     parent_id: int | None = None
 
 
+class ProjectGroup(OxydeBaseModel):
+    id: int | None = oxyde.Field(default=None, db_pk=True)
+    project: Project | None = oxyde.Field(
+        default=None, db_fk="id", db_on_delete="CASCADE"
+    )
+    name: str = oxyde.Field()
+    description: str | None = oxyde.Field(default=None)
+    created_at: datetime | None = oxyde.Field(default=None)
+    updated_at: datetime | None = oxyde.Field(default=None)
+
+    class Meta:
+        is_table = True
+        table_name = "project_group"
+        unique_together = [("project_id", "name")]
+
+
+class ProjectGroupOptional(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(extra="forbid")
+
+    name: str | None = None
+    description: str | None = None
+    permissions: list[str] | None = None
+
+
+class ProjectGroupPermission(OxydeBaseModel):
+    id: int | None = oxyde.Field(default=None, db_pk=True)
+    group: ProjectGroup | None = oxyde.Field(
+        default=None, db_fk="id", db_on_delete="CASCADE"
+    )
+    permission: str = oxyde.Field()
+
+    class Meta:
+        is_table = True
+        table_name = "project_group_permission"
+        unique_together = [("group_id", "permission")]
+
+
+class ProjectMember(OxydeBaseModel):
+    id: int | None = oxyde.Field(default=None, db_pk=True)
+    group: ProjectGroup | None = oxyde.Field(
+        default=None, db_fk="id", db_on_delete="CASCADE"
+    )
+    user: User | None = oxyde.Field(default=None, db_fk="id", db_on_delete="CASCADE")
+    created_at: datetime | None = oxyde.Field(default=None)
+
+    class Meta:
+        is_table = True
+        table_name = "project_member"
+        unique_together = [("group_id", "user_id")]
+
+
 Project.model_rebuild()
 Board.model_rebuild()
 Column.model_rebuild()
 Task.model_rebuild()
+ProjectGroup.model_rebuild()
+ProjectGroupPermission.model_rebuild()
+ProjectMember.model_rebuild()

@@ -2,7 +2,15 @@ import factory
 from passlib.hash import pbkdf2_sha256
 
 from freenit.config import getConfig
-from freenit.models.project import Board, Column, Project, Task
+from freenit.models.project import (
+    Board,
+    Column,
+    Project,
+    ProjectGroup,
+    ProjectGroupPermission,
+    ProjectMember,
+    Task,
+)
 from freenit.models.role import Role as RoleModel
 
 config = getConfig()
@@ -65,3 +73,28 @@ class TaskFactory(factory.Factory):
     position = factory.Faker("random_int")
     column_id = None
     assignee_id = None
+
+
+class ProjectGroupFactory(factory.Factory):
+    class Meta:
+        model = ProjectGroup
+
+    name = factory.Faker("pystr")
+    description = factory.Faker("sentence")
+    project_id = None
+
+
+class ProjectMemberFactory(factory.Factory):
+    class Meta:
+        model = ProjectMember
+
+    group_id = None
+    user_id = None
+
+
+class ProjectGroupPermissionFactory(factory.Factory):
+    class Meta:
+        model = ProjectGroupPermission
+
+    group_id = None
+    permission = factory.Faker("pystr")
