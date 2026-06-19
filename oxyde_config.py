@@ -30,7 +30,11 @@ def database_dialect():
     return detect_dialect(database_url())
 
 
-MODELS = ["freenit.models.sql.base"]
+MODELS = [
+    "freenit.models.sql.base",
+    "freenit.models.sql.mailinglist",
+    "freenit.models.sql.project",
+]
 DIALECT = database_dialect()
 MIGRATIONS_DIR = "migrations"
 DATABASES = {

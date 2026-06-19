@@ -140,6 +140,7 @@ class BaseConfig:
     role = "freenit.models.sql.role"
     theme = "freenit.models.sql.theme"
     mailinglist = "freenit.models.sql.mailinglist"
+    project = "freenit.models.sql.project"
     theme_name = "Freenit"
     meta = None
     auth = Auth()
