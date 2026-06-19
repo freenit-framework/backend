@@ -1,31 +1,37 @@
-# OMEMO LDAP Schema
+# LDAP Schemas
 
-OpenLDAP schema extension for storing encrypted OMEMO device bundles on LDAP user entries.
+This directory contains optional OpenLDAP schema extensions used by Freenit.
 
 ## Files
 
-- `omemo.schema` — traditional schema file for `slapd.conf` setups
-- `omemo.ldif` — OLC/LDIF format for modern `cn=config` setups
+- `omemo.schema` / `omemo.ldif` — OMEMO device bundle storage on user entries.
+- `mailinglist.schema` / `mailinglist.ldif` — mailing list metadata storage in LDAP.
 
-## Loading the schema
+## Loading the schemas
 
-### Traditional slapd.conf
-
-Add to `slapd.conf`:
+### Traditional `slapd.conf`
 
 ```
 include /path/to/omemo.schema
+include /path/to/mailinglist.schema
 ```
 
 Then restart `slapd`.
 
-### Modern cn=config (OLC)
+### Modern `cn=config` (OLC)
 
 ```bash
 ldapadd -Y EXTERNAL -H ldapi:/// -f omemo.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f mailinglist.ldif
 ```
 
 No restart required.
+
+---
+
+# OMEMO LDAP Schema
+
+OpenLDAP schema extension for storing encrypted OMEMO device bundles on LDAP user entries.
 
 ## Adding omemoPerson to existing accounts
 
@@ -83,3 +89,58 @@ ldap = LDAP(
     userOmemoAttr="omemoBundle",
 )
 ```
+
+---
+
+# Mailing List LDAP Schema
+
+OpenLDAP schema extension for storing Freenit mailing list metadata in LDAP.
+
+This includes:
+
+- `freenitMailingList` — mailing list entries
+- `freenitPendingSubscriber` — pending subscribe/unsubscribe tokens
+- `freenitModerationMessage` — messages awaiting moderation
+- `freenitMailingListIdNext` — global numeric ID counter
+
+## Preparing the directory
+
+Create the mailing list container and the ID counter before using the LDAP backend:
+
+```bash
+ldapadd -x -D "cn=admin,dc=ldap" -W <<EOF
+dn: ou=mailinglists,dc=ldap
+objectClass: organizationalUnit
+ou: mailinglists
+
+dn: cn=mlidnext,dc=ldap
+objectClass: freenitMailingListIdNext
+cn: mlidnext
+mlidNumber: 1
+EOF
+```
+
+## Freenit configuration
+
+To store mailing list metadata in LDAP, point the model module at the LDAP implementation and configure the LDAP backend:
+
+```python
+from freenit.base_config import BaseConfig, LDAP
+
+class BaseConfig(BaseConfig):
+    mailinglist = "freenit.models.ldap.mailinglist"
+    ldap = LDAP(
+        host="ldap.example.com",
+        service_dn="cn=freenit,dc=service,dc=ldap",
+        service_pw="secret",
+        mailinglistBase="ou=mailinglists,dc=ldap",
+        mailinglistClasses=["freenitMailingList"],
+        pendingSubscriberClasses=["freenitPendingSubscriber"],
+        moderationMessageClasses=["freenitModerationMessage"],
+        mlidNextDN="cn=mlidnext,dc=ldap",
+        mlidNextClass="freenitMailingListIdNext",
+        mlidNextField="mlidNumber",
+    )
+```
+
+The default SQL backend remains active unless `mailinglist` is changed.

@@ -2,6 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
+from freenit.models.mailinglist import MailingList
+
 from . import factories
 
 
@@ -26,7 +28,7 @@ class TestMailingList:
         user = factories.User()
         await user.save()
         client.login(user=user)
-        data = {"name": "testlist", "address": "testlist@example.com"}
+        data = {"name": "testlist", "domain": "example.com"}
         response = client.post("/mailinglists", data=data)
         assert response.status_code == 403
 
@@ -40,7 +42,7 @@ class TestMailingList:
         create_archive.return_value = 3
         user = await self._admin()
         client.login(user=user)
-        data = {"name": "testlist", "address": "testlist@example.com"}
+        data = {"name": "testlist", "domain": "example.com"}
         response = client.post("/mailinglists", data=data)
         assert response.status_code == 200
         result = response.json()
@@ -59,7 +61,7 @@ class TestMailingList:
         create_archive.return_value = 3
         user = await self._admin()
         client.login(user=user)
-        data = {"name": "testlist", "address": "testlist@example.com"}
+        data = {"name": "testlist", "domain": "example.com"}
         response = client.post("/mailinglists", data=data)
         assert response.status_code == 200
         list_id = response.json()["id"]
@@ -69,7 +71,21 @@ class TestMailingList:
             assert response.status_code == 200
             mock_send.assert_called_once()
 
+    @patch("freenit.api.mailinglist.list_domains")
+    async def test_get_mailinglist_domains(self, mock_list_domains, client):
+        mock_list_domains.return_value = ["example.com", "example.org"]
+        user = await self._admin()
+        client.login(user=user)
+        response = client.get("/mailinglists/domains")
+        assert response.status_code == 200
+        assert response.json() == ["example.com", "example.org"]
+
     async def test_public_archive_forbidden_when_private(self, client):
         # Without mocking stalwart this just validates the endpoint wiring
         response = client.get("/mailinglists/1/archive")
         assert response.status_code in (404, 403)
+
+
+
+def test_default_mailinglist_backend():
+    assert MailingList.dbtype() == "sql"

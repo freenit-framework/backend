@@ -1,0 +1,217 @@
+# OpenLDAP schema for Freenit mailing list metadata
+# Load with: include /path/to/mailinglist.schema
+# Then restart slapd.
+#
+# This schema stores mailing lists, pending subscribers, and moderation
+# messages in LDAP. It is independent of the OMEMO schema.
+
+# Attribute definitions
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.1
+    NAME 'mlidNumber'
+    DESC 'Freenit mailing list numeric identifier'
+    EQUALITY integerMatch
+    ORDERING integerOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.2
+    NAME 'mailinglistAddress'
+    DESC 'Primary mailing list email address'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.3
+    NAME 'mailinglistDistributionAddress'
+    DESC 'Mailing list distribution email address'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.4
+    NAME 'mailinglistArchiveAddress'
+    DESC 'Mailing list archive email address'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.5
+    NAME 'mailinglistPublic'
+    DESC 'Whether the mailing list is publicly visible'
+    EQUALITY booleanMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.6
+    NAME 'mailinglistArchiveEnabled'
+    DESC 'Whether the archive is enabled'
+    EQUALITY booleanMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.7
+    NAME 'mailinglistModerationEnabled'
+    DESC 'Whether moderation is enabled'
+    EQUALITY booleanMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.8
+    NAME 'principalId'
+    DESC 'Stalwart list principal identifier'
+    EQUALITY integerMatch
+    ORDERING integerOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.9
+    NAME 'inboxPrincipalId'
+    DESC 'Stalwart inbox principal identifier'
+    EQUALITY integerMatch
+    ORDERING integerOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.10
+    NAME 'archivePrincipalId'
+    DESC 'Stalwart archive principal identifier'
+    EQUALITY integerMatch
+    ORDERING integerOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.11
+    NAME 'createdAt'
+    DESC 'Entry creation timestamp'
+    EQUALITY generalizedTimeMatch
+    ORDERING generalizedTimeOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.12
+    NAME 'updatedAt'
+    DESC 'Entry last update timestamp'
+    EQUALITY generalizedTimeMatch
+    ORDERING generalizedTimeOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.13
+    NAME 'mailinglistToken'
+    DESC 'Pending subscriber confirmation token'
+    EQUALITY caseExactMatch
+    SUBSTR caseExactSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.14
+    NAME 'mailinglistAction'
+    DESC 'Pending action type (subscribe or unsubscribe)'
+    EQUALITY caseIgnoreMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.15
+    NAME 'mailinglistMessageId'
+    DESC 'Original Message-ID header'
+    EQUALITY caseExactMatch
+    SUBSTR caseExactSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.16
+    NAME 'mailinglistSubject'
+    DESC 'Message subject'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.17
+    NAME 'mailinglistSender'
+    DESC 'Message sender email address'
+    EQUALITY caseIgnoreMatch
+    SUBSTR caseIgnoreSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.18
+    NAME 'sentAt'
+    DESC 'Original message sent timestamp'
+    EQUALITY generalizedTimeMatch
+    ORDERING generalizedTimeOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.19
+    NAME 'textBody'
+    DESC 'Plain text message body'
+    EQUALITY caseExactMatch
+    SUBSTR caseExactSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1048576}
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.20
+    NAME 'htmlBody'
+    DESC 'HTML message body'
+    EQUALITY caseExactMatch
+    SUBSTR caseExactSubstringsMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1048576}
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.21
+    NAME 'mailinglistStatus'
+    DESC 'Moderation message status (pending/approved/rejected)'
+    EQUALITY caseIgnoreMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+    SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.4203.666.100.22
+    NAME 'decidedAt'
+    DESC 'Moderation decision timestamp'
+    EQUALITY generalizedTimeMatch
+    ORDERING generalizedTimeOrderingMatch
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+    SINGLE-VALUE )
+
+# Object class definitions
+
+objectclass ( 1.3.6.1.4.1.4203.666.101.1
+    NAME 'freenitMailingList'
+    DESC 'Freenit mailing list entry'
+    SUP top
+    STRUCTURAL
+    MUST ( cn $ mlidNumber $ mailinglistAddress $
+           mailinglistDistributionAddress $ mailinglistArchiveAddress )
+    MAY ( description $ mailinglistPublic $ mailinglistArchiveEnabled $
+          mailinglistModerationEnabled $ principalId $ inboxPrincipalId $
+          archivePrincipalId $ createdAt $ updatedAt ) )
+
+objectclass ( 1.3.6.1.4.1.4203.666.101.2
+    NAME 'freenitPendingSubscriber'
+    DESC 'Freenit pending mailing list subscriber'
+    SUP top
+    STRUCTURAL
+    MUST ( cn $ mlidNumber $ mail $ mailinglistToken $ mailinglistAction $ createdAt )
+    MAY ( ) )
+
+objectclass ( 1.3.6.1.4.1.4203.666.101.3
+    NAME 'freenitModerationMessage'
+    DESC 'Freenit moderation message entry'
+    SUP top
+    STRUCTURAL
+    MUST ( cn $ mlidNumber $ createdAt )
+    MAY ( mailinglistMessageId $ mailinglistSubject $ mailinglistSender $
+          sentAt $ textBody $ htmlBody $ mailinglistStatus $ decidedAt ) )
+
+objectclass ( 1.3.6.1.4.1.4203.666.101.4
+    NAME 'freenitMailingListIdNext'
+    DESC 'Freenit mailing list ID counter'
+    SUP top
+    STRUCTURAL
+    MUST ( cn $ mlidNumber )
+    MAY ( ) )
