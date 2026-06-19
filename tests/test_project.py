@@ -405,3 +405,206 @@ class TestTask:
             f"/tasks/{task.id}", data={"parent_id": task.id}
         )
         assert response.status_code == 400
+
+
+@pytest.mark.asyncio
+class TestProjectGroup:
+    async def test_create_project_group(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        data = {"name": "Test Group", "description": "A test group"}
+        response = client.post(f"/projects/{project.id}/groups", data=data)
+        assert response.status_code == 200
+        result = response.json()
+        assert result["name"] == data["name"]
+        assert result["description"] == data["description"]
+        assert result["project_id"] == project.id
+
+    async def test_get_project_groups(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        response = client.get(f"/projects/{project.id}/groups")
+        assert response.status_code == 200
+        assert response.json()["total"] >= 1
+
+    async def test_get_project_group(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        response = client.get(f"/project-groups/{group.id}")
+        assert response.status_code == 200
+        assert response.json()["id"] == group.id
+
+    async def test_update_project_group(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        data = {"name": "Updated Group"}
+        response = client.patch(f"/project-groups/{group.id}", data=data)
+        assert response.status_code == 200
+        assert response.json()["name"] == data["name"]
+
+    async def test_delete_project_group(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        response = client.delete(f"/project-groups/{group.id}")
+        assert response.status_code == 200
+        response = client.get(f"/project-groups/{group.id}")
+        assert response.status_code == 404
+
+    async def test_create_project_group_duplicate_name(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id, name="Group X")
+        await group.save()
+        response = client.post(f"/projects/{project.id}/groups", data={"name": "Group X"})
+        assert response.status_code == 409
+
+    async def test_update_project_group_duplicate_name(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group1 = factories.ProjectGroupFactory(project_id=project.id, name="Group One")
+        await group1.save()
+        group2 = factories.ProjectGroupFactory(project_id=project.id, name="Group Two")
+        await group2.save()
+        response = client.patch(f"/project-groups/{group2.id}", data={"name": "Group One"})
+        assert response.status_code == 409
+
+
+@pytest.mark.asyncio
+class TestProjectGroupMember:
+    async def test_add_project_group_member(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        response = client.post(f"/project-groups/{group.id}/members", data={"user_id": user.id})
+        assert response.status_code == 200
+        result = response.json()
+        assert result["group_id"] == group.id
+        assert result["user_id"] == user.id
+
+    async def test_get_project_group_members(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        member = factories.ProjectMemberFactory(group_id=group.id, user_id=user.id)
+        await member.save()
+        response = client.get(f"/project-groups/{group.id}/members")
+        assert response.status_code == 200
+        assert response.json()["total"] >= 1
+
+    async def test_remove_project_group_member(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        member = factories.ProjectMemberFactory(group_id=group.id, user_id=user.id)
+        await member.save()
+        response = client.delete(f"/project-groups/{group.id}/members/{user.id}")
+        assert response.status_code == 200
+        response = client.get(f"/project-groups/{group.id}/members")
+        assert response.json()["total"] == 0
+
+    async def test_add_duplicate_project_group_member(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        member = factories.ProjectMemberFactory(group_id=group.id, user_id=user.id)
+        await member.save()
+        response = client.post(f"/project-groups/{group.id}/members", data={"user_id": user.id})
+        assert response.status_code == 409
+
+
+@pytest.mark.asyncio
+class TestProjectGroupPermissions:
+    async def test_create_project_group_with_permissions(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        data = {
+            "name": "Test Group",
+            "description": "A test group",
+            "permissions": ["create_board", "delete_board"],
+        }
+        response = client.post(f"/projects/{project.id}/groups", data=data)
+        assert response.status_code == 200
+        result = response.json()
+        assert result["permissions"] == data["permissions"]
+
+    async def test_get_project_group_with_permissions(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        perm = factories.ProjectGroupPermissionFactory(
+            group_id=group.id, permission="create_column"
+        )
+        await perm.save()
+        response = client.get(f"/project-groups/{group.id}")
+        assert response.status_code == 200
+        assert "create_column" in response.json()["permissions"]
+
+    async def test_update_project_group_permissions(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        group = factories.ProjectGroupFactory(project_id=project.id)
+        await group.save()
+        perm = factories.ProjectGroupPermissionFactory(
+            group_id=group.id, permission="create_column"
+        )
+        await perm.save()
+        data = {"permissions": ["create_project", "delete_project"]}
+        response = client.patch(f"/project-groups/{group.id}", data=data)
+        assert response.status_code == 200
+        result = response.json()
+        assert result["permissions"] == data["permissions"]

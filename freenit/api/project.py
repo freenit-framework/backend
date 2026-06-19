@@ -13,6 +13,10 @@ from freenit.models.project import (
     Column,
     ColumnOptional,
     Project,
+    ProjectGroup,
+    ProjectGroupOptional,
+    ProjectGroupPermission,
+    ProjectMember,
     ProjectOptional,
     Task,
     TaskOptional,
@@ -98,6 +102,37 @@ class TaskResponse(pydantic.BaseModel):
     updated_at: datetime | None = None
 
 
+class ProjectGroupCreate(pydantic.BaseModel):
+    name: str
+    description: str | None = None
+    permissions: list[str] = []
+
+
+class ProjectGroupResponse(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
+    id: int
+    project_id: int
+    name: str
+    description: str | None = None
+    permissions: list[str] = []
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+
+class ProjectGroupMemberCreate(pydantic.BaseModel):
+    user_id: int
+
+
+class ProjectGroupMemberResponse(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
+    id: int
+    group_id: int
+    user_id: int
+    created_at: datetime | None = None
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -129,6 +164,20 @@ async def _get_task(id: int) -> Task:
         return await Task.objects.get(id=id)
     except oxyde.NotFoundError:
         raise HTTPException(status_code=404, detail="No such task")
+
+
+async def _get_project_group(id: int) -> ProjectGroup:
+    try:
+        return await ProjectGroup.objects.get(id=id)
+    except oxyde.NotFoundError:
+        raise HTTPException(status_code=404, detail="No such project group")
+
+
+async def _get_project_member(group_id: int, user_id: int) -> ProjectMember:
+    try:
+        return await ProjectMember.objects.get(group_id=group_id, user_id=user_id)
+    except oxyde.NotFoundError:
+        raise HTTPException(status_code=404, detail="No such project member")
 
 
 async def _next_position(model, filter_kwargs: dict) -> int:
@@ -187,6 +236,40 @@ async def _check_column_name_unique(
     if any(item.id != exclude_id for item in existing):
         raise HTTPException(
             status_code=409, detail="Column name already exists in this board"
+        )
+
+
+async def _check_project_group_name_unique(
+    project_id: int, name: str, exclude_id: int | None = None
+) -> None:
+    existing = await ProjectGroup.objects.filter(project_id=project_id, name=name).all()
+    if any(item.id != exclude_id for item in existing):
+        raise HTTPException(
+            status_code=409, detail="Group name already exists in this project"
+        )
+
+
+async def _validate_project_group_member(group_id: int, user_id: int) -> None:
+    try:
+        await User.objects.get(id=user_id)
+    except oxyde.NotFoundError:
+        raise HTTPException(status_code=404, detail="No such user")
+
+
+async def _get_project_group_permissions(group_id: int) -> list[str]:
+    permissions = await ProjectGroupPermission.objects.filter(group_id=group_id).all()
+    return [p.permission for p in permissions]
+
+
+async def _set_project_group_permissions(
+    group_id: int, permissions: list[str]
+) -> None:
+    existing = await ProjectGroupPermission.objects.filter(group_id=group_id).all()
+    for perm in existing:
+        await perm.delete()
+    for permission in permissions:
+        await ProjectGroupPermission.objects.create(
+            group_id=group_id, permission=permission
         )
 
 
@@ -481,3 +564,138 @@ class TaskDetailAPI:
         task = await _get_task(id)
         await task.delete()
         return TaskResponse.model_validate(task)
+
+
+# ---------------------------------------------------------------------------
+# Project Groups
+# ---------------------------------------------------------------------------
+
+
+@route("/projects/{project_id}/groups", tags=tags)
+class ProjectGroupListAPI:
+    @staticmethod
+    @description("Get project groups")
+    async def get(
+        project_id: int,
+        page: int = Header(default=1),
+        perpage: int = Header(default=10),
+        _: User = Depends(project_perms),
+    ) -> Page[ProjectGroupResponse]:
+        await _get_project(project_id)
+        result = await paginate(
+            ProjectGroup.objects.filter(project_id=project_id),
+            page,
+            perpage,
+        )
+        for item in result.data:
+            object.__setattr__(item, "permissions", await _get_project_group_permissions(item.id))
+        return result
+
+    @staticmethod
+    @description("Create project group")
+    async def post(
+        project_id: int,
+        data: ProjectGroupCreate,
+        _: User = Depends(project_perms),
+    ) -> ProjectGroupResponse:
+        await _get_project(project_id)
+        await _check_project_group_name_unique(project_id, data.name)
+        now = datetime.utcnow()
+        group = await ProjectGroup.objects.create(
+            project_id=project_id,
+            name=data.name,
+            description=data.description,
+            created_at=now,
+            updated_at=now,
+        )
+        await _set_project_group_permissions(group.id, data.permissions)
+        object.__setattr__(group, "permissions", await _get_project_group_permissions(group.id))
+        return ProjectGroupResponse.model_validate(group)
+
+
+@route("/project-groups/{id}", tags=tags)
+class ProjectGroupDetailAPI:
+    @staticmethod
+    async def get(id: int, _: User = Depends(project_perms)) -> ProjectGroupResponse:
+        group = await _get_project_group(id)
+        object.__setattr__(group, "permissions", await _get_project_group_permissions(id))
+        return ProjectGroupResponse.model_validate(group)
+
+    @staticmethod
+    async def patch(
+        id: int,
+        data: ProjectGroupOptional,
+        _: User = Depends(project_perms),
+    ) -> ProjectGroupResponse:
+        group = await _get_project_group(id)
+        if data.name:
+            await _check_project_group_name_unique(group.project_id, data.name, exclude_id=id)
+        update = data.model_dump(exclude_none=True)
+        if "permissions" in update:
+            await _set_project_group_permissions(id, update.pop("permissions"))
+        if update:
+            await group.patch(ProjectGroupOptional(**update))
+        object.__setattr__(group, "permissions", await _get_project_group_permissions(id))
+        return ProjectGroupResponse.model_validate(group)
+
+    @staticmethod
+    async def delete(id: int, _: User = Depends(project_perms)) -> ProjectGroupResponse:
+        group = await _get_project_group(id)
+        await group.delete()
+        return ProjectGroupResponse.model_validate(group)
+
+
+# ---------------------------------------------------------------------------
+# Project Group Members
+# ---------------------------------------------------------------------------
+
+
+@route("/project-groups/{group_id}/members", tags=tags)
+class ProjectGroupMemberListAPI:
+    @staticmethod
+    @description("Get project group members")
+    async def get(
+        group_id: int,
+        page: int = Header(default=1),
+        perpage: int = Header(default=10),
+        _: User = Depends(project_perms),
+    ) -> Page[ProjectGroupMemberResponse]:
+        await _get_project_group(group_id)
+        return await paginate(
+            ProjectMember.objects.filter(group_id=group_id),
+            page,
+            perpage,
+        )
+
+    @staticmethod
+    @description("Add member to project group")
+    async def post(
+        group_id: int,
+        data: ProjectGroupMemberCreate,
+        _: User = Depends(project_perms),
+    ) -> ProjectGroupMemberResponse:
+        await _get_project_group(group_id)
+        await _validate_project_group_member(group_id, data.user_id)
+        now = datetime.utcnow()
+        try:
+            member = await ProjectMember.objects.create(
+                group_id=group_id,
+                user_id=data.user_id,
+                created_at=now,
+            )
+        except oxyde.IntegrityError:
+            raise HTTPException(status_code=409, detail="User already in group")
+        return ProjectGroupMemberResponse.model_validate(member)
+
+
+@route("/project-groups/{group_id}/members/{user_id}", tags=tags)
+class ProjectGroupMemberDetailAPI:
+    @staticmethod
+    async def delete(
+        group_id: int,
+        user_id: int,
+        _: User = Depends(project_perms),
+    ) -> ProjectGroupMemberResponse:
+        member = await _get_project_member(group_id, user_id)
+        await member.delete()
+        return ProjectGroupMemberResponse.model_validate(member)
