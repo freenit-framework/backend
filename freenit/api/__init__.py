@@ -5,6 +5,7 @@ import freenit.api.jabber
 import freenit.api.mail
 import freenit.api.mailinglist
 import freenit.api.omemo
+import freenit.api.project
 import freenit.api.role
 import freenit.api.sieve
 import freenit.api.theme
