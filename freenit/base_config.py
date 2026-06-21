@@ -134,14 +134,13 @@ class BaseConfig:
     port = 5000
     debug = False
     dburl = "sqlite:///db.sqlite"
-    database = None
+    _database = None
     secret = "SECRET"  # nosec
     user = "freenit.models.sql.user"
     role = "freenit.models.sql.role"
-    theme = "freenit.models.sql.theme"
     mailinglist = "freenit.models.sql.mailinglist"
     project = "freenit.models.sql.project"
-    theme_name = "Freenit"
+    modules = ["auth"]
     meta = None
     auth = Auth()
     mail = None
@@ -157,7 +156,16 @@ class BaseConfig:
             dbpath = Path(dburl.removeprefix("sqlite:///")).resolve()
             dburl = f"sqlite:///{dbpath}"
         self.dburl = dburl
-        self.database = oxyde.AsyncDatabase(self.dburl, overwrite=True)
+
+    @property
+    def database(self):
+        if self._database is None:
+            self._database = oxyde.AsyncDatabase(self.dburl, overwrite=True)
+        return self._database
+
+    @database.setter
+    def database(self, value):
+        self._database = value
 
     def __repr__(self):
         return (
@@ -186,6 +194,19 @@ class TestConfig(BaseConfig):
     debug = True
     dburl = "sqlite:///test.sqlite"
     auth = Auth(secure=False)
+    modules = [
+        "auth",
+        "user",
+        "role",
+        "project",
+        "mailinglist",
+        "domain",
+        "dav",
+        "mail",
+        "sieve",
+        "jabber",
+        "omemo",
+    ]
 
 
 class ProdConfig(BaseConfig):

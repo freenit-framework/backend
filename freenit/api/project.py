@@ -102,6 +102,11 @@ class TaskResponse(pydantic.BaseModel):
     updated_at: datetime | None = None
 
 
+class TaskDetailResponse(TaskResponse):
+    children: list[TaskResponse] = []
+    parent: TaskResponse | None = None
+
+
 class ProjectGroupCreate(pydantic.BaseModel):
     name: str
     description: str | None = None
@@ -261,9 +266,7 @@ async def _get_project_group_permissions(group_id: int) -> list[str]:
     return [p.permission for p in permissions]
 
 
-async def _set_project_group_permissions(
-    group_id: int, permissions: list[str]
-) -> None:
+async def _set_project_group_permissions(group_id: int, permissions: list[str]) -> None:
     existing = await ProjectGroupPermission.objects.filter(group_id=group_id).all()
     for perm in existing:
         await perm.delete()
@@ -524,9 +527,19 @@ class ColumnTaskListAPI:
 @route("/tasks/{id}", tags=tags)
 class TaskDetailAPI:
     @staticmethod
-    async def get(id: int, _: User = Depends(project_perms)) -> TaskResponse:
+    async def get(id: int, _: User = Depends(project_perms)) -> TaskDetailResponse:
         task = await _get_task(id)
-        return TaskResponse.model_validate(task)
+        children = await Task.objects.filter(parent_id=id).order_by("position").all()
+        parent = None
+        if task.parent_id is not None:
+            try:
+                parent = await Task.objects.get(id=task.parent_id)
+            except oxyde.NotFoundError:
+                parent = None
+        data = TaskResponse.model_validate(task).model_dump()
+        data["children"] = [TaskResponse.model_validate(child) for child in children]
+        data["parent"] = TaskResponse.model_validate(parent) if parent else None
+        return TaskDetailResponse(**data)
 
     @staticmethod
     async def patch(
@@ -588,7 +601,9 @@ class ProjectGroupListAPI:
             perpage,
         )
         for item in result.data:
-            object.__setattr__(item, "permissions", await _get_project_group_permissions(item.id))
+            object.__setattr__(
+                item, "permissions", await _get_project_group_permissions(item.id)
+            )
         return result
 
     @staticmethod
@@ -609,7 +624,9 @@ class ProjectGroupListAPI:
             updated_at=now,
         )
         await _set_project_group_permissions(group.id, data.permissions)
-        object.__setattr__(group, "permissions", await _get_project_group_permissions(group.id))
+        object.__setattr__(
+            group, "permissions", await _get_project_group_permissions(group.id)
+        )
         return ProjectGroupResponse.model_validate(group)
 
 
@@ -618,7 +635,9 @@ class ProjectGroupDetailAPI:
     @staticmethod
     async def get(id: int, _: User = Depends(project_perms)) -> ProjectGroupResponse:
         group = await _get_project_group(id)
-        object.__setattr__(group, "permissions", await _get_project_group_permissions(id))
+        object.__setattr__(
+            group, "permissions", await _get_project_group_permissions(id)
+        )
         return ProjectGroupResponse.model_validate(group)
 
     @staticmethod
@@ -629,13 +648,17 @@ class ProjectGroupDetailAPI:
     ) -> ProjectGroupResponse:
         group = await _get_project_group(id)
         if data.name:
-            await _check_project_group_name_unique(group.project_id, data.name, exclude_id=id)
+            await _check_project_group_name_unique(
+                group.project_id, data.name, exclude_id=id
+            )
         update = data.model_dump(exclude_none=True)
         if "permissions" in update:
             await _set_project_group_permissions(id, update.pop("permissions"))
         if update:
             await group.patch(ProjectGroupOptional(**update))
-        object.__setattr__(group, "permissions", await _get_project_group_permissions(id))
+        object.__setattr__(
+            group, "permissions", await _get_project_group_permissions(id)
+        )
         return ProjectGroupResponse.model_validate(group)
 
     @staticmethod

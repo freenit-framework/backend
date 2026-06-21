@@ -3,6 +3,9 @@ from pathlib import Path
 
 from oxyde.migrations.utils import detect_dialect
 
+from freenit.config import getConfig
+from freenit.modules import get_models
+
 
 def database_url():
     env = os.getenv("FREENIT_ENV", "prod")
@@ -30,11 +33,8 @@ def database_dialect():
     return detect_dialect(database_url())
 
 
-MODELS = [
-    "freenit.models.sql.base",
-    "freenit.models.sql.mailinglist",
-    "freenit.models.sql.project",
-]
+config = getConfig()
+MODELS = get_models(config.modules)
 DIALECT = database_dialect()
 MIGRATIONS_DIR = "migrations"
 DATABASES = {
