@@ -458,7 +458,10 @@ EOF
     await store.auth.logout()
   }
 
-  onMount(async () => { await store.auth.refresh_token() })
+  onMount(async () => {
+    await store.loadModules()
+    await store.auth.refresh_token()
+  })
 </script>
 
 <svelte:head>
@@ -585,33 +588,6 @@ EOF
 </script>
 
 <Domains store={store} />
-EOF
-
-  mkdir -p 'src/routes/themes/[pk]'
-  cat >'src/routes/themes/[pk]/+page.ts' <<EOF
-export const load = ({ params }) => {
-  return {
-    name: params.name
-  }
-}
-EOF
-  cat >'src/routes/themes/[pk]/+page.svelte' <<EOF
-<script lang="ts">
-  import { Theme } from 'freenit'
-  import store from '\$lib/store'
-
-  const { data: props } = \$props()
-</script>
-
-<Theme name={props.name} store={store} />
-EOF
-  cat >'src/routes/themes/+page.svelte' <<EOF
-<script lang="ts">
-  import { Themes } from 'freenit'
-  import store from '\$lib/store'
-</script>
-
-<Themes store={store} />
 EOF
 
   mkdir -p 'src/routes/users/[pk]'

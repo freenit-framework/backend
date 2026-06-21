@@ -76,7 +76,9 @@ class TestProject:
         await project1.save()
         project2 = factories.ProjectFactory(name="Project Two", created_by_id=user.id)
         await project2.save()
-        response = client.patch(f"/projects/{project2.id}", data={"name": "Project One"})
+        response = client.patch(
+            f"/projects/{project2.id}", data={"name": "Project One"}
+        )
         assert response.status_code == 409
 
 
@@ -245,9 +247,7 @@ class TestColumn:
         await board.save()
         column = factories.ColumnFactory(board_id=board.id, name="Column X")
         await column.save()
-        response = client.post(
-            f"/boards/{board.id}/columns", data={"name": "Column X"}
-        )
+        response = client.post(f"/boards/{board.id}/columns", data={"name": "Column X"})
         assert response.status_code == 409
 
     async def test_update_column_duplicate_name(self, client):
@@ -316,6 +316,49 @@ class TestTask:
         response = client.get(f"/tasks/{task.id}")
         assert response.status_code == 200
         assert response.json()["id"] == task.id
+        assert response.json()["children"] == []
+        assert response.json()["parent"] is None
+
+    async def test_get_task_includes_children(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        board = factories.BoardFactory(project_id=project.id)
+        await board.save()
+        column = factories.ColumnFactory(board_id=board.id)
+        await column.save()
+        parent = factories.TaskFactory(column_id=column.id)
+        await parent.save()
+        child = factories.TaskFactory(column_id=column.id, parent_id=parent.id)
+        await child.save()
+        response = client.get(f"/tasks/{parent.id}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == parent.id
+        assert len(data["children"]) == 1
+        assert data["children"][0]["id"] == child.id
+
+    async def test_get_task_includes_parent(self, client):
+        user = factories.User()
+        await user.save()
+        client.login(user=user)
+        project = factories.ProjectFactory(created_by_id=user.id)
+        await project.save()
+        board = factories.BoardFactory(project_id=project.id)
+        await board.save()
+        column = factories.ColumnFactory(board_id=board.id)
+        await column.save()
+        parent = factories.TaskFactory(column_id=column.id)
+        await parent.save()
+        child = factories.TaskFactory(column_id=column.id, parent_id=parent.id)
+        await child.save()
+        response = client.get(f"/tasks/{child.id}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == child.id
+        assert data["parent"]["id"] == parent.id
 
     async def test_update_task(self, client):
         user = factories.User()
@@ -401,9 +444,7 @@ class TestTask:
         await column.save()
         task = factories.TaskFactory(column_id=column.id)
         await task.save()
-        response = client.patch(
-            f"/tasks/{task.id}", data={"parent_id": task.id}
-        )
+        response = client.patch(f"/tasks/{task.id}", data={"parent_id": task.id})
         assert response.status_code == 400
 
 
@@ -481,7 +522,9 @@ class TestProjectGroup:
         await project.save()
         group = factories.ProjectGroupFactory(project_id=project.id, name="Group X")
         await group.save()
-        response = client.post(f"/projects/{project.id}/groups", data={"name": "Group X"})
+        response = client.post(
+            f"/projects/{project.id}/groups", data={"name": "Group X"}
+        )
         assert response.status_code == 409
 
     async def test_update_project_group_duplicate_name(self, client):
@@ -494,7 +537,9 @@ class TestProjectGroup:
         await group1.save()
         group2 = factories.ProjectGroupFactory(project_id=project.id, name="Group Two")
         await group2.save()
-        response = client.patch(f"/project-groups/{group2.id}", data={"name": "Group One"})
+        response = client.patch(
+            f"/project-groups/{group2.id}", data={"name": "Group One"}
+        )
         assert response.status_code == 409
 
 
@@ -508,7 +553,9 @@ class TestProjectGroupMember:
         await project.save()
         group = factories.ProjectGroupFactory(project_id=project.id)
         await group.save()
-        response = client.post(f"/project-groups/{group.id}/members", data={"user_id": user.id})
+        response = client.post(
+            f"/project-groups/{group.id}/members", data={"user_id": user.id}
+        )
         assert response.status_code == 200
         result = response.json()
         assert result["group_id"] == group.id
@@ -553,7 +600,9 @@ class TestProjectGroupMember:
         await group.save()
         member = factories.ProjectMemberFactory(group_id=group.id, user_id=user.id)
         await member.save()
-        response = client.post(f"/project-groups/{group.id}/members", data={"user_id": user.id})
+        response = client.post(
+            f"/project-groups/{group.id}/members", data={"user_id": user.id}
+        )
         assert response.status_code == 409
 
 
