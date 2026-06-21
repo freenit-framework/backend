@@ -2,6 +2,13 @@ import factory
 from passlib.hash import pbkdf2_sha256
 
 from freenit.config import getConfig
+from freenit.models.lms import (
+    Course,
+    CourseGroup,
+    CourseGroupPermission,
+    CourseMember,
+    Lecture,
+)
 from freenit.models.project import (
     Board,
     Column,
@@ -98,3 +105,48 @@ class ProjectGroupPermissionFactory(factory.Factory):
 
     group_id = None
     permission = factory.Faker("pystr")
+
+
+class CourseFactory(factory.Factory):
+    class Meta:
+        model = Course
+
+    name = factory.Faker("pystr")
+    description = factory.Faker("sentence")
+    created_by_id = None
+
+
+class LectureFactory(factory.Factory):
+    class Meta:
+        model = Lecture
+
+    title = factory.Faker("pystr")
+    content = factory.Faker("sentence")
+    position = factory.Faker("random_int")
+    state = "draft"
+    course_id = None
+
+
+class CourseGroupFactory(factory.Factory):
+    class Meta:
+        model = CourseGroup
+
+    name = factory.Faker("pystr")
+    description = factory.Faker("sentence")
+    course_id = None
+
+
+class CourseMemberFactory(factory.Factory):
+    class Meta:
+        model = CourseMember
+
+    group_id = None
+    user_id = None
+
+
+class CourseGroupPermissionFactory(factory.Factory):
+    class Meta:
+        model = CourseGroupPermission
+
+    group_id = None
+    permission = "edit"

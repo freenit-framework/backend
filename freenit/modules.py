@@ -36,6 +36,12 @@ MODULES = {
         models=["freenit.models.sql.project"],
         api="freenit.api.project",
     ),
+    "lms": Module(
+        name="lms",
+        dependencies=["user"],
+        models=["freenit.models.sql.lms"],
+        api="freenit.api.lms",
+    ),
     "mailinglist": Module(
         name="mailinglist",
         dependencies=["user"],

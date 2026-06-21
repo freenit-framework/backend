@@ -140,6 +140,7 @@ class BaseConfig:
     role = "freenit.models.sql.role"
     mailinglist = "freenit.models.sql.mailinglist"
     project = "freenit.models.sql.project"
+    lms = "freenit.models.sql.lms"
     modules = ["auth"]
     meta = None
     auth = Auth()
@@ -199,6 +200,7 @@ class TestConfig(BaseConfig):
         "user",
         "role",
         "project",
+        "lms",
         "mailinglist",
         "domain",
         "dav",
