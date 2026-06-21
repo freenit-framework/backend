@@ -1,6 +1,7 @@
 from freenit.auth import permissions
 
 domain_perms = permissions()
+git_perms = permissions()
 group_perms = permissions()
 lms_perms = permissions()
 mailinglist_perms = permissions()

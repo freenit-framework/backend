@@ -1,0 +1,3 @@
+#!/bin/sh
+# Freenit pre-receive hook. Rejects the push if the user lacks write access.
+exec python -m freenit.git.hooks "REPO_NAME" pre-receive

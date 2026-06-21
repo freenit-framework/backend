@@ -30,3 +30,8 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.mount(config.api_root, api)
+
+if "git" in config.modules:
+    from .api.git_http import router as git_http_router
+
+    app.include_router(git_http_router)

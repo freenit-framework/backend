@@ -92,6 +92,15 @@ class LDAP:
         mlidNextClass="freenitMailingListIdNext",
         mlidNextDN="cn=mlidnext,dc=ldap",
         mlidNextField="mlidNumber",
+        gitBase="ou=git,dc=ldap",
+        gitRepoDN="cn={}",
+        gitRepoClasses=["freenitGitRepo"],
+        gitPermissionClasses=["freenitGitPermission"],
+        gitPushLogClasses=["freenitGitPushLog"],
+        gitCommitTaskRefClasses=["freenitGitCommitTaskRef"],
+        gitIdNextClass="freenitGitIdNext",
+        gitIdNextDN="cn=gitidnext,dc=ldap",
+        gitIdNextField="gitIdNumber",
     ):
         self.host = host
         self.tls = tls
@@ -124,6 +133,15 @@ class LDAP:
         self.mlidNextClass = mlidNextClass
         self.mlidNextDN = mlidNextDN
         self.mlidNextField = mlidNextField
+        self.gitBase = gitBase
+        self.gitRepoDN = f"{gitRepoDN},{gitBase}"
+        self.gitRepoClasses = gitRepoClasses
+        self.gitPermissionClasses = gitPermissionClasses
+        self.gitPushLogClasses = gitPushLogClasses
+        self.gitCommitTaskRefClasses = gitCommitTaskRefClasses
+        self.gitIdNextClass = gitIdNextClass
+        self.gitIdNextDN = gitIdNextDN
+        self.gitIdNextField = gitIdNextField
 
 
 class BaseConfig:
@@ -141,6 +159,7 @@ class BaseConfig:
     mailinglist = "freenit.models.sql.mailinglist"
     project = "freenit.models.sql.project"
     lms = "freenit.models.sql.lms"
+    git = "freenit.models.sql.git"
     modules = ["auth"]
     meta = None
     auth = Auth()
@@ -208,6 +227,7 @@ class TestConfig(BaseConfig):
         "sieve",
         "jabber",
         "omemo",
+        "git",
     ]
 
 
