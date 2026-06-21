@@ -4,9 +4,7 @@ from freenit.base_config import Auth, Mail, BaseConfig as FreenitBaseConfig
 class BaseConfig(FreenitBaseConfig):
     name = "NAME"
     version = "0.0.1"
-    # Modules are inherited from FreenitBaseConfig (default: ["auth"]).
-    # Add feature modules here, e.g.:
-    # modules = ["auth", "project", "lms"]
+    modules = ["auth", "git"]
     stalwart_url = "http://stalwart.example.com"
     stalwart_admin = "%admin"
     stalwart_admin_pass = ""  # nosec: B105

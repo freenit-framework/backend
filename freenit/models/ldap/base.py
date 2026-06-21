@@ -91,6 +91,26 @@ async def next_mlid(increment=True) -> int:
         raise HTTPException(status_code=403, detail="Failed to login")
 
 
+async def next_git_id(increment=True) -> int:
+    client = get_client()
+    try:
+        async with client.connect(is_async=True) as conn:
+            res = await conn.search(
+                config.ldap.gitIdNextDN,
+                LDAPSearchScope.BASE,
+                f"objectClass={config.ldap.gitIdNextClass}",
+            )
+            if len(res) < 1:
+                raise HTTPException(status_code=404, detail="Can not find next Git ID")
+            gitIdNext = int(res[0][config.ldap.gitIdNextField][0])
+            if increment:
+                res[0][config.ldap.gitIdNextField] = gitIdNext + 1
+                await res[0].modify()
+            return gitIdNext
+    except errors.AuthenticationError:
+        raise HTTPException(status_code=403, detail="Failed to login")
+
+
 def class2filter(classes):
     return "".join([f"(objectClass={group})" for group in classes])
 

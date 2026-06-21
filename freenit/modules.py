@@ -78,6 +78,12 @@ MODULES = {
         dependencies=["user"],
         api="freenit.api.omemo",
     ),
+    "git": Module(
+        name="git",
+        dependencies=["user"],
+        models=["freenit.models.sql.git"],
+        api="freenit.api.git",
+    ),
 }
 
 

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Freenit post-receive hook. Records the push and triggers tests if configured.
+exec python -m freenit.git.hooks "REPO_NAME" post-receive

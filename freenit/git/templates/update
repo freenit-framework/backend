@@ -1,0 +1,6 @@
+#!/bin/sh
+# Freenit update hook. Rejects the ref update if the user lacks write access.
+ref="$1"
+oldrev="$2"
+newrev="$3"
+exec python -m freenit.git.hooks "REPO_NAME" update "$ref" "$oldrev" "$newrev"
