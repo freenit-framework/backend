@@ -11,11 +11,12 @@ from oxyde.queries import Query, QueryManager
 
 from __future__ import annotations
 from datetime import datetime
+from enum import StrEnum
 import oxyde
 import pydantic
 from freenit.models.sql.base import OxydeBaseModel, User
 
-class Project(Model):
+class Course(Model):
     class Meta:
         is_table: bool
         table_name: str
@@ -26,11 +27,11 @@ class Project(Model):
     created_at: datetime | None
     updated_at: datetime | None
     created_by_id: int | None
-    objects: ClassVar["ProjectManager"]
+    objects: ClassVar["CourseManager"]
 
 
-class ProjectQuery(Query[Project]):
-    """Type-safe Query for Project model."""
+class CourseQuery(Query[Course]):
+    """Type-safe Query for Course model."""
 
     # Query building methods (sync, return Query)
 
@@ -102,7 +103,7 @@ class ProjectQuery(Query[Project]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> "ProjectQuery":
+    ) -> "CourseQuery":
         """Filter by Q-expressions or field lookups."""
         ...
 
@@ -174,63 +175,63 @@ class ProjectQuery(Query[Project]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> "ProjectQuery":
+    ) -> "CourseQuery":
         """Exclude objects matching field lookups."""
         ...
 
-    def order_by(self, *fields: Literal["created_at", "-created_at", "created_by", "-created_by", "created_by_id", "-created_by_id", "description", "-description", "id", "-id", "name", "-name", "updated_at", "-updated_at"]) -> "ProjectQuery":  # type: ignore[override]
+    def order_by(self, *fields: Literal["created_at", "-created_at", "created_by", "-created_by", "created_by_id", "-created_by_id", "description", "-description", "id", "-id", "name", "-name", "updated_at", "-updated_at"]) -> "CourseQuery":  # type: ignore[override]
         """Order results by fields."""
         ...
 
-    def limit(self, n: int) -> "ProjectQuery":
+    def limit(self, n: int) -> "CourseQuery":
         """Limit number of results."""
         ...
 
-    def offset(self, n: int) -> "ProjectQuery":
+    def offset(self, n: int) -> "CourseQuery":
         """Skip first n results."""
         ...
 
-    def distinct(self, value: bool = True) -> "ProjectQuery":
+    def distinct(self, value: bool = True) -> "CourseQuery":
         """Return distinct results."""
         ...
 
-    def select(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> "ProjectQuery":  # type: ignore[override]
+    def select(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> "CourseQuery":  # type: ignore[override]
         """Select specific fields."""
         ...
 
-    def join(self, *paths: str) -> "ProjectQuery":
+    def join(self, *paths: str) -> "CourseQuery":
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> "ProjectQuery":
+    def prefetch(self, *paths: str) -> "CourseQuery":
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> "ProjectQuery":
+    def for_update(self) -> "CourseQuery":
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> "ProjectQuery":
+    def for_share(self) -> "CourseQuery":
         """Add FOR SHARE lock to query."""
         ...
 
-    def annotate(self, **annotations: Any) -> "ProjectQuery":
+    def annotate(self, **annotations: Any) -> "CourseQuery":
         """Add computed fields using aggregate functions."""
         ...
 
-    def group_by(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> "ProjectQuery":  # type: ignore[override]
+    def group_by(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> "CourseQuery":  # type: ignore[override]
         """Add GROUP BY clause."""
         ...
 
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "ProjectQuery":
+    def having(self, *q_exprs: Any, **kwargs: Any) -> "CourseQuery":
         """Add HAVING clause for filtering grouped results."""
         ...
 
-    def values(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> "ProjectQuery":  # type: ignore[override]
+    def values(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> "CourseQuery":  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"], flat: bool = False) -> "ProjectQuery":  # type: ignore[override]
+    def values_list(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"], flat: bool = False) -> "CourseQuery":  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
@@ -241,7 +242,7 @@ class ProjectQuery(Query[Project]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[Project]:
+    ) -> list[Course]:
         """Execute query and return all results."""
         ...
 
@@ -250,7 +251,7 @@ class ProjectQuery(Query[Project]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Project | None:
+    ) -> Course | None:
         """Execute query and return first result."""
         ...
 
@@ -259,7 +260,7 @@ class ProjectQuery(Query[Project]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Project | None:
+    ) -> Course | None:
         """Execute query and return last result."""
         ...
 
@@ -342,12 +343,12 @@ class ProjectQuery(Query[Project]):
         """Delete matching objects."""
         ...
 
-class ProjectManager(QueryManager[Project]):
-    """Type-safe Manager for Project model."""
+class CourseManager(QueryManager[Course]):
+    """Type-safe Manager for Course model."""
 
     # Query building methods (sync, return Query)
 
-    def query(self) -> ProjectQuery:
+    def query(self) -> CourseQuery:
         """Return a Query builder for this model."""
         ...
 
@@ -419,7 +420,7 @@ class ProjectManager(QueryManager[Project]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> ProjectQuery:
+    ) -> CourseQuery:
         """Filter by Q-expressions or field lookups."""
         ...
 
@@ -491,35 +492,35 @@ class ProjectManager(QueryManager[Project]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> ProjectQuery:
+    ) -> CourseQuery:
         """Exclude objects matching field lookups."""
         ...
 
-    def values(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> ProjectQuery:  # type: ignore[override]
+    def values(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"]) -> CourseQuery:  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"], flat: bool = False) -> ProjectQuery:  # type: ignore[override]
+    def values_list(self, *fields: Literal["created_at", "created_by", "created_by_id", "description", "id", "name", "updated_at"], flat: bool = False) -> CourseQuery:  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
-    def distinct(self, distinct: bool = True) -> ProjectQuery:
+    def distinct(self, distinct: bool = True) -> CourseQuery:
         """Return distinct results."""
         ...
 
-    def join(self, *paths: str) -> ProjectQuery:
+    def join(self, *paths: str) -> CourseQuery:
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> ProjectQuery:
+    def prefetch(self, *paths: str) -> CourseQuery:
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> ProjectQuery:
+    def for_update(self) -> CourseQuery:
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> ProjectQuery:
+    def for_share(self) -> CourseQuery:
         """Add FOR SHARE lock to query."""
         ...
 
@@ -531,7 +532,7 @@ class ProjectManager(QueryManager[Project]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> Project:
+    ) -> Course:
         """Get single object matching lookups."""
         ...
 
@@ -541,7 +542,7 @@ class ProjectManager(QueryManager[Project]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> Project | None:
+    ) -> Course | None:
         """Get object or None if not found."""
         ...
 
@@ -552,7 +553,7 @@ class ProjectManager(QueryManager[Project]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[Project, bool]:
+    ) -> tuple[Course, bool]:
         """Get object or create if not found. Returns (object, created)."""
         ...
 
@@ -563,7 +564,7 @@ class ProjectManager(QueryManager[Project]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[Project, bool]:
+    ) -> tuple[Course, bool]:
         """Get object, create if missing, or update it when defaults are provided."""
         ...
 
@@ -573,7 +574,7 @@ class ProjectManager(QueryManager[Project]):
         client: Any | None = None,
         using: str | None = None,
         mode: str = "models",
-    ) -> list[Project]:
+    ) -> list[Course]:
         """Get all objects."""
         ...
 
@@ -582,7 +583,7 @@ class ProjectManager(QueryManager[Project]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Project | None:
+    ) -> Course | None:
         """Get first object."""
         ...
 
@@ -591,7 +592,7 @@ class ProjectManager(QueryManager[Project]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Project | None:
+    ) -> Course | None:
         """Get last object."""
         ...
 
@@ -647,7 +648,7 @@ class ProjectManager(QueryManager[Project]):
     async def create(  # type: ignore[override]
         self,
         *,
-        instance: Project | None = None,
+        instance: Course | None = None,
         client: Any | None = None,
         using: str | None = None,
         created_at: datetime | None = None,
@@ -657,24 +658,24 @@ class ProjectManager(QueryManager[Project]):
         id: int | None = None,
         name: str | None = None,
         updated_at: datetime | None = None,
-    ) -> Project:
+    ) -> Course:
         """Create new object."""
         ...
 
     async def bulk_create(  # type: ignore[override]
         self,
-        objects: list[Project],
+        objects: list[Course],
         *,
         batch_size: int | None = None,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[Project]:
+    ) -> list[Course]:
         """Bulk create objects."""
         ...
 
     async def bulk_update(  # type: ignore[override]
         self,
-        objects: list[Project],
+        objects: list[Course],
         fields: list[str],
         *,
         client: Any | None = None,
@@ -684,1391 +685,52 @@ class ProjectManager(QueryManager[Project]):
         ...
 
 
-class Board(Model):
+class Lecture(Model):
     class Meta:
         is_table: bool
         table_name: str
     id: int | None
-    project: Project | None
-    name: str
-    description: str | None
-    created_at: datetime | None
-    updated_at: datetime | None
-    project_id: int | None
-    objects: ClassVar["BoardManager"]
-
-
-class BoardQuery(Query[Board]):
-    """Type-safe Query for Board model."""
-
-    # Query building methods (sync, return Query)
-
-    def filter(
-        self,
-        *args: Any,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> "BoardQuery":
-        """Filter by Q-expressions or field lookups."""
-        ...
-
-    def exclude(
-        self,
-        *args: Any,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> "BoardQuery":
-        """Exclude objects matching field lookups."""
-        ...
-
-    def order_by(self, *fields: Literal["created_at", "-created_at", "description", "-description", "id", "-id", "name", "-name", "project", "-project", "project_id", "-project_id", "updated_at", "-updated_at"]) -> "BoardQuery":  # type: ignore[override]
-        """Order results by fields."""
-        ...
-
-    def limit(self, n: int) -> "BoardQuery":
-        """Limit number of results."""
-        ...
-
-    def offset(self, n: int) -> "BoardQuery":
-        """Skip first n results."""
-        ...
-
-    def distinct(self, value: bool = True) -> "BoardQuery":
-        """Return distinct results."""
-        ...
-
-    def select(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> "BoardQuery":  # type: ignore[override]
-        """Select specific fields."""
-        ...
-
-    def join(self, *paths: str) -> "BoardQuery":
-        """Perform LEFT JOIN for relations."""
-        ...
-
-    def prefetch(self, *paths: str) -> "BoardQuery":
-        """Prefetch related objects (separate queries)."""
-        ...
-
-    def for_update(self) -> "BoardQuery":
-        """Add FOR UPDATE lock to query."""
-        ...
-
-    def for_share(self) -> "BoardQuery":
-        """Add FOR SHARE lock to query."""
-        ...
-
-    def annotate(self, **annotations: Any) -> "BoardQuery":
-        """Add computed fields using aggregate functions."""
-        ...
-
-    def group_by(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> "BoardQuery":  # type: ignore[override]
-        """Add GROUP BY clause."""
-        ...
-
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "BoardQuery":
-        """Add HAVING clause for filtering grouped results."""
-        ...
-
-    def values(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> "BoardQuery":  # type: ignore[override]
-        """Return dicts instead of models."""
-        ...
-
-    def values_list(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"], flat: bool = False) -> "BoardQuery":  # type: ignore[override]
-        """Return tuples/values instead of models."""
-        ...
-
-    # Terminal methods (async, execute query)
-
-    async def all(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> list[Board]:
-        """Execute query and return all results."""
-        ...
-
-    async def first(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Board | None:
-        """Execute query and return first result."""
-        ...
-
-    async def last(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Board | None:
-        """Execute query and return last result."""
-        ...
-
-    async def count(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Count matching objects."""
-        ...
-
-    async def sum(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate sum of field values."""
-        ...
-
-    async def avg(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate average of field values."""
-        ...
-
-    async def max(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get maximum field value."""
-        ...
-
-    async def min(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get minimum field value."""
-        ...
-
-    async def update(  # type: ignore[override]
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        **values: Any,
-    ) -> int:
-        """Update matching objects."""
-        ...
-
-    async def increment(
-        self,
-        field: str,
-        by: int | float = 1,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Atomically increment a field value."""
-        ...
-
-    async def delete(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Delete matching objects."""
-        ...
-
-class BoardManager(QueryManager[Board]):
-    """Type-safe Manager for Board model."""
-
-    # Query building methods (sync, return Query)
-
-    def query(self) -> BoardQuery:
-        """Return a Query builder for this model."""
-        ...
-
-    def filter(
-        self,
-        *args: Any,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> BoardQuery:
-        """Filter by Q-expressions or field lookups."""
-        ...
-
-    def exclude(
-        self,
-        *args: Any,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> BoardQuery:
-        """Exclude objects matching field lookups."""
-        ...
-
-    def values(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> BoardQuery:  # type: ignore[override]
-        """Return dicts instead of models."""
-        ...
-
-    def values_list(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"], flat: bool = False) -> BoardQuery:  # type: ignore[override]
-        """Return tuples/values instead of models."""
-        ...
-
-    def distinct(self, distinct: bool = True) -> BoardQuery:
-        """Return distinct results."""
-        ...
-
-    def join(self, *paths: str) -> BoardQuery:
-        """Perform LEFT JOIN for relations."""
-        ...
-
-    def prefetch(self, *paths: str) -> BoardQuery:
-        """Prefetch related objects (separate queries)."""
-        ...
-
-    def for_update(self) -> BoardQuery:
-        """Add FOR UPDATE lock to query."""
-        ...
-
-    def for_share(self) -> BoardQuery:
-        """Add FOR SHARE lock to query."""
-        ...
-
-    # Terminal methods (async, execute query)
-
-    async def get(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> Board:
-        """Get single object matching lookups."""
-        ...
-
-    async def get_or_none(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> Board | None:
-        """Get object or None if not found."""
-        ...
-
-    async def get_or_create(
-        self,
-        *,
-        defaults: dict[str, Any] | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> tuple[Board, bool]:
-        """Get object or create if not found. Returns (object, created)."""
-        ...
-
-    async def update_or_create(
-        self,
-        *,
-        defaults: dict[str, Any] | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> tuple[Board, bool]:
-        """Get object, create if missing, or update it when defaults are provided."""
-        ...
-
-    async def all(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        mode: str = "models",
-    ) -> list[Board]:
-        """Get all objects."""
-        ...
-
-    async def first(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Board | None:
-        """Get first object."""
-        ...
-
-    async def last(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Board | None:
-        """Get last object."""
-        ...
-
-    async def count(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Count all objects."""
-        ...
-
-    async def sum(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate sum of field values."""
-        ...
-
-    async def avg(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate average of field values."""
-        ...
-
-    async def max(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get maximum field value."""
-        ...
-
-    async def min(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get minimum field value."""
-        ...
-
-    async def create(  # type: ignore[override]
-        self,
-        *,
-        instance: Board | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-        created_at: datetime | None = None,
-        description: str | None = None,
-        id: int | None = None,
-        name: str | None = None,
-        project: Project | None = None,
-        project_id: int | None = None,
-        updated_at: datetime | None = None,
-    ) -> Board:
-        """Create new object."""
-        ...
-
-    async def bulk_create(  # type: ignore[override]
-        self,
-        objects: list[Board],
-        *,
-        batch_size: int | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> list[Board]:
-        """Bulk create objects."""
-        ...
-
-    async def bulk_update(  # type: ignore[override]
-        self,
-        objects: list[Board],
-        fields: list[str],
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Bulk update objects."""
-        ...
-
-
-class Column(Model):
-    class Meta:
-        is_table: bool
-        table_name: str
-    id: int | None
-    board: Board | None
-    name: str
-    position: int
-    created_at: datetime | None
-    updated_at: datetime | None
-    board_id: int | None
-    objects: ClassVar["ColumnManager"]
-
-
-class ColumnQuery(Query[Column]):
-    """Type-safe Query for Column model."""
-
-    # Query building methods (sync, return Query)
-
-    def filter(
-        self,
-        *args: Any,
-        board: Board | None = None,
-        board__in: list[Board] | None = None,
-        board__isnull: bool | None = None,
-        board_id: int | None = None,
-        board_id__gt: int | None = None,
-        board_id__gte: int | None = None,
-        board_id__lt: int | None = None,
-        board_id__lte: int | None = None,
-        board_id__between: tuple[int, int] | None = None,
-        board_id__range: int | None = None,
-        board_id__in: list[int] | None = None,
-        board_id__isnull: bool | None = None,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        position: int | None = None,
-        position__gt: int | None = None,
-        position__gte: int | None = None,
-        position__lt: int | None = None,
-        position__lte: int | None = None,
-        position__between: tuple[int, int] | None = None,
-        position__range: int | None = None,
-        position__in: list[int] | None = None,
-        position__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> "ColumnQuery":
-        """Filter by Q-expressions or field lookups."""
-        ...
-
-    def exclude(
-        self,
-        *args: Any,
-        board: Board | None = None,
-        board__in: list[Board] | None = None,
-        board__isnull: bool | None = None,
-        board_id: int | None = None,
-        board_id__gt: int | None = None,
-        board_id__gte: int | None = None,
-        board_id__lt: int | None = None,
-        board_id__lte: int | None = None,
-        board_id__between: tuple[int, int] | None = None,
-        board_id__range: int | None = None,
-        board_id__in: list[int] | None = None,
-        board_id__isnull: bool | None = None,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        position: int | None = None,
-        position__gt: int | None = None,
-        position__gte: int | None = None,
-        position__lt: int | None = None,
-        position__lte: int | None = None,
-        position__between: tuple[int, int] | None = None,
-        position__range: int | None = None,
-        position__in: list[int] | None = None,
-        position__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> "ColumnQuery":
-        """Exclude objects matching field lookups."""
-        ...
-
-    def order_by(self, *fields: Literal["board", "-board", "board_id", "-board_id", "created_at", "-created_at", "id", "-id", "name", "-name", "position", "-position", "updated_at", "-updated_at"]) -> "ColumnQuery":  # type: ignore[override]
-        """Order results by fields."""
-        ...
-
-    def limit(self, n: int) -> "ColumnQuery":
-        """Limit number of results."""
-        ...
-
-    def offset(self, n: int) -> "ColumnQuery":
-        """Skip first n results."""
-        ...
-
-    def distinct(self, value: bool = True) -> "ColumnQuery":
-        """Return distinct results."""
-        ...
-
-    def select(self, *fields: Literal["board", "board_id", "created_at", "id", "name", "position", "updated_at"]) -> "ColumnQuery":  # type: ignore[override]
-        """Select specific fields."""
-        ...
-
-    def join(self, *paths: str) -> "ColumnQuery":
-        """Perform LEFT JOIN for relations."""
-        ...
-
-    def prefetch(self, *paths: str) -> "ColumnQuery":
-        """Prefetch related objects (separate queries)."""
-        ...
-
-    def for_update(self) -> "ColumnQuery":
-        """Add FOR UPDATE lock to query."""
-        ...
-
-    def for_share(self) -> "ColumnQuery":
-        """Add FOR SHARE lock to query."""
-        ...
-
-    def annotate(self, **annotations: Any) -> "ColumnQuery":
-        """Add computed fields using aggregate functions."""
-        ...
-
-    def group_by(self, *fields: Literal["board", "board_id", "created_at", "id", "name", "position", "updated_at"]) -> "ColumnQuery":  # type: ignore[override]
-        """Add GROUP BY clause."""
-        ...
-
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "ColumnQuery":
-        """Add HAVING clause for filtering grouped results."""
-        ...
-
-    def values(self, *fields: Literal["board", "board_id", "created_at", "id", "name", "position", "updated_at"]) -> "ColumnQuery":  # type: ignore[override]
-        """Return dicts instead of models."""
-        ...
-
-    def values_list(self, *fields: Literal["board", "board_id", "created_at", "id", "name", "position", "updated_at"], flat: bool = False) -> "ColumnQuery":  # type: ignore[override]
-        """Return tuples/values instead of models."""
-        ...
-
-    # Terminal methods (async, execute query)
-
-    async def all(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> list[Column]:
-        """Execute query and return all results."""
-        ...
-
-    async def first(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Column | None:
-        """Execute query and return first result."""
-        ...
-
-    async def last(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Column | None:
-        """Execute query and return last result."""
-        ...
-
-    async def count(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Count matching objects."""
-        ...
-
-    async def sum(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate sum of field values."""
-        ...
-
-    async def avg(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate average of field values."""
-        ...
-
-    async def max(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get maximum field value."""
-        ...
-
-    async def min(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get minimum field value."""
-        ...
-
-    async def update(  # type: ignore[override]
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        **values: Any,
-    ) -> int:
-        """Update matching objects."""
-        ...
-
-    async def increment(
-        self,
-        field: str,
-        by: int | float = 1,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Atomically increment a field value."""
-        ...
-
-    async def delete(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Delete matching objects."""
-        ...
-
-class ColumnManager(QueryManager[Column]):
-    """Type-safe Manager for Column model."""
-
-    # Query building methods (sync, return Query)
-
-    def query(self) -> ColumnQuery:
-        """Return a Query builder for this model."""
-        ...
-
-    def filter(
-        self,
-        *args: Any,
-        board: Board | None = None,
-        board__in: list[Board] | None = None,
-        board__isnull: bool | None = None,
-        board_id: int | None = None,
-        board_id__gt: int | None = None,
-        board_id__gte: int | None = None,
-        board_id__lt: int | None = None,
-        board_id__lte: int | None = None,
-        board_id__between: tuple[int, int] | None = None,
-        board_id__range: int | None = None,
-        board_id__in: list[int] | None = None,
-        board_id__isnull: bool | None = None,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        position: int | None = None,
-        position__gt: int | None = None,
-        position__gte: int | None = None,
-        position__lt: int | None = None,
-        position__lte: int | None = None,
-        position__between: tuple[int, int] | None = None,
-        position__range: int | None = None,
-        position__in: list[int] | None = None,
-        position__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> ColumnQuery:
-        """Filter by Q-expressions or field lookups."""
-        ...
-
-    def exclude(
-        self,
-        *args: Any,
-        board: Board | None = None,
-        board__in: list[Board] | None = None,
-        board__isnull: bool | None = None,
-        board_id: int | None = None,
-        board_id__gt: int | None = None,
-        board_id__gte: int | None = None,
-        board_id__lt: int | None = None,
-        board_id__lte: int | None = None,
-        board_id__between: tuple[int, int] | None = None,
-        board_id__range: int | None = None,
-        board_id__in: list[int] | None = None,
-        board_id__isnull: bool | None = None,
-        created_at: datetime | None = None,
-        created_at__gt: datetime | None = None,
-        created_at__gte: datetime | None = None,
-        created_at__lt: datetime | None = None,
-        created_at__lte: datetime | None = None,
-        created_at__between: tuple[datetime, datetime] | None = None,
-        created_at__range: datetime | None = None,
-        created_at__year: int | None = None,
-        created_at__month: int | None = None,
-        created_at__day: int | None = None,
-        created_at__in: list[datetime] | None = None,
-        created_at__isnull: bool | None = None,
-        id: int | None = None,
-        id__gt: int | None = None,
-        id__gte: int | None = None,
-        id__lt: int | None = None,
-        id__lte: int | None = None,
-        id__between: tuple[int, int] | None = None,
-        id__range: int | None = None,
-        id__in: list[int] | None = None,
-        id__isnull: bool | None = None,
-        name: str | None = None,
-        name__contains: str | None = None,
-        name__icontains: str | None = None,
-        name__startswith: str | None = None,
-        name__istartswith: str | None = None,
-        name__endswith: str | None = None,
-        name__iendswith: str | None = None,
-        name__iexact: str | None = None,
-        name__in: list[str] | None = None,
-        name__isnull: bool | None = None,
-        position: int | None = None,
-        position__gt: int | None = None,
-        position__gte: int | None = None,
-        position__lt: int | None = None,
-        position__lte: int | None = None,
-        position__between: tuple[int, int] | None = None,
-        position__range: int | None = None,
-        position__in: list[int] | None = None,
-        position__isnull: bool | None = None,
-        updated_at: datetime | None = None,
-        updated_at__gt: datetime | None = None,
-        updated_at__gte: datetime | None = None,
-        updated_at__lt: datetime | None = None,
-        updated_at__lte: datetime | None = None,
-        updated_at__between: tuple[datetime, datetime] | None = None,
-        updated_at__range: datetime | None = None,
-        updated_at__year: int | None = None,
-        updated_at__month: int | None = None,
-        updated_at__day: int | None = None,
-        updated_at__in: list[datetime] | None = None,
-        updated_at__isnull: bool | None = None,
-    ) -> ColumnQuery:
-        """Exclude objects matching field lookups."""
-        ...
-
-    def values(self, *fields: Literal["board", "board_id", "created_at", "id", "name", "position", "updated_at"]) -> ColumnQuery:  # type: ignore[override]
-        """Return dicts instead of models."""
-        ...
-
-    def values_list(self, *fields: Literal["board", "board_id", "created_at", "id", "name", "position", "updated_at"], flat: bool = False) -> ColumnQuery:  # type: ignore[override]
-        """Return tuples/values instead of models."""
-        ...
-
-    def distinct(self, distinct: bool = True) -> ColumnQuery:
-        """Return distinct results."""
-        ...
-
-    def join(self, *paths: str) -> ColumnQuery:
-        """Perform LEFT JOIN for relations."""
-        ...
-
-    def prefetch(self, *paths: str) -> ColumnQuery:
-        """Prefetch related objects (separate queries)."""
-        ...
-
-    def for_update(self) -> ColumnQuery:
-        """Add FOR UPDATE lock to query."""
-        ...
-
-    def for_share(self) -> ColumnQuery:
-        """Add FOR SHARE lock to query."""
-        ...
-
-    # Terminal methods (async, execute query)
-
-    async def get(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> Column:
-        """Get single object matching lookups."""
-        ...
-
-    async def get_or_none(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> Column | None:
-        """Get object or None if not found."""
-        ...
-
-    async def get_or_create(
-        self,
-        *,
-        defaults: dict[str, Any] | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> tuple[Column, bool]:
-        """Get object or create if not found. Returns (object, created)."""
-        ...
-
-    async def update_or_create(
-        self,
-        *,
-        defaults: dict[str, Any] | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-        **filters: Any,
-    ) -> tuple[Column, bool]:
-        """Get object, create if missing, or update it when defaults are provided."""
-        ...
-
-    async def all(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-        mode: str = "models",
-    ) -> list[Column]:
-        """Get all objects."""
-        ...
-
-    async def first(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Column | None:
-        """Get first object."""
-        ...
-
-    async def last(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Column | None:
-        """Get last object."""
-        ...
-
-    async def count(
-        self,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Count all objects."""
-        ...
-
-    async def sum(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate sum of field values."""
-        ...
-
-    async def avg(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Calculate average of field values."""
-        ...
-
-    async def max(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get maximum field value."""
-        ...
-
-    async def min(
-        self,
-        field: str,
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> Any:
-        """Get minimum field value."""
-        ...
-
-    async def create(  # type: ignore[override]
-        self,
-        *,
-        instance: Column | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-        board: Board | None = None,
-        board_id: int | None = None,
-        created_at: datetime | None = None,
-        id: int | None = None,
-        name: str | None = None,
-        position: int | None = None,
-        updated_at: datetime | None = None,
-    ) -> Column:
-        """Create new object."""
-        ...
-
-    async def bulk_create(  # type: ignore[override]
-        self,
-        objects: list[Column],
-        *,
-        batch_size: int | None = None,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> list[Column]:
-        """Bulk create objects."""
-        ...
-
-    async def bulk_update(  # type: ignore[override]
-        self,
-        objects: list[Column],
-        fields: list[str],
-        *,
-        client: Any | None = None,
-        using: str | None = None,
-    ) -> int:
-        """Bulk update objects."""
-        ...
-
-
-class Task(Model):
-    class Meta:
-        is_table: bool
-        table_name: str
-    id: int | None
-    column: Column | None
+    course: Course | None
     title: str
-    description: str | None
+    content: str | None
     position: int
-    assignee: User | None
-    parent: Task | None
+    state: LectureState
     created_at: datetime | None
     updated_at: datetime | None
-    column_id: int | None
-    assignee_id: int | None
-    parent_id: int | None
-    objects: ClassVar["TaskManager"]
+    course_id: int | None
+    objects: ClassVar["LectureManager"]
 
 
-class TaskQuery(Query[Task]):
-    """Type-safe Query for Task model."""
+class LectureQuery(Query[Lecture]):
+    """Type-safe Query for Lecture model."""
 
     # Query building methods (sync, return Query)
 
     def filter(
         self,
         *args: Any,
-        assignee: User | None = None,
-        assignee__in: list[User] | None = None,
-        assignee__isnull: bool | None = None,
-        assignee_id: int | None = None,
-        assignee_id__gt: int | None = None,
-        assignee_id__gte: int | None = None,
-        assignee_id__lt: int | None = None,
-        assignee_id__lte: int | None = None,
-        assignee_id__between: tuple[int, int] | None = None,
-        assignee_id__range: int | None = None,
-        assignee_id__in: list[int] | None = None,
-        assignee_id__isnull: bool | None = None,
-        column: Column | None = None,
-        column__in: list[Column] | None = None,
-        column__isnull: bool | None = None,
-        column_id: int | None = None,
-        column_id__gt: int | None = None,
-        column_id__gte: int | None = None,
-        column_id__lt: int | None = None,
-        column_id__lte: int | None = None,
-        column_id__between: tuple[int, int] | None = None,
-        column_id__range: int | None = None,
-        column_id__in: list[int] | None = None,
-        column_id__isnull: bool | None = None,
+        content: str | None = None,
+        content__contains: str | None = None,
+        content__icontains: str | None = None,
+        content__startswith: str | None = None,
+        content__istartswith: str | None = None,
+        content__endswith: str | None = None,
+        content__iendswith: str | None = None,
+        content__iexact: str | None = None,
+        content__in: list[str] | None = None,
+        content__isnull: bool | None = None,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -2081,16 +743,6 @@ class TaskQuery(Query[Task]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
         id: int | None = None,
         id__gt: int | None = None,
         id__gte: int | None = None,
@@ -2100,18 +752,6 @@ class TaskQuery(Query[Task]):
         id__range: int | None = None,
         id__in: list[int] | None = None,
         id__isnull: bool | None = None,
-        parent: Task | None = None,
-        parent__in: list[Task] | None = None,
-        parent__isnull: bool | None = None,
-        parent_id: int | None = None,
-        parent_id__gt: int | None = None,
-        parent_id__gte: int | None = None,
-        parent_id__lt: int | None = None,
-        parent_id__lte: int | None = None,
-        parent_id__between: tuple[int, int] | None = None,
-        parent_id__range: int | None = None,
-        parent_id__in: list[int] | None = None,
-        parent_id__isnull: bool | None = None,
         position: int | None = None,
         position__gt: int | None = None,
         position__gte: int | None = None,
@@ -2121,6 +761,9 @@ class TaskQuery(Query[Task]):
         position__range: int | None = None,
         position__in: list[int] | None = None,
         position__isnull: bool | None = None,
+        state: LectureState | None = None,
+        state__in: list[LectureState] | None = None,
+        state__isnull: bool | None = None,
         title: str | None = None,
         title__contains: str | None = None,
         title__icontains: str | None = None,
@@ -2143,37 +786,35 @@ class TaskQuery(Query[Task]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> "TaskQuery":
+    ) -> "LectureQuery":
         """Filter by Q-expressions or field lookups."""
         ...
 
     def exclude(
         self,
         *args: Any,
-        assignee: User | None = None,
-        assignee__in: list[User] | None = None,
-        assignee__isnull: bool | None = None,
-        assignee_id: int | None = None,
-        assignee_id__gt: int | None = None,
-        assignee_id__gte: int | None = None,
-        assignee_id__lt: int | None = None,
-        assignee_id__lte: int | None = None,
-        assignee_id__between: tuple[int, int] | None = None,
-        assignee_id__range: int | None = None,
-        assignee_id__in: list[int] | None = None,
-        assignee_id__isnull: bool | None = None,
-        column: Column | None = None,
-        column__in: list[Column] | None = None,
-        column__isnull: bool | None = None,
-        column_id: int | None = None,
-        column_id__gt: int | None = None,
-        column_id__gte: int | None = None,
-        column_id__lt: int | None = None,
-        column_id__lte: int | None = None,
-        column_id__between: tuple[int, int] | None = None,
-        column_id__range: int | None = None,
-        column_id__in: list[int] | None = None,
-        column_id__isnull: bool | None = None,
+        content: str | None = None,
+        content__contains: str | None = None,
+        content__icontains: str | None = None,
+        content__startswith: str | None = None,
+        content__istartswith: str | None = None,
+        content__endswith: str | None = None,
+        content__iendswith: str | None = None,
+        content__iexact: str | None = None,
+        content__in: list[str] | None = None,
+        content__isnull: bool | None = None,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -2186,16 +827,6 @@ class TaskQuery(Query[Task]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
         id: int | None = None,
         id__gt: int | None = None,
         id__gte: int | None = None,
@@ -2205,18 +836,6 @@ class TaskQuery(Query[Task]):
         id__range: int | None = None,
         id__in: list[int] | None = None,
         id__isnull: bool | None = None,
-        parent: Task | None = None,
-        parent__in: list[Task] | None = None,
-        parent__isnull: bool | None = None,
-        parent_id: int | None = None,
-        parent_id__gt: int | None = None,
-        parent_id__gte: int | None = None,
-        parent_id__lt: int | None = None,
-        parent_id__lte: int | None = None,
-        parent_id__between: tuple[int, int] | None = None,
-        parent_id__range: int | None = None,
-        parent_id__in: list[int] | None = None,
-        parent_id__isnull: bool | None = None,
         position: int | None = None,
         position__gt: int | None = None,
         position__gte: int | None = None,
@@ -2226,6 +845,9 @@ class TaskQuery(Query[Task]):
         position__range: int | None = None,
         position__in: list[int] | None = None,
         position__isnull: bool | None = None,
+        state: LectureState | None = None,
+        state__in: list[LectureState] | None = None,
+        state__isnull: bool | None = None,
         title: str | None = None,
         title__contains: str | None = None,
         title__icontains: str | None = None,
@@ -2248,63 +870,63 @@ class TaskQuery(Query[Task]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> "TaskQuery":
+    ) -> "LectureQuery":
         """Exclude objects matching field lookups."""
         ...
 
-    def order_by(self, *fields: Literal["assignee", "-assignee", "assignee_id", "-assignee_id", "column", "-column", "column_id", "-column_id", "created_at", "-created_at", "description", "-description", "id", "-id", "parent", "-parent", "parent_id", "-parent_id", "position", "-position", "title", "-title", "updated_at", "-updated_at"]) -> "TaskQuery":  # type: ignore[override]
+    def order_by(self, *fields: Literal["content", "-content", "course", "-course", "course_id", "-course_id", "created_at", "-created_at", "id", "-id", "position", "-position", "state", "-state", "title", "-title", "updated_at", "-updated_at"]) -> "LectureQuery":  # type: ignore[override]
         """Order results by fields."""
         ...
 
-    def limit(self, n: int) -> "TaskQuery":
+    def limit(self, n: int) -> "LectureQuery":
         """Limit number of results."""
         ...
 
-    def offset(self, n: int) -> "TaskQuery":
+    def offset(self, n: int) -> "LectureQuery":
         """Skip first n results."""
         ...
 
-    def distinct(self, value: bool = True) -> "TaskQuery":
+    def distinct(self, value: bool = True) -> "LectureQuery":
         """Return distinct results."""
         ...
 
-    def select(self, *fields: Literal["assignee", "assignee_id", "column", "column_id", "created_at", "description", "id", "parent", "parent_id", "position", "title", "updated_at"]) -> "TaskQuery":  # type: ignore[override]
+    def select(self, *fields: Literal["content", "course", "course_id", "created_at", "id", "position", "state", "title", "updated_at"]) -> "LectureQuery":  # type: ignore[override]
         """Select specific fields."""
         ...
 
-    def join(self, *paths: str) -> "TaskQuery":
+    def join(self, *paths: str) -> "LectureQuery":
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> "TaskQuery":
+    def prefetch(self, *paths: str) -> "LectureQuery":
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> "TaskQuery":
+    def for_update(self) -> "LectureQuery":
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> "TaskQuery":
+    def for_share(self) -> "LectureQuery":
         """Add FOR SHARE lock to query."""
         ...
 
-    def annotate(self, **annotations: Any) -> "TaskQuery":
+    def annotate(self, **annotations: Any) -> "LectureQuery":
         """Add computed fields using aggregate functions."""
         ...
 
-    def group_by(self, *fields: Literal["assignee", "assignee_id", "column", "column_id", "created_at", "description", "id", "parent", "parent_id", "position", "title", "updated_at"]) -> "TaskQuery":  # type: ignore[override]
+    def group_by(self, *fields: Literal["content", "course", "course_id", "created_at", "id", "position", "state", "title", "updated_at"]) -> "LectureQuery":  # type: ignore[override]
         """Add GROUP BY clause."""
         ...
 
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "TaskQuery":
+    def having(self, *q_exprs: Any, **kwargs: Any) -> "LectureQuery":
         """Add HAVING clause for filtering grouped results."""
         ...
 
-    def values(self, *fields: Literal["assignee", "assignee_id", "column", "column_id", "created_at", "description", "id", "parent", "parent_id", "position", "title", "updated_at"]) -> "TaskQuery":  # type: ignore[override]
+    def values(self, *fields: Literal["content", "course", "course_id", "created_at", "id", "position", "state", "title", "updated_at"]) -> "LectureQuery":  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["assignee", "assignee_id", "column", "column_id", "created_at", "description", "id", "parent", "parent_id", "position", "title", "updated_at"], flat: bool = False) -> "TaskQuery":  # type: ignore[override]
+    def values_list(self, *fields: Literal["content", "course", "course_id", "created_at", "id", "position", "state", "title", "updated_at"], flat: bool = False) -> "LectureQuery":  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
@@ -2315,7 +937,7 @@ class TaskQuery(Query[Task]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[Task]:
+    ) -> list[Lecture]:
         """Execute query and return all results."""
         ...
 
@@ -2324,7 +946,7 @@ class TaskQuery(Query[Task]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Task | None:
+    ) -> Lecture | None:
         """Execute query and return first result."""
         ...
 
@@ -2333,7 +955,7 @@ class TaskQuery(Query[Task]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Task | None:
+    ) -> Lecture | None:
         """Execute query and return last result."""
         ...
 
@@ -2416,42 +1038,40 @@ class TaskQuery(Query[Task]):
         """Delete matching objects."""
         ...
 
-class TaskManager(QueryManager[Task]):
-    """Type-safe Manager for Task model."""
+class LectureManager(QueryManager[Lecture]):
+    """Type-safe Manager for Lecture model."""
 
     # Query building methods (sync, return Query)
 
-    def query(self) -> TaskQuery:
+    def query(self) -> LectureQuery:
         """Return a Query builder for this model."""
         ...
 
     def filter(
         self,
         *args: Any,
-        assignee: User | None = None,
-        assignee__in: list[User] | None = None,
-        assignee__isnull: bool | None = None,
-        assignee_id: int | None = None,
-        assignee_id__gt: int | None = None,
-        assignee_id__gte: int | None = None,
-        assignee_id__lt: int | None = None,
-        assignee_id__lte: int | None = None,
-        assignee_id__between: tuple[int, int] | None = None,
-        assignee_id__range: int | None = None,
-        assignee_id__in: list[int] | None = None,
-        assignee_id__isnull: bool | None = None,
-        column: Column | None = None,
-        column__in: list[Column] | None = None,
-        column__isnull: bool | None = None,
-        column_id: int | None = None,
-        column_id__gt: int | None = None,
-        column_id__gte: int | None = None,
-        column_id__lt: int | None = None,
-        column_id__lte: int | None = None,
-        column_id__between: tuple[int, int] | None = None,
-        column_id__range: int | None = None,
-        column_id__in: list[int] | None = None,
-        column_id__isnull: bool | None = None,
+        content: str | None = None,
+        content__contains: str | None = None,
+        content__icontains: str | None = None,
+        content__startswith: str | None = None,
+        content__istartswith: str | None = None,
+        content__endswith: str | None = None,
+        content__iendswith: str | None = None,
+        content__iexact: str | None = None,
+        content__in: list[str] | None = None,
+        content__isnull: bool | None = None,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -2464,16 +1084,6 @@ class TaskManager(QueryManager[Task]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
         id: int | None = None,
         id__gt: int | None = None,
         id__gte: int | None = None,
@@ -2483,18 +1093,6 @@ class TaskManager(QueryManager[Task]):
         id__range: int | None = None,
         id__in: list[int] | None = None,
         id__isnull: bool | None = None,
-        parent: Task | None = None,
-        parent__in: list[Task] | None = None,
-        parent__isnull: bool | None = None,
-        parent_id: int | None = None,
-        parent_id__gt: int | None = None,
-        parent_id__gte: int | None = None,
-        parent_id__lt: int | None = None,
-        parent_id__lte: int | None = None,
-        parent_id__between: tuple[int, int] | None = None,
-        parent_id__range: int | None = None,
-        parent_id__in: list[int] | None = None,
-        parent_id__isnull: bool | None = None,
         position: int | None = None,
         position__gt: int | None = None,
         position__gte: int | None = None,
@@ -2504,6 +1102,9 @@ class TaskManager(QueryManager[Task]):
         position__range: int | None = None,
         position__in: list[int] | None = None,
         position__isnull: bool | None = None,
+        state: LectureState | None = None,
+        state__in: list[LectureState] | None = None,
+        state__isnull: bool | None = None,
         title: str | None = None,
         title__contains: str | None = None,
         title__icontains: str | None = None,
@@ -2526,37 +1127,35 @@ class TaskManager(QueryManager[Task]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> TaskQuery:
+    ) -> LectureQuery:
         """Filter by Q-expressions or field lookups."""
         ...
 
     def exclude(
         self,
         *args: Any,
-        assignee: User | None = None,
-        assignee__in: list[User] | None = None,
-        assignee__isnull: bool | None = None,
-        assignee_id: int | None = None,
-        assignee_id__gt: int | None = None,
-        assignee_id__gte: int | None = None,
-        assignee_id__lt: int | None = None,
-        assignee_id__lte: int | None = None,
-        assignee_id__between: tuple[int, int] | None = None,
-        assignee_id__range: int | None = None,
-        assignee_id__in: list[int] | None = None,
-        assignee_id__isnull: bool | None = None,
-        column: Column | None = None,
-        column__in: list[Column] | None = None,
-        column__isnull: bool | None = None,
-        column_id: int | None = None,
-        column_id__gt: int | None = None,
-        column_id__gte: int | None = None,
-        column_id__lt: int | None = None,
-        column_id__lte: int | None = None,
-        column_id__between: tuple[int, int] | None = None,
-        column_id__range: int | None = None,
-        column_id__in: list[int] | None = None,
-        column_id__isnull: bool | None = None,
+        content: str | None = None,
+        content__contains: str | None = None,
+        content__icontains: str | None = None,
+        content__startswith: str | None = None,
+        content__istartswith: str | None = None,
+        content__endswith: str | None = None,
+        content__iendswith: str | None = None,
+        content__iexact: str | None = None,
+        content__in: list[str] | None = None,
+        content__isnull: bool | None = None,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -2569,16 +1168,6 @@ class TaskManager(QueryManager[Task]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        description: str | None = None,
-        description__contains: str | None = None,
-        description__icontains: str | None = None,
-        description__startswith: str | None = None,
-        description__istartswith: str | None = None,
-        description__endswith: str | None = None,
-        description__iendswith: str | None = None,
-        description__iexact: str | None = None,
-        description__in: list[str] | None = None,
-        description__isnull: bool | None = None,
         id: int | None = None,
         id__gt: int | None = None,
         id__gte: int | None = None,
@@ -2588,18 +1177,6 @@ class TaskManager(QueryManager[Task]):
         id__range: int | None = None,
         id__in: list[int] | None = None,
         id__isnull: bool | None = None,
-        parent: Task | None = None,
-        parent__in: list[Task] | None = None,
-        parent__isnull: bool | None = None,
-        parent_id: int | None = None,
-        parent_id__gt: int | None = None,
-        parent_id__gte: int | None = None,
-        parent_id__lt: int | None = None,
-        parent_id__lte: int | None = None,
-        parent_id__between: tuple[int, int] | None = None,
-        parent_id__range: int | None = None,
-        parent_id__in: list[int] | None = None,
-        parent_id__isnull: bool | None = None,
         position: int | None = None,
         position__gt: int | None = None,
         position__gte: int | None = None,
@@ -2609,6 +1186,9 @@ class TaskManager(QueryManager[Task]):
         position__range: int | None = None,
         position__in: list[int] | None = None,
         position__isnull: bool | None = None,
+        state: LectureState | None = None,
+        state__in: list[LectureState] | None = None,
+        state__isnull: bool | None = None,
         title: str | None = None,
         title__contains: str | None = None,
         title__icontains: str | None = None,
@@ -2631,35 +1211,35 @@ class TaskManager(QueryManager[Task]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> TaskQuery:
+    ) -> LectureQuery:
         """Exclude objects matching field lookups."""
         ...
 
-    def values(self, *fields: Literal["assignee", "assignee_id", "column", "column_id", "created_at", "description", "id", "parent", "parent_id", "position", "title", "updated_at"]) -> TaskQuery:  # type: ignore[override]
+    def values(self, *fields: Literal["content", "course", "course_id", "created_at", "id", "position", "state", "title", "updated_at"]) -> LectureQuery:  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["assignee", "assignee_id", "column", "column_id", "created_at", "description", "id", "parent", "parent_id", "position", "title", "updated_at"], flat: bool = False) -> TaskQuery:  # type: ignore[override]
+    def values_list(self, *fields: Literal["content", "course", "course_id", "created_at", "id", "position", "state", "title", "updated_at"], flat: bool = False) -> LectureQuery:  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
-    def distinct(self, distinct: bool = True) -> TaskQuery:
+    def distinct(self, distinct: bool = True) -> LectureQuery:
         """Return distinct results."""
         ...
 
-    def join(self, *paths: str) -> TaskQuery:
+    def join(self, *paths: str) -> LectureQuery:
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> TaskQuery:
+    def prefetch(self, *paths: str) -> LectureQuery:
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> TaskQuery:
+    def for_update(self) -> LectureQuery:
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> TaskQuery:
+    def for_share(self) -> LectureQuery:
         """Add FOR SHARE lock to query."""
         ...
 
@@ -2671,7 +1251,7 @@ class TaskManager(QueryManager[Task]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> Task:
+    ) -> Lecture:
         """Get single object matching lookups."""
         ...
 
@@ -2681,7 +1261,7 @@ class TaskManager(QueryManager[Task]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> Task | None:
+    ) -> Lecture | None:
         """Get object or None if not found."""
         ...
 
@@ -2692,7 +1272,7 @@ class TaskManager(QueryManager[Task]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[Task, bool]:
+    ) -> tuple[Lecture, bool]:
         """Get object or create if not found. Returns (object, created)."""
         ...
 
@@ -2703,7 +1283,7 @@ class TaskManager(QueryManager[Task]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[Task, bool]:
+    ) -> tuple[Lecture, bool]:
         """Get object, create if missing, or update it when defaults are provided."""
         ...
 
@@ -2713,7 +1293,7 @@ class TaskManager(QueryManager[Task]):
         client: Any | None = None,
         using: str | None = None,
         mode: str = "models",
-    ) -> list[Task]:
+    ) -> list[Lecture]:
         """Get all objects."""
         ...
 
@@ -2722,7 +1302,7 @@ class TaskManager(QueryManager[Task]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Task | None:
+    ) -> Lecture | None:
         """Get first object."""
         ...
 
@@ -2731,7 +1311,7 @@ class TaskManager(QueryManager[Task]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> Task | None:
+    ) -> Lecture | None:
         """Get last object."""
         ...
 
@@ -2787,39 +1367,36 @@ class TaskManager(QueryManager[Task]):
     async def create(  # type: ignore[override]
         self,
         *,
-        instance: Task | None = None,
+        instance: Lecture | None = None,
         client: Any | None = None,
         using: str | None = None,
-        assignee: User | None = None,
-        assignee_id: int | None = None,
-        column: Column | None = None,
-        column_id: int | None = None,
+        content: str | None = None,
+        course: Course | None = None,
+        course_id: int | None = None,
         created_at: datetime | None = None,
-        description: str | None = None,
         id: int | None = None,
-        parent: Task | None = None,
-        parent_id: int | None = None,
         position: int | None = None,
+        state: LectureState | None = None,
         title: str | None = None,
         updated_at: datetime | None = None,
-    ) -> Task:
+    ) -> Lecture:
         """Create new object."""
         ...
 
     async def bulk_create(  # type: ignore[override]
         self,
-        objects: list[Task],
+        objects: list[Lecture],
         *,
         batch_size: int | None = None,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[Task]:
+    ) -> list[Lecture]:
         """Bulk create objects."""
         ...
 
     async def bulk_update(  # type: ignore[override]
         self,
-        objects: list[Task],
+        objects: list[Lecture],
         fields: list[str],
         *,
         client: Any | None = None,
@@ -2829,28 +1406,40 @@ class TaskManager(QueryManager[Task]):
         ...
 
 
-class ProjectGroup(Model):
+class CourseGroup(Model):
     class Meta:
         is_table: bool
         table_name: str
     id: int | None
-    project: Project | None
+    course: Course | None
     name: str
     description: str | None
     created_at: datetime | None
     updated_at: datetime | None
-    project_id: int | None
-    objects: ClassVar["ProjectGroupManager"]
+    course_id: int | None
+    objects: ClassVar["CourseGroupManager"]
 
 
-class ProjectGroupQuery(Query[ProjectGroup]):
-    """Type-safe Query for ProjectGroup model."""
+class CourseGroupQuery(Query[CourseGroup]):
+    """Type-safe Query for CourseGroup model."""
 
     # Query building methods (sync, return Query)
 
     def filter(
         self,
         *args: Any,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -2892,18 +1481,6 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         name__iexact: str | None = None,
         name__in: list[str] | None = None,
         name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
         updated_at: datetime | None = None,
         updated_at__gt: datetime | None = None,
         updated_at__gte: datetime | None = None,
@@ -2916,13 +1493,25 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> "ProjectGroupQuery":
+    ) -> "CourseGroupQuery":
         """Filter by Q-expressions or field lookups."""
         ...
 
     def exclude(
         self,
         *args: Any,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -2964,18 +1553,6 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         name__iexact: str | None = None,
         name__in: list[str] | None = None,
         name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
         updated_at: datetime | None = None,
         updated_at__gt: datetime | None = None,
         updated_at__gte: datetime | None = None,
@@ -2988,63 +1565,63 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> "ProjectGroupQuery":
+    ) -> "CourseGroupQuery":
         """Exclude objects matching field lookups."""
         ...
 
-    def order_by(self, *fields: Literal["created_at", "-created_at", "description", "-description", "id", "-id", "name", "-name", "project", "-project", "project_id", "-project_id", "updated_at", "-updated_at"]) -> "ProjectGroupQuery":  # type: ignore[override]
+    def order_by(self, *fields: Literal["course", "-course", "course_id", "-course_id", "created_at", "-created_at", "description", "-description", "id", "-id", "name", "-name", "updated_at", "-updated_at"]) -> "CourseGroupQuery":  # type: ignore[override]
         """Order results by fields."""
         ...
 
-    def limit(self, n: int) -> "ProjectGroupQuery":
+    def limit(self, n: int) -> "CourseGroupQuery":
         """Limit number of results."""
         ...
 
-    def offset(self, n: int) -> "ProjectGroupQuery":
+    def offset(self, n: int) -> "CourseGroupQuery":
         """Skip first n results."""
         ...
 
-    def distinct(self, value: bool = True) -> "ProjectGroupQuery":
+    def distinct(self, value: bool = True) -> "CourseGroupQuery":
         """Return distinct results."""
         ...
 
-    def select(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> "ProjectGroupQuery":  # type: ignore[override]
+    def select(self, *fields: Literal["course", "course_id", "created_at", "description", "id", "name", "updated_at"]) -> "CourseGroupQuery":  # type: ignore[override]
         """Select specific fields."""
         ...
 
-    def join(self, *paths: str) -> "ProjectGroupQuery":
+    def join(self, *paths: str) -> "CourseGroupQuery":
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> "ProjectGroupQuery":
+    def prefetch(self, *paths: str) -> "CourseGroupQuery":
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> "ProjectGroupQuery":
+    def for_update(self) -> "CourseGroupQuery":
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> "ProjectGroupQuery":
+    def for_share(self) -> "CourseGroupQuery":
         """Add FOR SHARE lock to query."""
         ...
 
-    def annotate(self, **annotations: Any) -> "ProjectGroupQuery":
+    def annotate(self, **annotations: Any) -> "CourseGroupQuery":
         """Add computed fields using aggregate functions."""
         ...
 
-    def group_by(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> "ProjectGroupQuery":  # type: ignore[override]
+    def group_by(self, *fields: Literal["course", "course_id", "created_at", "description", "id", "name", "updated_at"]) -> "CourseGroupQuery":  # type: ignore[override]
         """Add GROUP BY clause."""
         ...
 
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "ProjectGroupQuery":
+    def having(self, *q_exprs: Any, **kwargs: Any) -> "CourseGroupQuery":
         """Add HAVING clause for filtering grouped results."""
         ...
 
-    def values(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> "ProjectGroupQuery":  # type: ignore[override]
+    def values(self, *fields: Literal["course", "course_id", "created_at", "description", "id", "name", "updated_at"]) -> "CourseGroupQuery":  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"], flat: bool = False) -> "ProjectGroupQuery":  # type: ignore[override]
+    def values_list(self, *fields: Literal["course", "course_id", "created_at", "description", "id", "name", "updated_at"], flat: bool = False) -> "CourseGroupQuery":  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
@@ -3055,7 +1632,7 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[ProjectGroup]:
+    ) -> list[CourseGroup]:
         """Execute query and return all results."""
         ...
 
@@ -3064,7 +1641,7 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroup | None:
+    ) -> CourseGroup | None:
         """Execute query and return first result."""
         ...
 
@@ -3073,7 +1650,7 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroup | None:
+    ) -> CourseGroup | None:
         """Execute query and return last result."""
         ...
 
@@ -3156,18 +1733,30 @@ class ProjectGroupQuery(Query[ProjectGroup]):
         """Delete matching objects."""
         ...
 
-class ProjectGroupManager(QueryManager[ProjectGroup]):
-    """Type-safe Manager for ProjectGroup model."""
+class CourseGroupManager(QueryManager[CourseGroup]):
+    """Type-safe Manager for CourseGroup model."""
 
     # Query building methods (sync, return Query)
 
-    def query(self) -> ProjectGroupQuery:
+    def query(self) -> CourseGroupQuery:
         """Return a Query builder for this model."""
         ...
 
     def filter(
         self,
         *args: Any,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -3209,18 +1798,6 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         name__iexact: str | None = None,
         name__in: list[str] | None = None,
         name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
         updated_at: datetime | None = None,
         updated_at__gt: datetime | None = None,
         updated_at__gte: datetime | None = None,
@@ -3233,13 +1810,25 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> ProjectGroupQuery:
+    ) -> CourseGroupQuery:
         """Filter by Q-expressions or field lookups."""
         ...
 
     def exclude(
         self,
         *args: Any,
+        course: Course | None = None,
+        course__in: list[Course] | None = None,
+        course__isnull: bool | None = None,
+        course_id: int | None = None,
+        course_id__gt: int | None = None,
+        course_id__gte: int | None = None,
+        course_id__lt: int | None = None,
+        course_id__lte: int | None = None,
+        course_id__between: tuple[int, int] | None = None,
+        course_id__range: int | None = None,
+        course_id__in: list[int] | None = None,
+        course_id__isnull: bool | None = None,
         created_at: datetime | None = None,
         created_at__gt: datetime | None = None,
         created_at__gte: datetime | None = None,
@@ -3281,18 +1870,6 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         name__iexact: str | None = None,
         name__in: list[str] | None = None,
         name__isnull: bool | None = None,
-        project: Project | None = None,
-        project__in: list[Project] | None = None,
-        project__isnull: bool | None = None,
-        project_id: int | None = None,
-        project_id__gt: int | None = None,
-        project_id__gte: int | None = None,
-        project_id__lt: int | None = None,
-        project_id__lte: int | None = None,
-        project_id__between: tuple[int, int] | None = None,
-        project_id__range: int | None = None,
-        project_id__in: list[int] | None = None,
-        project_id__isnull: bool | None = None,
         updated_at: datetime | None = None,
         updated_at__gt: datetime | None = None,
         updated_at__gte: datetime | None = None,
@@ -3305,35 +1882,35 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         updated_at__day: int | None = None,
         updated_at__in: list[datetime] | None = None,
         updated_at__isnull: bool | None = None,
-    ) -> ProjectGroupQuery:
+    ) -> CourseGroupQuery:
         """Exclude objects matching field lookups."""
         ...
 
-    def values(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"]) -> ProjectGroupQuery:  # type: ignore[override]
+    def values(self, *fields: Literal["course", "course_id", "created_at", "description", "id", "name", "updated_at"]) -> CourseGroupQuery:  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["created_at", "description", "id", "name", "project", "project_id", "updated_at"], flat: bool = False) -> ProjectGroupQuery:  # type: ignore[override]
+    def values_list(self, *fields: Literal["course", "course_id", "created_at", "description", "id", "name", "updated_at"], flat: bool = False) -> CourseGroupQuery:  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
-    def distinct(self, distinct: bool = True) -> ProjectGroupQuery:
+    def distinct(self, distinct: bool = True) -> CourseGroupQuery:
         """Return distinct results."""
         ...
 
-    def join(self, *paths: str) -> ProjectGroupQuery:
+    def join(self, *paths: str) -> CourseGroupQuery:
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> ProjectGroupQuery:
+    def prefetch(self, *paths: str) -> CourseGroupQuery:
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> ProjectGroupQuery:
+    def for_update(self) -> CourseGroupQuery:
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> ProjectGroupQuery:
+    def for_share(self) -> CourseGroupQuery:
         """Add FOR SHARE lock to query."""
         ...
 
@@ -3345,7 +1922,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> ProjectGroup:
+    ) -> CourseGroup:
         """Get single object matching lookups."""
         ...
 
@@ -3355,7 +1932,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> ProjectGroup | None:
+    ) -> CourseGroup | None:
         """Get object or None if not found."""
         ...
 
@@ -3366,7 +1943,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[ProjectGroup, bool]:
+    ) -> tuple[CourseGroup, bool]:
         """Get object or create if not found. Returns (object, created)."""
         ...
 
@@ -3377,7 +1954,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[ProjectGroup, bool]:
+    ) -> tuple[CourseGroup, bool]:
         """Get object, create if missing, or update it when defaults are provided."""
         ...
 
@@ -3387,7 +1964,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         client: Any | None = None,
         using: str | None = None,
         mode: str = "models",
-    ) -> list[ProjectGroup]:
+    ) -> list[CourseGroup]:
         """Get all objects."""
         ...
 
@@ -3396,7 +1973,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroup | None:
+    ) -> CourseGroup | None:
         """Get first object."""
         ...
 
@@ -3405,7 +1982,7 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroup | None:
+    ) -> CourseGroup | None:
         """Get last object."""
         ...
 
@@ -3461,34 +2038,34 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
     async def create(  # type: ignore[override]
         self,
         *,
-        instance: ProjectGroup | None = None,
+        instance: CourseGroup | None = None,
         client: Any | None = None,
         using: str | None = None,
+        course: Course | None = None,
+        course_id: int | None = None,
         created_at: datetime | None = None,
         description: str | None = None,
         id: int | None = None,
         name: str | None = None,
-        project: Project | None = None,
-        project_id: int | None = None,
         updated_at: datetime | None = None,
-    ) -> ProjectGroup:
+    ) -> CourseGroup:
         """Create new object."""
         ...
 
     async def bulk_create(  # type: ignore[override]
         self,
-        objects: list[ProjectGroup],
+        objects: list[CourseGroup],
         *,
         batch_size: int | None = None,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[ProjectGroup]:
+    ) -> list[CourseGroup]:
         """Bulk create objects."""
         ...
 
     async def bulk_update(  # type: ignore[override]
         self,
-        objects: list[ProjectGroup],
+        objects: list[CourseGroup],
         fields: list[str],
         *,
         client: Any | None = None,
@@ -3498,27 +2075,27 @@ class ProjectGroupManager(QueryManager[ProjectGroup]):
         ...
 
 
-class ProjectGroupPermission(Model):
+class CourseGroupPermission(Model):
     class Meta:
         is_table: bool
         table_name: str
     id: int | None
-    group: ProjectGroup | None
+    group: CourseGroup | None
     permission: str
     group_id: int | None
-    objects: ClassVar["ProjectGroupPermissionManager"]
+    objects: ClassVar["CourseGroupPermissionManager"]
 
 
-class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
-    """Type-safe Query for ProjectGroupPermission model."""
+class CourseGroupPermissionQuery(Query[CourseGroupPermission]):
+    """Type-safe Query for CourseGroupPermission model."""
 
     # Query building methods (sync, return Query)
 
     def filter(
         self,
         *args: Any,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -3548,15 +2125,15 @@ class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
         permission__iexact: str | None = None,
         permission__in: list[str] | None = None,
         permission__isnull: bool | None = None,
-    ) -> "ProjectGroupPermissionQuery":
+    ) -> "CourseGroupPermissionQuery":
         """Filter by Q-expressions or field lookups."""
         ...
 
     def exclude(
         self,
         *args: Any,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -3586,63 +2163,63 @@ class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
         permission__iexact: str | None = None,
         permission__in: list[str] | None = None,
         permission__isnull: bool | None = None,
-    ) -> "ProjectGroupPermissionQuery":
+    ) -> "CourseGroupPermissionQuery":
         """Exclude objects matching field lookups."""
         ...
 
-    def order_by(self, *fields: Literal["group", "-group", "group_id", "-group_id", "id", "-id", "permission", "-permission"]) -> "ProjectGroupPermissionQuery":  # type: ignore[override]
+    def order_by(self, *fields: Literal["group", "-group", "group_id", "-group_id", "id", "-id", "permission", "-permission"]) -> "CourseGroupPermissionQuery":  # type: ignore[override]
         """Order results by fields."""
         ...
 
-    def limit(self, n: int) -> "ProjectGroupPermissionQuery":
+    def limit(self, n: int) -> "CourseGroupPermissionQuery":
         """Limit number of results."""
         ...
 
-    def offset(self, n: int) -> "ProjectGroupPermissionQuery":
+    def offset(self, n: int) -> "CourseGroupPermissionQuery":
         """Skip first n results."""
         ...
 
-    def distinct(self, value: bool = True) -> "ProjectGroupPermissionQuery":
+    def distinct(self, value: bool = True) -> "CourseGroupPermissionQuery":
         """Return distinct results."""
         ...
 
-    def select(self, *fields: Literal["group", "group_id", "id", "permission"]) -> "ProjectGroupPermissionQuery":  # type: ignore[override]
+    def select(self, *fields: Literal["group", "group_id", "id", "permission"]) -> "CourseGroupPermissionQuery":  # type: ignore[override]
         """Select specific fields."""
         ...
 
-    def join(self, *paths: str) -> "ProjectGroupPermissionQuery":
+    def join(self, *paths: str) -> "CourseGroupPermissionQuery":
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> "ProjectGroupPermissionQuery":
+    def prefetch(self, *paths: str) -> "CourseGroupPermissionQuery":
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> "ProjectGroupPermissionQuery":
+    def for_update(self) -> "CourseGroupPermissionQuery":
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> "ProjectGroupPermissionQuery":
+    def for_share(self) -> "CourseGroupPermissionQuery":
         """Add FOR SHARE lock to query."""
         ...
 
-    def annotate(self, **annotations: Any) -> "ProjectGroupPermissionQuery":
+    def annotate(self, **annotations: Any) -> "CourseGroupPermissionQuery":
         """Add computed fields using aggregate functions."""
         ...
 
-    def group_by(self, *fields: Literal["group", "group_id", "id", "permission"]) -> "ProjectGroupPermissionQuery":  # type: ignore[override]
+    def group_by(self, *fields: Literal["group", "group_id", "id", "permission"]) -> "CourseGroupPermissionQuery":  # type: ignore[override]
         """Add GROUP BY clause."""
         ...
 
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "ProjectGroupPermissionQuery":
+    def having(self, *q_exprs: Any, **kwargs: Any) -> "CourseGroupPermissionQuery":
         """Add HAVING clause for filtering grouped results."""
         ...
 
-    def values(self, *fields: Literal["group", "group_id", "id", "permission"]) -> "ProjectGroupPermissionQuery":  # type: ignore[override]
+    def values(self, *fields: Literal["group", "group_id", "id", "permission"]) -> "CourseGroupPermissionQuery":  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["group", "group_id", "id", "permission"], flat: bool = False) -> "ProjectGroupPermissionQuery":  # type: ignore[override]
+    def values_list(self, *fields: Literal["group", "group_id", "id", "permission"], flat: bool = False) -> "CourseGroupPermissionQuery":  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
@@ -3653,7 +2230,7 @@ class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[ProjectGroupPermission]:
+    ) -> list[CourseGroupPermission]:
         """Execute query and return all results."""
         ...
 
@@ -3662,7 +2239,7 @@ class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroupPermission | None:
+    ) -> CourseGroupPermission | None:
         """Execute query and return first result."""
         ...
 
@@ -3671,7 +2248,7 @@ class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroupPermission | None:
+    ) -> CourseGroupPermission | None:
         """Execute query and return last result."""
         ...
 
@@ -3754,20 +2331,20 @@ class ProjectGroupPermissionQuery(Query[ProjectGroupPermission]):
         """Delete matching objects."""
         ...
 
-class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
-    """Type-safe Manager for ProjectGroupPermission model."""
+class CourseGroupPermissionManager(QueryManager[CourseGroupPermission]):
+    """Type-safe Manager for CourseGroupPermission model."""
 
     # Query building methods (sync, return Query)
 
-    def query(self) -> ProjectGroupPermissionQuery:
+    def query(self) -> CourseGroupPermissionQuery:
         """Return a Query builder for this model."""
         ...
 
     def filter(
         self,
         *args: Any,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -3797,15 +2374,15 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         permission__iexact: str | None = None,
         permission__in: list[str] | None = None,
         permission__isnull: bool | None = None,
-    ) -> ProjectGroupPermissionQuery:
+    ) -> CourseGroupPermissionQuery:
         """Filter by Q-expressions or field lookups."""
         ...
 
     def exclude(
         self,
         *args: Any,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -3835,35 +2412,35 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         permission__iexact: str | None = None,
         permission__in: list[str] | None = None,
         permission__isnull: bool | None = None,
-    ) -> ProjectGroupPermissionQuery:
+    ) -> CourseGroupPermissionQuery:
         """Exclude objects matching field lookups."""
         ...
 
-    def values(self, *fields: Literal["group", "group_id", "id", "permission"]) -> ProjectGroupPermissionQuery:  # type: ignore[override]
+    def values(self, *fields: Literal["group", "group_id", "id", "permission"]) -> CourseGroupPermissionQuery:  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["group", "group_id", "id", "permission"], flat: bool = False) -> ProjectGroupPermissionQuery:  # type: ignore[override]
+    def values_list(self, *fields: Literal["group", "group_id", "id", "permission"], flat: bool = False) -> CourseGroupPermissionQuery:  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
-    def distinct(self, distinct: bool = True) -> ProjectGroupPermissionQuery:
+    def distinct(self, distinct: bool = True) -> CourseGroupPermissionQuery:
         """Return distinct results."""
         ...
 
-    def join(self, *paths: str) -> ProjectGroupPermissionQuery:
+    def join(self, *paths: str) -> CourseGroupPermissionQuery:
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> ProjectGroupPermissionQuery:
+    def prefetch(self, *paths: str) -> CourseGroupPermissionQuery:
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> ProjectGroupPermissionQuery:
+    def for_update(self) -> CourseGroupPermissionQuery:
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> ProjectGroupPermissionQuery:
+    def for_share(self) -> CourseGroupPermissionQuery:
         """Add FOR SHARE lock to query."""
         ...
 
@@ -3875,7 +2452,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> ProjectGroupPermission:
+    ) -> CourseGroupPermission:
         """Get single object matching lookups."""
         ...
 
@@ -3885,7 +2462,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> ProjectGroupPermission | None:
+    ) -> CourseGroupPermission | None:
         """Get object or None if not found."""
         ...
 
@@ -3896,7 +2473,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[ProjectGroupPermission, bool]:
+    ) -> tuple[CourseGroupPermission, bool]:
         """Get object or create if not found. Returns (object, created)."""
         ...
 
@@ -3907,7 +2484,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[ProjectGroupPermission, bool]:
+    ) -> tuple[CourseGroupPermission, bool]:
         """Get object, create if missing, or update it when defaults are provided."""
         ...
 
@@ -3917,7 +2494,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         client: Any | None = None,
         using: str | None = None,
         mode: str = "models",
-    ) -> list[ProjectGroupPermission]:
+    ) -> list[CourseGroupPermission]:
         """Get all objects."""
         ...
 
@@ -3926,7 +2503,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroupPermission | None:
+    ) -> CourseGroupPermission | None:
         """Get first object."""
         ...
 
@@ -3935,7 +2512,7 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectGroupPermission | None:
+    ) -> CourseGroupPermission | None:
         """Get last object."""
         ...
 
@@ -3991,31 +2568,31 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
     async def create(  # type: ignore[override]
         self,
         *,
-        instance: ProjectGroupPermission | None = None,
+        instance: CourseGroupPermission | None = None,
         client: Any | None = None,
         using: str | None = None,
-        group: ProjectGroup | None = None,
+        group: CourseGroup | None = None,
         group_id: int | None = None,
         id: int | None = None,
         permission: str | None = None,
-    ) -> ProjectGroupPermission:
+    ) -> CourseGroupPermission:
         """Create new object."""
         ...
 
     async def bulk_create(  # type: ignore[override]
         self,
-        objects: list[ProjectGroupPermission],
+        objects: list[CourseGroupPermission],
         *,
         batch_size: int | None = None,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[ProjectGroupPermission]:
+    ) -> list[CourseGroupPermission]:
         """Bulk create objects."""
         ...
 
     async def bulk_update(  # type: ignore[override]
         self,
-        objects: list[ProjectGroupPermission],
+        objects: list[CourseGroupPermission],
         fields: list[str],
         *,
         client: Any | None = None,
@@ -4025,21 +2602,21 @@ class ProjectGroupPermissionManager(QueryManager[ProjectGroupPermission]):
         ...
 
 
-class ProjectMember(Model):
+class CourseMember(Model):
     class Meta:
         is_table: bool
         table_name: str
     id: int | None
-    group: ProjectGroup | None
+    group: CourseGroup | None
     user: User | None
     created_at: datetime | None
     group_id: int | None
     user_id: int | None
-    objects: ClassVar["ProjectMemberManager"]
+    objects: ClassVar["CourseMemberManager"]
 
 
-class ProjectMemberQuery(Query[ProjectMember]):
-    """Type-safe Query for ProjectMember model."""
+class CourseMemberQuery(Query[CourseMember]):
+    """Type-safe Query for CourseMember model."""
 
     # Query building methods (sync, return Query)
 
@@ -4058,8 +2635,8 @@ class ProjectMemberQuery(Query[ProjectMember]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -4091,7 +2668,7 @@ class ProjectMemberQuery(Query[ProjectMember]):
         user_id__range: int | None = None,
         user_id__in: list[int] | None = None,
         user_id__isnull: bool | None = None,
-    ) -> "ProjectMemberQuery":
+    ) -> "CourseMemberQuery":
         """Filter by Q-expressions or field lookups."""
         ...
 
@@ -4110,8 +2687,8 @@ class ProjectMemberQuery(Query[ProjectMember]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -4143,63 +2720,63 @@ class ProjectMemberQuery(Query[ProjectMember]):
         user_id__range: int | None = None,
         user_id__in: list[int] | None = None,
         user_id__isnull: bool | None = None,
-    ) -> "ProjectMemberQuery":
+    ) -> "CourseMemberQuery":
         """Exclude objects matching field lookups."""
         ...
 
-    def order_by(self, *fields: Literal["created_at", "-created_at", "group", "-group", "group_id", "-group_id", "id", "-id", "user", "-user", "user_id", "-user_id"]) -> "ProjectMemberQuery":  # type: ignore[override]
+    def order_by(self, *fields: Literal["created_at", "-created_at", "group", "-group", "group_id", "-group_id", "id", "-id", "user", "-user", "user_id", "-user_id"]) -> "CourseMemberQuery":  # type: ignore[override]
         """Order results by fields."""
         ...
 
-    def limit(self, n: int) -> "ProjectMemberQuery":
+    def limit(self, n: int) -> "CourseMemberQuery":
         """Limit number of results."""
         ...
 
-    def offset(self, n: int) -> "ProjectMemberQuery":
+    def offset(self, n: int) -> "CourseMemberQuery":
         """Skip first n results."""
         ...
 
-    def distinct(self, value: bool = True) -> "ProjectMemberQuery":
+    def distinct(self, value: bool = True) -> "CourseMemberQuery":
         """Return distinct results."""
         ...
 
-    def select(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> "ProjectMemberQuery":  # type: ignore[override]
+    def select(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> "CourseMemberQuery":  # type: ignore[override]
         """Select specific fields."""
         ...
 
-    def join(self, *paths: str) -> "ProjectMemberQuery":
+    def join(self, *paths: str) -> "CourseMemberQuery":
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> "ProjectMemberQuery":
+    def prefetch(self, *paths: str) -> "CourseMemberQuery":
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> "ProjectMemberQuery":
+    def for_update(self) -> "CourseMemberQuery":
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> "ProjectMemberQuery":
+    def for_share(self) -> "CourseMemberQuery":
         """Add FOR SHARE lock to query."""
         ...
 
-    def annotate(self, **annotations: Any) -> "ProjectMemberQuery":
+    def annotate(self, **annotations: Any) -> "CourseMemberQuery":
         """Add computed fields using aggregate functions."""
         ...
 
-    def group_by(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> "ProjectMemberQuery":  # type: ignore[override]
+    def group_by(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> "CourseMemberQuery":  # type: ignore[override]
         """Add GROUP BY clause."""
         ...
 
-    def having(self, *q_exprs: Any, **kwargs: Any) -> "ProjectMemberQuery":
+    def having(self, *q_exprs: Any, **kwargs: Any) -> "CourseMemberQuery":
         """Add HAVING clause for filtering grouped results."""
         ...
 
-    def values(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> "ProjectMemberQuery":  # type: ignore[override]
+    def values(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> "CourseMemberQuery":  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"], flat: bool = False) -> "ProjectMemberQuery":  # type: ignore[override]
+    def values_list(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"], flat: bool = False) -> "CourseMemberQuery":  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
@@ -4210,7 +2787,7 @@ class ProjectMemberQuery(Query[ProjectMember]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[ProjectMember]:
+    ) -> list[CourseMember]:
         """Execute query and return all results."""
         ...
 
@@ -4219,7 +2796,7 @@ class ProjectMemberQuery(Query[ProjectMember]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectMember | None:
+    ) -> CourseMember | None:
         """Execute query and return first result."""
         ...
 
@@ -4228,7 +2805,7 @@ class ProjectMemberQuery(Query[ProjectMember]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectMember | None:
+    ) -> CourseMember | None:
         """Execute query and return last result."""
         ...
 
@@ -4311,12 +2888,12 @@ class ProjectMemberQuery(Query[ProjectMember]):
         """Delete matching objects."""
         ...
 
-class ProjectMemberManager(QueryManager[ProjectMember]):
-    """Type-safe Manager for ProjectMember model."""
+class CourseMemberManager(QueryManager[CourseMember]):
+    """Type-safe Manager for CourseMember model."""
 
     # Query building methods (sync, return Query)
 
-    def query(self) -> ProjectMemberQuery:
+    def query(self) -> CourseMemberQuery:
         """Return a Query builder for this model."""
         ...
 
@@ -4335,8 +2912,8 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -4368,7 +2945,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         user_id__range: int | None = None,
         user_id__in: list[int] | None = None,
         user_id__isnull: bool | None = None,
-    ) -> ProjectMemberQuery:
+    ) -> CourseMemberQuery:
         """Filter by Q-expressions or field lookups."""
         ...
 
@@ -4387,8 +2964,8 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         created_at__day: int | None = None,
         created_at__in: list[datetime] | None = None,
         created_at__isnull: bool | None = None,
-        group: ProjectGroup | None = None,
-        group__in: list[ProjectGroup] | None = None,
+        group: CourseGroup | None = None,
+        group__in: list[CourseGroup] | None = None,
         group__isnull: bool | None = None,
         group_id: int | None = None,
         group_id__gt: int | None = None,
@@ -4420,35 +2997,35 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         user_id__range: int | None = None,
         user_id__in: list[int] | None = None,
         user_id__isnull: bool | None = None,
-    ) -> ProjectMemberQuery:
+    ) -> CourseMemberQuery:
         """Exclude objects matching field lookups."""
         ...
 
-    def values(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> ProjectMemberQuery:  # type: ignore[override]
+    def values(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"]) -> CourseMemberQuery:  # type: ignore[override]
         """Return dicts instead of models."""
         ...
 
-    def values_list(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"], flat: bool = False) -> ProjectMemberQuery:  # type: ignore[override]
+    def values_list(self, *fields: Literal["created_at", "group", "group_id", "id", "user", "user_id"], flat: bool = False) -> CourseMemberQuery:  # type: ignore[override]
         """Return tuples/values instead of models."""
         ...
 
-    def distinct(self, distinct: bool = True) -> ProjectMemberQuery:
+    def distinct(self, distinct: bool = True) -> CourseMemberQuery:
         """Return distinct results."""
         ...
 
-    def join(self, *paths: str) -> ProjectMemberQuery:
+    def join(self, *paths: str) -> CourseMemberQuery:
         """Perform LEFT JOIN for relations."""
         ...
 
-    def prefetch(self, *paths: str) -> ProjectMemberQuery:
+    def prefetch(self, *paths: str) -> CourseMemberQuery:
         """Prefetch related objects (separate queries)."""
         ...
 
-    def for_update(self) -> ProjectMemberQuery:
+    def for_update(self) -> CourseMemberQuery:
         """Add FOR UPDATE lock to query."""
         ...
 
-    def for_share(self) -> ProjectMemberQuery:
+    def for_share(self) -> CourseMemberQuery:
         """Add FOR SHARE lock to query."""
         ...
 
@@ -4460,7 +3037,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> ProjectMember:
+    ) -> CourseMember:
         """Get single object matching lookups."""
         ...
 
@@ -4470,7 +3047,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> ProjectMember | None:
+    ) -> CourseMember | None:
         """Get object or None if not found."""
         ...
 
@@ -4481,7 +3058,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[ProjectMember, bool]:
+    ) -> tuple[CourseMember, bool]:
         """Get object or create if not found. Returns (object, created)."""
         ...
 
@@ -4492,7 +3069,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         client: Any | None = None,
         using: str | None = None,
         **filters: Any,
-    ) -> tuple[ProjectMember, bool]:
+    ) -> tuple[CourseMember, bool]:
         """Get object, create if missing, or update it when defaults are provided."""
         ...
 
@@ -4502,7 +3079,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         client: Any | None = None,
         using: str | None = None,
         mode: str = "models",
-    ) -> list[ProjectMember]:
+    ) -> list[CourseMember]:
         """Get all objects."""
         ...
 
@@ -4511,7 +3088,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectMember | None:
+    ) -> CourseMember | None:
         """Get first object."""
         ...
 
@@ -4520,7 +3097,7 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
         *,
         client: Any | None = None,
         using: str | None = None,
-    ) -> ProjectMember | None:
+    ) -> CourseMember | None:
         """Get last object."""
         ...
 
@@ -4576,33 +3153,33 @@ class ProjectMemberManager(QueryManager[ProjectMember]):
     async def create(  # type: ignore[override]
         self,
         *,
-        instance: ProjectMember | None = None,
+        instance: CourseMember | None = None,
         client: Any | None = None,
         using: str | None = None,
         created_at: datetime | None = None,
-        group: ProjectGroup | None = None,
+        group: CourseGroup | None = None,
         group_id: int | None = None,
         id: int | None = None,
         user: User | None = None,
         user_id: int | None = None,
-    ) -> ProjectMember:
+    ) -> CourseMember:
         """Create new object."""
         ...
 
     async def bulk_create(  # type: ignore[override]
         self,
-        objects: list[ProjectMember],
+        objects: list[CourseMember],
         *,
         batch_size: int | None = None,
         client: Any | None = None,
         using: str | None = None,
-    ) -> list[ProjectMember]:
+    ) -> list[CourseMember]:
         """Bulk create objects."""
         ...
 
     async def bulk_update(  # type: ignore[override]
         self,
-        objects: list[ProjectMember],
+        objects: list[CourseMember],
         fields: list[str],
         *,
         client: Any | None = None,

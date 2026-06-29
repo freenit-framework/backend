@@ -20,6 +20,7 @@ from typing import List, Tuple
 from freenit.config import getConfig
 from freenit.git import repo as git_repo
 from freenit.git import store
+from freenit.git.webhook import notify_push
 from freenit.models.git import GitRepo
 
 config = getConfig()
@@ -173,6 +174,7 @@ async def post_receive(repo_name: str) -> int:
                 await _run_tests_detached(repo_name, push_log.id)
             else:
                 await store.update_push_status(push_log, "completed")
+            await notify_push(repo, ref, old_rev, new_rev, _pusher_email())
             await _record_task_refs(repo, old_rev, new_rev)
         except Exception as exc:
             _error(f"Failed to record push for {ref}: {exc}")

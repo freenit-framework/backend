@@ -23,6 +23,7 @@ class GitRepo(OxydeBaseModel):
     default_branch: str = oxyde.Field(default="main")
     tests_enabled: bool = oxyde.Field(default=False)
     test_command: str | None = oxyde.Field(default=None)
+    webhook_url: str | None = oxyde.Field(default=None)
     created_at: datetime | None = oxyde.Field(default=None)
     updated_at: datetime | None = oxyde.Field(default=None)
 

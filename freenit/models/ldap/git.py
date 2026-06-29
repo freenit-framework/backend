@@ -58,6 +58,7 @@ class GitRepo(LDAPBaseModel):
     default_branch: str = Field("main", description="Default branch name")
     tests_enabled: bool = Field(False, description="Run tests on push")
     test_command: str | None = Field(None, description="Shell command used for tests")
+    webhook_url: str | None = Field(None, description="URL to notify on push")
     created_at: datetime | None = Field(None, description="Creation timestamp")
     updated_at: datetime | None = Field(None, description="Last update timestamp")
 
@@ -74,6 +75,7 @@ class GitRepo(LDAPBaseModel):
             default_branch=_first(entry, "gitDefaultBranch", "main"),
             tests_enabled=_bool(entry, "gitTestsEnabled", False),
             test_command=_first(entry, "gitTestCommand"),
+            webhook_url=_first(entry, "gitWebhookUrl"),
             created_at=_datetime(entry, "createdAt"),
             updated_at=_datetime(entry, "updatedAt"),
         )
@@ -157,6 +159,7 @@ class GitRepoCreate(BaseModel):
     default_branch: str = "main"
     tests_enabled: bool = False
     test_command: str | None = None
+    webhook_url: str | None = None
 
 
 class GitRepoUpdate(BaseModel):
@@ -168,3 +171,4 @@ class GitRepoUpdate(BaseModel):
     default_branch: str | None = None
     tests_enabled: bool | None = None
     test_command: str | None = None
+    webhook_url: str | None = None

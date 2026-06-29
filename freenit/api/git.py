@@ -11,6 +11,7 @@ from freenit.config import getConfig
 from freenit.decorators import description
 from freenit.git import repo as git_repo
 from freenit.git import store
+from freenit.git.webhook import notify_push
 from freenit.models.git import GitPermission, GitPushLog, GitRepo
 from freenit.models.pagination import Page
 from freenit.models.user import User
@@ -40,6 +41,7 @@ class GitRepoCreate(pydantic.BaseModel):
     default_branch: str = "main"
     tests_enabled: bool = False
     test_command: str | None = None
+    webhook_url: str | None = None
 
 
 class GitRepoUpdate(pydantic.BaseModel):
@@ -51,6 +53,7 @@ class GitRepoUpdate(pydantic.BaseModel):
     default_branch: str | None = None
     tests_enabled: bool | None = None
     test_command: str | None = None
+    webhook_url: str | None = None
 
 
 class GitRepoResponse(pydantic.BaseModel):
@@ -65,6 +68,7 @@ class GitRepoResponse(pydantic.BaseModel):
     default_branch: str
     tests_enabled: bool
     test_command: str | None = None
+    webhook_url: str | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
@@ -307,6 +311,7 @@ class GitHookPushAPI:
             background_tasks.add_task(_run_tests, repo, push_log)
         else:
             await store.update_push_status(push_log, "completed")
+        await notify_push(repo, data.ref, data.old_rev, data.new_rev, data.pusher_email)
         return GitPushLogResponse.model_validate(push_log)
 
 

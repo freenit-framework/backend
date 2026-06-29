@@ -4,11 +4,11 @@ from freenit.config import getConfig
 from freenit.permissions import profile_perms
 
 config = getConfig()
-tags = ["jabber"]
+tags = ["chat"]
 
 
-@api.get("/jabber/config", tags=tags)
-async def jabber_config(user=Depends(profile_perms)):
+@api.get("/chat/config", tags=tags)
+async def chat_config(user=Depends(profile_perms)):
     return {
         "ws_url": config.xmpp.ws_url,
     }

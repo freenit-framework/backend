@@ -160,7 +160,8 @@ class BaseConfig:
     project = "freenit.models.sql.project"
     lms = "freenit.models.sql.lms"
     git = "freenit.models.sql.git"
-    modules = ["auth"]
+    blog = "freenit.models.sql.blog"
+    modules = ["auth", "blog"]
     meta = None
     auth = Auth()
     mail = None
@@ -225,9 +226,10 @@ class TestConfig(BaseConfig):
         "dav",
         "mail",
         "sieve",
-        "jabber",
+        "chat",
         "omemo",
         "git",
+        "blog",
     ]
 
 
