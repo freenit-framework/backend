@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 
 import io
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -454,3 +454,111 @@ class TestGit:
         response = client.get(f"/git/repos/{repo_id}/task-refs")
         assert response.status_code == 200  # nosec
         assert response.json()["total"] == 0  # nosec
+
+    @pytest.mark.asyncio
+    async def test_hook_push_endpoint_sends_webhook(self, client):
+        admin: User = factories.User(admin=True)
+        await admin.save()
+        client.login(user=admin)
+        project_id = _create_project(client)
+
+        response = client.post(
+            "/git/repos",
+            {
+                "name": "webhook-repo",
+                "path": _tmp_dir(),
+                "project_id": project_id,
+                "webhook_url": "https://example.com/hook",
+            },
+        )
+        repo_id = response.json()["id"]
+
+        with patch("freenit.api.git.notify_push") as mock_notify:
+            response = client.post(
+                f"/git/repos/{repo_id}/hooks/push",
+                {
+                    "ref": "refs/heads/main",
+                    "old_rev": "0000000000000000000000000000000000000000",
+                    "new_rev": "a" * 40,
+                    "pusher_email": "pusher@example.com",
+                },
+            )
+        assert response.status_code == 200  # nosec
+        mock_notify.assert_awaited_once()
+        args = mock_notify.await_args.args
+        assert args[0].id == repo_id  # nosec
+        assert args[1] == "refs/heads/main"  # nosec
+
+    @pytest.mark.asyncio
+    async def test_post_receive_sends_webhook(self, client):
+        admin: User = factories.User(admin=True)
+        await admin.save()
+        client.login(user=admin)
+        project_id = _create_project(client)
+        tmp = _init_temp_repo()
+
+        response = client.post(
+            "/git/repos",
+            {
+                "name": "post-webhook-repo",
+                "path": tmp.name,
+                "project_id": project_id,
+                "webhook_url": "https://example.com/hook",
+            },
+        )
+        repo_id = response.json()["id"]
+
+        proc = subprocess.run(
+            ["git", "-C", tmp.name, "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )  # nosec
+        head = proc.stdout.strip()
+
+        stdin_data = f"0000000000000000000000000000000000000000 {head} refs/heads/main\n"
+        with patch("freenit.git.hooks.notify_push") as mock_notify:
+            with patch("sys.stdin", io.StringIO(stdin_data)):
+                result = await post_receive("post-webhook-repo")
+        assert result == 0  # nosec
+        mock_notify.assert_awaited_once()
+        args = mock_notify.await_args.args
+        assert args[0].id == repo_id  # nosec
+        assert args[1] == "refs/heads/main"  # nosec
+
+    @pytest.mark.asyncio
+    async def test_webhook_payload(self):
+        from freenit.git.webhook import notify_push
+
+        repo = AsyncMock()
+        repo.id = 1
+        repo.name = "payload-repo"
+        repo.path = None
+        repo.webhook_url = "https://example.com/hook"
+
+        from unittest.mock import Mock
+
+        mock_response = AsyncMock()
+        mock_response.raise_for_status = Mock()
+        mock_client = AsyncMock()
+        mock_client.post = AsyncMock(return_value=mock_response)
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=False)
+
+        with patch("freenit.git.webhook.httpx.AsyncClient", return_value=mock_client):
+            await notify_push(
+                repo,
+                "refs/heads/main",
+                "0" * 40,
+                "a" * 40,
+                "pusher@example.com",
+            )
+
+        mock_client.post.assert_awaited_once()
+        url, kwargs = mock_client.post.await_args.args, mock_client.post.await_args.kwargs
+        assert url[0] == "https://example.com/hook"  # nosec
+        payload = kwargs["json"]
+        assert payload["event"] == "push"  # nosec
+        assert payload["repository"]["name"] == "payload-repo"  # nosec
+        assert payload["ref"] == "refs/heads/main"  # nosec
+        assert payload["pusher"]["email"] == "pusher@example.com"  # nosec

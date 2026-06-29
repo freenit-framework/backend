@@ -663,17 +663,17 @@ EOF
 <Password store={store} />
 EOF
 
-  mkdir -p src/routes/jabber
-  cat >src/routes/jabber/+page.svelte<<EOF
+  mkdir -p src/routes/chat
+  cat >src/routes/chat/+page.svelte<<EOF
 <script lang="ts">
-  import { Jabber } from 'freenit'
+  import { Chat } from 'freenit'
 </script>
 
 <svelte:head>
-  <title>Jabber</title>
+  <title>Chat</title>
 </svelte:head>
 
-<Jabber />
+<Chat />
 EOF
 
   mkdir -p src/routes/calendar

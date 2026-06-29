@@ -198,6 +198,9 @@ async def create_repo(**kwargs) -> GitRepo:
     test_command = kwargs.get("test_command")
     if test_command:
         entry["gitTestCommand"] = test_command
+    webhook_url = kwargs.get("webhook_url")
+    if webhook_url:
+        entry["gitWebhookUrl"] = webhook_url
     entry["createdAt"] = _ldap_dt(now)
     entry["updatedAt"] = _ldap_dt(now)
 
@@ -217,6 +220,7 @@ async def create_repo(**kwargs) -> GitRepo:
         default_branch=kwargs.get("default_branch", "main"),
         tests_enabled=kwargs.get("tests_enabled", False),
         test_command=test_command,
+        webhook_url=webhook_url,
         created_at=now,
         updated_at=now,
     )
@@ -254,6 +258,12 @@ async def update_repo(repo: GitRepo, data) -> GitRepo:
                 entry["gitTestCommand"] = value
             elif "gitTestCommand" in entry:
                 del entry["gitTestCommand"]
+        if "webhook_url" in fields:
+            value = fields["webhook_url"]
+            if value:
+                entry["gitWebhookUrl"] = value
+            elif "gitWebhookUrl" in entry:
+                del entry["gitWebhookUrl"]
         entry["updatedAt"] = _ldap_dt(datetime.utcnow())
         await entry.modify()
 

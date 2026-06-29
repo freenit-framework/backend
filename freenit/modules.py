@@ -68,10 +68,10 @@ MODULES = {
         dependencies=["user"],
         api="freenit.api.sieve",
     ),
-    "jabber": Module(
-        name="jabber",
+    "chat": Module(
+        name="chat",
         dependencies=["user"],
-        api="freenit.api.jabber",
+        api="freenit.api.chat",
     ),
     "omemo": Module(
         name="omemo",
@@ -83,6 +83,12 @@ MODULES = {
         dependencies=["user"],
         models=["freenit.models.sql.git"],
         api="freenit.api.git",
+    ),
+    "blog": Module(
+        name="blog",
+        dependencies=["user"],
+        models=["freenit.models.sql.blog"],
+        api="freenit.api.blog",
     ),
 }
 

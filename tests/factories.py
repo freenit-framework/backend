@@ -2,6 +2,7 @@ import factory
 from passlib.hash import pbkdf2_sha256
 
 from freenit.config import getConfig
+from freenit.models.blog import BlogPost, Tag
 from freenit.models.lms import (
     Course,
     CourseGroup,
@@ -150,3 +151,22 @@ class CourseGroupPermissionFactory(factory.Factory):
 
     group_id = None
     permission = "edit"
+
+
+class TagFactory(factory.Factory):
+    class Meta:
+        model = Tag
+
+    name = factory.Faker("pystr")
+
+
+class BlogPostFactory(factory.Factory):
+    class Meta:
+        model = BlogPost
+
+    title = factory.Faker("sentence")
+    slug = factory.Faker("pystr")
+    content = factory.Faker("paragraph")
+    date = factory.Faker("date_time")
+    published = True
+    author_id = None
