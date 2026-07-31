@@ -11,6 +11,7 @@ def FreenitAPI(app):
         def __call__(self, cls):
             origGet = getattr(cls, "get", None)
             origPost = getattr(cls, "post", None)
+            origPut = getattr(cls, "put", None)
             origPatch = getattr(cls, "patch", None)
             origDelete = getattr(cls, "delete", None)
 
@@ -31,6 +32,13 @@ def FreenitAPI(app):
                         tags=tags,
                     )
                     post = _deco(origPost)
+                if callable(origPut):
+                    _deco = self.app.put(
+                        self.route,
+                        summary=getattr(origPut, "description", f"Replace {tag}"),
+                        tags=tags,
+                    )
+                    put = _deco(origPut)
                 if callable(origPatch):
                     _deco = self.app.patch(
                         self.route,
